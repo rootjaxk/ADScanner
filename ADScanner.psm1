@@ -1,11 +1,15 @@
+# Dynamically determine module name
 $directorySeparator = [System.IO.Path]::DirectorySeparatorChar
 $moduleName = $PSScriptRoot.Split($directorySeparator)[-1]
+
+# Pull current module manifest and test it
 $moduleManifest = $PSScriptRoot + $directorySeparator + $moduleName + '.psd1'
 $publicFunctionsPath = $PSScriptRoot + $directorySeparator + 'Public' + $directorySeparator + 'ps1'
 $privateFunctionsPath = $PSScriptRoot + $directorySeparator + 'Private' + $directorySeparator + 'ps1'
 $classesPath =  $PSScriptRoot + $directorySeparator + 'Classes' + $directorySeparator + 'ps1'
 $currentManifest = Test-ModuleManifest $moduleManifest
 
+# Discover all .ps1 in private and public directories, dot souring (importing) them in
 $aliases = @()
 $publicFunctions = Get-ChildItem -Path $publicFunctionsPath | Where-Object {$_.Extension -eq '.ps1'}
 $privateFunctions = Get-ChildItem -Path $privateFunctionsPath | Where-Object {$_.Extension -eq '.ps1'}
@@ -13,6 +17,7 @@ $publicFunctions | ForEach-Object { . $_.FullName }
 $privateFunctions | ForEach-Object { . $_.FullName }
 $classes | ForEach-Object { . $_.FullName }
 
+# Loop over each public function to import any required aliases as module members
 $publicFunctions | ForEach-Object { # Export all of the public functions from this module
 
     # The command has already been sourced in above. Query any defined aliases.
@@ -27,6 +32,7 @@ $publicFunctions | ForEach-Object { # Export all of the public functions from th
 
 }
 
+# If added functions or aliases, update the module manifest
 $functionsAdded = $publicFunctions | Where-Object {$_.BaseName -notin $currentManifest.ExportedFunctions.Keys}
 $functionsRemoved = $currentManifest.ExportedFunctions.Keys | Where-Object {$_ -notin $publicFunctions.BaseName}
 $aliasesAdded = $aliases | Where-Object {$_ -notin $currentManifest.ExportedAliases.Keys}
