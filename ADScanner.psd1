@@ -1,5 +1,4 @@
-# RootModule = 'ADScanner.psm1'
-
+@{
 # Version number of this module.
 ModuleVersion = '1.0'
 
@@ -20,17 +19,24 @@ Copyright = '(c) 2024. All rights reserved.'
 
 
 # Modules that must be imported into the global environment prior to importing this module
-RequiredModules = @(ActiveDirectory)    #probably need PSPKI as well 
+RootModule = 'ADScanner.psm1'
+RequiredModules = @(
+    @{
+        ModuleName    = 'ActiveDirectory'
+        ModuleVersion = '1.0.0.0'
+        Guid          = '43c15630-959c-49e4-a977-758c5cc93408'
+    }
+)    #probably need PSPKI as well 
 
 
-# Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @()
+# Only export public function to keep all internal working 'hidden' from end user. 
+FunctionsToExport = @('Invoke-ADScanner')
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
 
 # Variables to export from this module
-VariablesToExport = '*'
+VariablesToExport = @()
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
 AliasesToExport = @()
@@ -64,5 +70,4 @@ PrivateData = @{
 
 # Default prefix for commands exported from this module. Override the default prefix using Import-Module -Prefix.
 # DefaultCommandPrefix = ''
-
 }

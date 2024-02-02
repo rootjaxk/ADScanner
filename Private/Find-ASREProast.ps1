@@ -1,13 +1,13 @@
-function Find-Kerberoast {
+function Find-ASREProast {
     <#
   .SYNOPSIS
-  Searches LDAP returning service accounts containing Service Principal Names (SPNs) set within Active Directory. Will exclude krbtgt that has a SPN set by default 
+  Searches LDAP to return accounts that do not require Kerberos pre-authentication within Active Directory. 
 
   .PARAMETER Domain
   The domain to run against, in case of a multi-domain environment
 
   .EXAMPLE 
-  Find-Kerberoast -Domain test.local
+  Find-ASREProast -Domain test.local
 
   #>
  
@@ -19,15 +19,15 @@ function Find-Kerberoast {
       $Domain
   )
 
-  Write-Host '[*] Finding Kerberoastable Accounts..' -ForegroundColor Yellow
+  Write-Host '[*] Finding ASREProastable Accounts...' -ForegroundColor Yellow
   
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
   $searchBase = $SearchBaseComponents -join ','
 
-  #Search searchbase for user accounts with SPNs
-  Get-ADUser -SearchBase $searchBase -LDAPFilter '(&(objectCategory=user)(servicePrincipalName=*)(!(SamAccountName=krbtgt)))' -properties * | 
-  select SamAccountName, Enabled, ServicePrincipalName, MemberOf, LastLogonDate, SID | fl
+  #Search searchbase for user accounts with "Do Not require Kerberos preauthentication" set in their useraccountcontrol
+  Get-ADUser -SearchBase $searchBase -LDAPFilter '(&(objectCategory=user)(userAccountControl:1.2.840.113556.1.4.803:=4194304))' -properties * | 
+  select SamAccountName, Enabled, DoesNotRequirePreAuth, MemberOf, LastLogonDate, SID | fl
   
 #Account
 #Enabled
