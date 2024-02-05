@@ -27,7 +27,7 @@ function Find-Kerberoast {
 
   #Search searchbase for user accounts with SPNs
   Get-ADUser -SearchBase $searchBase -LDAPFilter '(&(objectCategory=user)(servicePrincipalName=*)(!(SamAccountName=krbtgt)))' -properties * | 
-  select SamAccountName, Enabled, ServicePrincipalName, MemberOf, LastLogonDate, SID | fl
+  Select-Object SamAccountName, Enabled, ServicePrincipalName, MemberOf, LastLogonDate, SID | Format-List
   
 #Account
 #Enabled
@@ -35,7 +35,7 @@ function Find-Kerberoast {
 #Admin account - if in privileged groups (DA/EA/built in administrators) - higher risk score!
 #Last logon
 #SID
-#Domain
+#Domain    
 #Dynamically produce domain within Invoke-ADScanner.ps1?
 
 }

@@ -27,7 +27,7 @@ function Find-ASREProast {
 
   #Search searchbase for user accounts with "Do Not require Kerberos preauthentication" set in their useraccountcontrol
   Get-ADUser -SearchBase $searchBase -LDAPFilter '(&(objectCategory=user)(userAccountControl:1.2.840.113556.1.4.803:=4194304))' -properties * | 
-  select SamAccountName, Enabled, DoesNotRequirePreAuth, MemberOf, LastLogonDate, SID | fl
+  Select-Object SamAccountName, Enabled, DoesNotRequirePreAuth, MemberOf, LastLogonDate, SID | Format-List
   
 #Account
 #Enabled

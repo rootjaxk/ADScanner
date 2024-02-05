@@ -33,12 +33,34 @@ function Invoke-ADScanner {
     3. PDF
 
     .EXAMPLE 
-    Invoke-ADScanner -Scans All -Format html -OutputPath c:\temp\
-    Invoke-ADScanner -Scans ADCS,Kerberos -Format csv -OutputPath c:\temp\
+    Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\temp\
+    Invoke-ADScanner -Domain staging.test.local -Scans ADCS,Kerberos -Format csv -OutputPath c:\temp\
 
     #>
 
+    [CmdletBinding()]
+    Param(
+        [Parameter()]
+        [String]
+        $Domain
+    )
+
+    Import-Module ActiveDirectory
+
+    # Display help menu if ran incorrectly
+    if (-not $Domain) {
+        Write-Host "Example Usage:  Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\temp\
+                -Domain     The domain to scan
+                -Scans      The scan type to choose
+                -Format     The report format
+                -OutputPath The location to save the report
+        " 
+        return
+    }
+
+    #Perform vulnerability checks
     Write-Host '[*] Scanning AD...' -ForegroundColor Yellow 
-    Find-Kerberoast
-    Find-ASREProast
+    Find-Kerberoast -Domain $Domain
+    Find-ASREProast -Domain $Domain
+    Find-PwdNotRequired -Domain $Domain
 }
