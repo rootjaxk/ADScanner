@@ -60,7 +60,19 @@ function Invoke-ADScanner {
 
     #Perform vulnerability checks
     Write-Host '[*] Scanning AD...' -ForegroundColor Yellow 
+    Find-DomainInfo -Domain $Domain
     Find-Kerberoast -Domain $Domain
     Find-ASREProast -Domain $Domain
     Find-PwdNotRequired -Domain $Domain
+
+
+    #Attribute risk score - maybe have own file - attribute it here or elsewhere?
+    # Caclulate-risk-score
+
+    #Get generative AI input
+
+
+    #Produce report
+    # Generate-Rport.ps1
+
 }

@@ -1,7 +1,7 @@
 function Find-UnsupportedOS {
     <#
   .SYNOPSIS
-  Searches LDAP to return computers with an unsupported / obsolete operating system within Active Directory. 
+  Searches LDAP to return computers with an unsupported / obsolete Windows operating system within Active Directory. 
   These systems are no longer supported by the manufacturer and are vulnerable to remote code execution CVEs. 
 
   .PARAMETER Domain

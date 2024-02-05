@@ -35,15 +35,6 @@ function Find-Delegations {
   #Resource-based constrained delegation - 'msDS-AllowedToActOnBehalfOfOtherIdentity'  
   Get-ADObject -SearchBase $searchBase -LDAPFilter '(&(objectCategory=*)(msDS-AllowedToActOnBehalfOfOtherIdentity=*))'
   
-  Get-ADComputer -Filter {msDS-AllowedToActOnBehalfOfOtherIdentity -eq $True} -Properties msDS-AllowedToActOnBehalfOfOtherIdentity    
-
-#Account
-#Enabled
-#Active - if ($Account.lastlogontimestamp -ge $inactiveThreshold) { "True" } else { "False" }
-#Admin account - if in privileged groups (DA/EA/built in administrators) - higher risk score!
-#Last logon
-#SID
-#Domain
-#Dynamically produce domain within Invoke-ADScanner.ps1?
+  #Also need to check for GenericAll / WriteDACL permissions on computer objects
 
 }
