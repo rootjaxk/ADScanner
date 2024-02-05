@@ -50,7 +50,7 @@ function Invoke-ADScanner {
     # Display help menu if ran incorrectly
     if (-not $Domain) {
         Write-Host "Example Usage:  Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\temp\
-                -Domain     The domain to scan
+                -Domain     The domain to scan. If don't know scanner will automatically use the current domain the system is joined to (Get-ADDomain)
                 -Scans      The scan type to choose
                 -Format     The report format
                 -OutputPath The location to save the report
@@ -64,7 +64,7 @@ function Invoke-ADScanner {
     Find-Kerberoast -Domain $Domain
     Find-ASREProast -Domain $Domain
     Find-PwdNotRequired -Domain $Domain
-
+    #wont output to screen in order as different ones take different amount of time, but when testing this is ok. real will save to variable for use in report
 
     #Attribute risk score - maybe have own file - attribute it here or elsewhere?
     # Caclulate-risk-score
@@ -73,6 +73,6 @@ function Invoke-ADScanner {
 
 
     #Produce report
-    # Generate-Rport.ps1
+    Generate-Report
 
 }

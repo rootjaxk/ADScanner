@@ -1,4 +1,6 @@
-
+function Generate-Report {
+    Write-Host '[*] Generating report...' -ForegroundColor Yellow
+}
 
 # Table of contents
 
