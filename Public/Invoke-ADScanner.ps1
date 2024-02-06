@@ -45,7 +45,10 @@ function Invoke-ADScanner {
         $Domain
     )
 
+    #Add a check to see if RSAT is installed, if not, say to install it before importing AD module
+
     Import-Module ActiveDirectory
+    
 
     # Display help menu if ran incorrectly
     if (-not $Domain) {
@@ -58,6 +61,8 @@ function Invoke-ADScanner {
         return
     }
 
+    $startTime = Get-Date
+
     #Perform vulnerability checks
     Write-Host '[*] Scanning AD...' -ForegroundColor Yellow 
     Find-DomainInfo -Domain $Domain
@@ -67,6 +72,7 @@ function Invoke-ADScanner {
     #wont output to screen in order as different ones take different amount of time, but when testing this is ok. real will save to variable for use in report
 
     #Attribute risk score - maybe have own file - attribute it here or elsewhere?
+  
     # Caclulate-risk-score
 
     #Get generative AI input
@@ -75,4 +81,9 @@ function Invoke-ADScanner {
     #Produce report
     Generate-Report
 
+
+    #Calculate time to run
+    $endTime = Get-Date
+    $elapsedTime = $endTime - $startTime
+    Write-Host "Script took $($elapsedTime.TotalSeconds) seconds to run."
 }

@@ -39,10 +39,7 @@ function Find-DomainInfo {
 
 
   #Users
-  # Active users
-  (Get-ADComputer -Filter *).Count
-  # Disabled users
-
+  (Get-ADUser -Filter *).Count
 
   #Groups - 48 is default
   (Get-ADGroup -Filter *).count
@@ -88,7 +85,7 @@ function Find-DomainInfo {
 
 
 
- # Ceritifcate Authority
+ # Ceritifcate Authority - might need ADCS module?
 
 
  # Certificate Templates

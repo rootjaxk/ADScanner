@@ -2,6 +2,16 @@ function Generate-Report {
     Write-Host '[*] Generating report...' -ForegroundColor Yellow
 }
 
+# Generic report info
+
+$EnvironmentTable = [PSCustomObject]@{
+    "Ran as User" = "$env:USERDNSDOMAIN\$env:USERNAME"
+    "Ran on Host" = $env:computername + '.' + $env:USERDNSDOMAIN
+    "Date and Time" = Get-Date
+}
+
+
+
 # Table of contents
 
 # Executive summary
@@ -14,8 +24,9 @@ function Generate-Report {
 
 # Attack demo - images
 
-# Reccomendations - chatGPT
+# Recommendations - chatGPT
 
 
 
 #Possible to-do - automated remediation?
+
