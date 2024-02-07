@@ -4,7 +4,8 @@ function Invoke-ADScanner {
     Scans Active Directory for common vulnerabilities and produces an intelligent report to support remediation of vulnerabilities.
 
     .DESCRIPTION
-    Invoke-ADScanner uses the Active Directory (AD) Powershell (PS) module to identify X misconfigurations commonly found in Enterprise Active Directory environments.
+    Invoke-ADScanner primarily uses the Active Directory (AD) Powershell (PS) module to identify common and highly dangerous misconfigurations
+    found in Enterprise Active Directory environments.
 
     .COMPONENT
     Invoke-ADScanner requires the AD module (and potentially PSPKI module) to be installed in the scope of the Current User. This will require the Remote System Administration
@@ -46,8 +47,23 @@ function Invoke-ADScanner {
     )
 
     #Add a check to see if RSAT is installed, if not, say to install it before importing AD module
+    function Test-RSAT-Installed {
+        $RSAT = Get-WindowsFeature -Name RSAT-AD-PowerShell
+        if ($RSAT.Installed -eq $true) {
+            return $true
+        } else {
+            return $false
+        }
+    }
 
-    Import-Module ActiveDirectory
+    if (Test-RSAT-Installed) {
+        Write-Host "RSAT is installed. Importing ActiveDirectory module..."
+        Import-Module ActiveDirectory
+    } else {
+        Write-Host "RSAT is not installed. Please install RSAT as an elevated user before running this script."
+        Write-Host "Command: Install-WindowsFeature -Name RSAT-AD-PowerShell"
+        return
+    }   
     
 
     # Display help menu if ran incorrectly
