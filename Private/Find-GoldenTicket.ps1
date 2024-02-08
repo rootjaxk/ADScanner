@@ -1,0 +1,1 @@
+# When was krbtgt last reset

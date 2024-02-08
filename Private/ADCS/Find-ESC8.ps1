@@ -1,8 +1,10 @@
 function Find-ESC8 {
     <#
   .SYNOPSIS
-  Finds ESC8 (NTLM relay to ADCS HTTP endpoints). The web enrollment interface (http://<caserver>/certsrv) is vulnerable to NTLM relay attacks. 
+  Finds ESC8 (NTLM relay to ADCS HTTP endpoints). The web enrollment interface (http://<caserver>/certsrv) is vulnerable to 'NTLM relay' attacks. 
   This can be exploited to issue arbitrary certificates, in the context of the coerced authentication.
+  NTLM must be disabled in favour of Kerberos
+  or
   HTTPS must be enforced in combination with Extended Protection for Authentication on IIS to enforce channel binding to mitigate this vulnerability.
   
   Certificate Web Enrollment Web Service
@@ -35,37 +37,64 @@ function Find-ESC8 {
   $httpurl = "http://$CAendpoint"
   $httpsurl = "https://$CAendpoint"
 
-  #test repsonse of cert endpoint
-  $httpresponse = Invoke-WebRequest -Uri $httpurl -UseBasicParsing -TimeoutSec 5
-  $httpsresponse = Invoke-WebRequest -Uri $httpsurl -UseBasicParsing -TimeoutSec 5
+  #test repsonse of http cert endpoint  useing curl (not alias of iwr) to retrieve raw HTTP headers (www-authenticate) as invoke-webrequest doesnt support response of all headers
+  Write-Host "Testing HTTP" -ForegroundColor Yellow
+  $httpresponse = cmd /c "curl $httpurl -verbose --connect-timeout 3 2>&1" 
 
-  if(($httpresponse.statuscode -eq 200) ){
-    Write-Host "ESC8: $httpurl" -ForegroundColor Green
-  }
-  elseif(($httpsresponse.statuscode -eq 200) ) {
-    Write-Host "HTTPS: $httpsurl" -ForegroundColor Yellow
-    Write-Host "Checking EPA is enforced"
- 
-    # Create a web request to the endpoint
-  $response = Invoke-WebRequest -Uri $httpsurl -UseBasicParsing -Method Head
-  
-  # Check if HTTPS & Extended Protection is enabled (full channel binding mitigation)
-  if ($response.Headers['WWW-Authenticate'] -match 'NTLM') {
-    Write-Output "Extended Protection for Authentication is enabled on $httpsurl."
+  if ($httpresponse -match "Timed Out"){
+    $httpresponse = $null
   } else {
-    Write-Output "Extended Protection for Authentication is not enabled on $httpsurl."
+    #parse response code from response using regex - HTTP + digit + . + digit + space + 3 digits
+    $httpResponseCode = ($httpresponse | Select-String -Pattern 'HTTP/\d\.\d\s+(\d{3})').Matches.Groups[1].Value
   }
 
+  #test response of https cert endpoint
+  Write-Host "Testing HTTPS" -ForegroundColor Yellow
+  $httpsresponse = cmd /c "curl $httpsurl -k -verbose --connect-timeout 3 2>&1" 
+  if ($httpsresponse -match "Timed Out"){
+    $httpsresponse = $null
+  } else {
+    #parse response code from response using regex - HTTP + digit + . + digit + space + 3 digits
+    $httpsResponseCode = ($httpsresponse | Select-String -Pattern 'HTTP/\d\.\d\s+(\d{3})').Matches.Groups[1].Value
   }
-  else {
+
+  #If no endpoints found
+  if ($httpresponse -eq $null -and $httpsresponse -eq $null) {
     Write-Host "ESC8: No web enrollment interface found" -ForegroundColor Green
+    return
   }
 
 
- # also else check if kerberos is disabled? - check if HTTPS & Kerberos works as a mitigation
- if ($response.Headers['WWW-Authenticate'] -match 'Negotiate' -and -not $response.Headers['WWW-Authenticate'] -match 'NTLM') {
-    Write-Output "Only Kerberos authentication is permitted on $httpsurl."
-} else {
-    Write-Output "Kerberos authentication is not exclusively permitted on $httpsurl."
+
+
+  #Possible ESC8 on HTTP (200 or 401 indicate endpoint is reachable)
+  if(($httpResponseCode -eq 200 -or $httpResponseCode -eq 401) ){
+    $httpwwwAuthenticate = $httpresponse | Select-String -Pattern 'WWW-Authenticate: (.*)' | ForEach-Object { $_.Matches.Groups[1].Value }
+    #Check first if kerberos is disabled on http
+    if ($httpwwwAuthenticate -match 'NTLM') {
+      Write-Host "ESC8: $httpurl" -ForegroundColor Red  #ESC8 confirmed
+    }
+    elseif ($httpwwwAuthenticate -match 'Negotiate' -and $httpwwwAuthenticate -notmatch 'NTLM'){
+      Write-Host "Kerberos is enforced on HTTP" -ForegroundColor Green   #Successful Mitigation
+    } 
+  }
+ 
+  #Possible ESC8 on HTTPS, check if mitigations are effective
+  if(($httpsResponseCode -eq 200 -or $httpsResponseCode -eq 401) ) {
+    Write-Host "HTTPS: $httpsurl" -ForegroundColor Yellow
+    Write-Host "Checking EPA is enforced" -ForegroundColor Yellow
+  
+    #parse www-authenticate header from curl output
+    $httpswwwAuthenticate = $httpsresponse | Select-String -Pattern 'WWW-Authenticate: (.*)' | ForEach-Object { $_.Matches.Groups[1].Value }
+
+    # Check if HTTPS & Extended Protection is enabled (full channel binding mitigation)
+    if ($httpswwwAuthenticate -match 'NTLM') {
+      Write-Output "Extended Protection for Authentication is likely enabled on $httpsurl."  #Successful mitigation
+    } elseif ($httpswwwAuthenticate -match 'Negotiate' -and $httpswwwAuthenticate -notmatch 'NTLM') {
+        Write-Output "Only Kerberos authentication is permitted on $httpsurl."  #Successful mitigation
+    } else {
+        Write-Output "Neither EPA or Kerberos authentication are enforced on $httpsurl."
+    }
 }
+
 }
