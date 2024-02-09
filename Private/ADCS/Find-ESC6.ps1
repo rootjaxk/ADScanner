@@ -1,7 +1,9 @@
 function Find-ESC6 {
-    <#
+  <#
   .SYNOPSIS
-  Finds ESC6 (explanation of the vulnerability here). Uses remote registry to check if the EDITF_ATTRIBUTESUBJECTALTNAME2 flag is set. If it is, the CA is vulnerable to ESC6.
+  Searches ADCS for misconfigured CA with the ESC6 EDITF_ATTRIBUTESUBJECTALTNAME2 flag. This flag allows the enrollee to specify an arbitrary SAN on all certificates despite 
+  a certificate template's configuration, meaning any certificate permitting client authentication can be exploited for ESC1.
+  Function uses remote registry to check if the EDITF_ATTRIBUTESUBJECTALTNAME2 flag is set. If it is, the CA is vulnerable to ESC6.
 
   .PARAMETER Domain
   The domain to run against, in case of a multi-domain environment

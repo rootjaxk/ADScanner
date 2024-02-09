@@ -1,5 +1,5 @@
 function Invoke-ADScanner {
-      <#
+    <#
     .SYNOPSIS
     Scans Active Directory for common vulnerabilities and produces an intelligent report to support remediation of vulnerabilities.
 

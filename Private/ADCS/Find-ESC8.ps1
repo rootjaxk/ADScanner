@@ -1,11 +1,12 @@
 function Find-ESC8 {
-    <#
+  <#
   .SYNOPSIS
   Finds ESC8 (NTLM relay to ADCS HTTP endpoints). The web enrollment interface (http://<caserver>/certsrv) is vulnerable to 'NTLM relay' attacks. 
-  This can be exploited to issue arbitrary certificates, in the context of the coerced authentication.
-  NTLM must be disabled in favour of Kerberos
+  This can be exploited to issue arbitrary certificates, in the context of the coerced authentication (through printerbug/dfscoerce/petitpotam).
+  To migiate:
+  -NTLM must be disabled in favour of Kerberos
   or
-  HTTPS must be enforced in combination with Extended Protection for Authentication on IIS to enforce channel binding to mitigate this vulnerability.
+  -HTTPS must be enforced in combination with Extended Protection for Authentication on IIS to enforce channel binding to mitigate this vulnerability.
   
   Certificate Web Enrollment Web Service
   Certificate Enrollment Service (CES) 
@@ -29,7 +30,10 @@ function Find-ESC8 {
 
   Write-Host '[*] Finding ESC8...' -ForegroundColor Yellow
   
-  # Find web endpoints
+##################
+# Find endpoints #
+##################
+
   $CAinfo = Find-ADCS -Domain $Domain
 
   #Find web enrollment interface 
@@ -64,8 +68,9 @@ function Find-ESC8 {
     return
   }
 
-
-
+##################
+#   ESC8 check   #
+##################
 
   #Possible ESC8 on HTTP (200 or 401 indicate endpoint is reachable)
   if(($httpResponseCode -eq 200 -or $httpResponseCode -eq 401) ){

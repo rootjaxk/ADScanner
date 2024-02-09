@@ -1,7 +1,9 @@
 function Find-ESC7 {
-    <#
+  <#
   .SYNOPSIS
-  Finds ESC7 (explanation of the vulnerability here). 
+  Searches ADCS for misconfigured certificate authorites vulnerable to ESC7. ESC7 relates to when a user has the Manage CA or Manage Certificates access right on a CA, they can issue
+  failed certificate requests. The SubCA certificate template is vulnerable to ESC1, but only administrators can enroll in the template. 
+  A user can request to enroll in the SubCA - which will be denied - but then issued by the manager afterwards escalating through ESC1.
 
   .PARAMETER Domain
   The domain to run against, in case of a multi-domain environment
