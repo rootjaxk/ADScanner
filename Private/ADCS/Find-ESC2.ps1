@@ -5,7 +5,6 @@ function Find-ESC2 {
   
   -Certificate template permit any purpose EKU (2.5.29.37.0) or no EKU (not present) 
   -Allows low-privileged users enrollment rights (Domain Users/Computers) - same as ESC1
-  -Allows the enrollee to supply an arbitrary Subject Alternative Name (SAN) - same as ESC1
   -Manager approval is disabled - same as ESC1
   
   ESC2 is similar to ESC1 with the specification of any purpose or lack of EKU, and can be exploited in conjunction with ESC3.
@@ -40,8 +39,7 @@ function Find-ESC2 {
 
   #Search for possible ESC2 templates
   # pKICertificateTemplate = certificate template objects
-  # pkiExtendedKeyUsage = certificate tempate EKUs
-  # msPKI-Certificate-Name-Flag = 1 (enrollee supplies an arbitrary SAN)
+  # pkiExtendedKeyUsage = any purpose EKU or no EKU
   # msPKI-Enrollment-Flag = 2 (manager approval required - certificates go into pending state)
   # msPKI-RA-Signature = 0 / null (manager approval is disabled)
   $ADCSobjects | Where-Object {

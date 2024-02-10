@@ -29,15 +29,18 @@ function Find-ESC6 {
   #Check if CA is vulnerable to ESC6
   $ESC6 = certutil -config "$($ADCSinfo.dnshostname)\$($ADCSinfo.DisplayName)" -getreg "policy\EditFlags"
 
-  #Check if the EDITF_ATTRIBUTESUBJECTALTNAME2 flag is set
+  #Check if the EDITF_ATTRIBUTESUBJECTALTNAME2 flag is set - put output in similar $Issue variable?
   $pattern = 'EDITF_ATTRIBUTESUBJECTALTNAME2'
   $match = $ESC6 | Select-String -Pattern $pattern -allmatches | ForEach-Object { $_.Matches.Groups[0].value}
 
   if ($match -eq $pattern) {
-    Write-Host "$($ADCSinfo.DisplayName) is vulnerable to ESC6"
-  } else {
-    Write-Host "CA is not vulnerable to ESC6"
-  }
-  
-
+    $Issue = [pscustomobject]@{
+      Forest                = $Domain
+      CAName                = $ADCSinfo.displayname
+      CAhostname            = $ADCSinfo.dnshostname
+      Issue                 = "$(($ADCSinfo).DisplayName) has the 'EDITF_ATTRIBUTESUBJECTALTNAME2' flag set"
+      Technique             = 'ESC6'
+    }
+    $Issue
+  } 
 }
