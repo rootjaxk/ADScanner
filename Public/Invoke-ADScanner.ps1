@@ -56,12 +56,38 @@ function Invoke-ADScanner {
         }
     }
 
+    #required for esc7 check
+    function Test-RSATADCS-Installed {
+        $RSAT = Get-WindowsFeature -Name RSAT-ADCS
+        if ($RSAT.Installed -eq $true) {
+            return $true
+        } else {
+            return $false
+        }
+      }
+
+      function Install-PSPKI {
+        $PSPKI = Get-Module -ListAvailable -Name PSPKI
+        if ($PSPKI -eq $null) {
+            
+        }
+      }
+
     if (Test-RSAT-Installed) {
         Write-Host "RSAT is installed. Importing ActiveDirectory module..."
         Import-Module ActiveDirectory
     } else {
         Write-Host "RSAT is not installed. Please install RSAT as an elevated user before running this script."
         Write-Host "Command: Install-WindowsFeature -Name RSAT-AD-PowerShell"
+        return
+    }   
+    
+    if (Test-RSATADCS-Installed) {
+        Write-Host "RSAT ADCS is installed."
+        Install-PSPKI
+    } else {
+        Write-Host "RSAT is not installed. Please install RSAT as an elevated user before running this script."
+        Write-Host "Command: Install-WindowsFeature -Name RSAT-ADCS"
         return
     }   
     

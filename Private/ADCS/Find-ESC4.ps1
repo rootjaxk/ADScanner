@@ -58,8 +58,6 @@ specifies which AD principals have specific permissions over the template.
             Forest                = $Domain
             Name                  = $_.Name
             DistinguishedName     = $_.DistinguishedName
-            IdentityReference     = $entry.IdentityReference
-            ActiveDirectoryRights = $entry.ActiveDirectoryRights
             Issue                 = "$($_.nTSecurityDescriptor.Owner) has Owner rights on this template"
             Technique             = 'ESC4'
         }
