@@ -31,8 +31,6 @@ function Find-ESC3 {
 
   Write-Host '[*] Finding ESC3...' -ForegroundColor Yellow
   
- 
-  
   #Get all ADCS objects
   $ADCSobjects = Find-ADCSobjects -Domain $Domain
 
@@ -42,10 +40,9 @@ function Find-ESC3 {
   #Define high privileged SIDs to exclude with regex (administrator, domain admins, enteprise admins, SYSTEM, cert publishers, administrator, domain controllers, enterprise domain controllers, key admins, enterprise key admins, self)
   $PrivilegedUsers = '-500$|-512$|-519$|-544$|-18$|-517$|-516$|-9$|-526$|-527$|S-1-5-10'
 
-
-###############
-# Condition 1 #
-###############
+  ###############
+  # Condition 1 #
+  ###############
 
   #Search for possible ESC3 templates
   # pKICertificateTemplate = certificate template objects
@@ -86,4 +83,3 @@ function Find-ESC3 {
       } 
     }
   }
-#https://redteam.wiki/postexploitation/active-directory/adcs/esc4

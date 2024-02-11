@@ -36,7 +36,6 @@ function Find-ESC2 {
   #Define high privileged SIDs to exclude with regex (administrator, domain admins, enteprise admins, SYSTEM, cert publishers, administrator, domain controllers, enterprise domain controllers, key admins, enterprise key admins, self)
   $PrivilegedUsers = '-500$|-512$|-519$|-544$|-18$|-517$|-516$|-9$|-526$|-527$|S-1-5-10'
 
-
   #Search for possible ESC2 templates
   # pKICertificateTemplate = certificate template objects
   # pkiExtendedKeyUsage = any purpose EKU or no EKU

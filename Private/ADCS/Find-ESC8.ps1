@@ -30,11 +30,14 @@ function Find-ESC8 {
 
   Write-Host '[*] Finding ESC8...' -ForegroundColor Yellow
   
-##################
-# Find endpoints #
-##################
+  ##################
+  # Find endpoints #
+  ##################
 
   $CAinfo = Find-ADCS -Domain $Domain
+
+  #Dynamically retrieve CA name(e.g. test-CA-CA)
+  $CAname = $CAinfo.displayname
 
   #Find web enrollment interface 
   $CAendpoint = "$($CAinfo.dNSHostName)/certsrv/"
@@ -68,17 +71,23 @@ function Find-ESC8 {
     return
   }
 
-##################
-#   ESC8 check   #
-##################
+  ##################
+  #   ESC8 check   #
+  ##################
 
   #Possible ESC8 on HTTP (200 or 401 indicate endpoint is reachable)
   if(($httpResponseCode -eq 200 -or $httpResponseCode -eq 401) ){
     $httpwwwAuthenticate = $httpresponse | Select-String -Pattern 'WWW-Authenticate: (.*)' | ForEach-Object { $_.Matches.Groups[1].Value }
     #Check first if kerberos is disabled on http
     if ($httpwwwAuthenticate -match 'NTLM') {
-      Write-Host "ESC8: $httpurl" -ForegroundColor Red  #ESC8 confirmed
-    }
+      $Issue = [pscustomobject]@{
+          Forest                = $Domain
+          Name                  = $CAname
+          Issue                 = "$httpurl is vulnerable to NTLM relay attacks"
+          Technique             = 'ESC8'
+        }
+        $Issue
+      }
     elseif ($httpwwwAuthenticate -match 'Negotiate' -and $httpwwwAuthenticate -notmatch 'NTLM'){
       Write-Host "Kerberos is enforced on HTTP" -ForegroundColor Green   #Successful Mitigation
     } 
@@ -86,20 +95,20 @@ function Find-ESC8 {
  
   #Possible ESC8 on HTTPS, check if mitigations are effective
   if(($httpsResponseCode -eq 200 -or $httpsResponseCode -eq 401) ) {
-    Write-Host "HTTPS: $httpsurl" -ForegroundColor Yellow
-    Write-Host "Checking EPA is enforced" -ForegroundColor Yellow
-  
     #parse www-authenticate header from curl output
     $httpswwwAuthenticate = $httpsresponse | Select-String -Pattern 'WWW-Authenticate: (.*)' | ForEach-Object { $_.Matches.Groups[1].Value }
 
     # Check if HTTPS & Extended Protection is enabled (full channel binding mitigation)
     if ($httpswwwAuthenticate -match 'NTLM') {
-      Write-Output "Extended Protection for Authentication is likely enabled on $httpsurl."  #Successful mitigation
+      $Issue = [pscustomobject]@{
+        Forest                = $Domain
+        Name                  = $CAname
+        Issue                 = "$httpsurl is possibly vulnerable to NTLM relay attacks if Extended Protection for Authentication (EPA) is not enforced"
+        Technique             = 'ESC8'
+      }
+      $Issue
     } elseif ($httpswwwAuthenticate -match 'Negotiate' -and $httpswwwAuthenticate -notmatch 'NTLM') {
         Write-Output "Only Kerberos authentication is permitted on $httpsurl."  #Successful mitigation
-    } else {
-        Write-Output "Neither EPA or Kerberos authentication are enforced on $httpsurl."
     }
-}
-
+  }
 }

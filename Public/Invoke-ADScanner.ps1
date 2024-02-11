@@ -8,7 +8,7 @@ function Invoke-ADScanner {
     found in Enterprise Active Directory environments.
 
     .COMPONENT
-    Invoke-ADScanner requires the AD module (and potentially PSPKI module) to be installed in the scope of the Current User. This will require the Remote System Administration
+    Invoke-ADScanner requires the AD & ADCS modules to be installed in the scope of the Current User. This will require the Remote System Administration
     Toolkit (RSAT) installed on the device. 
     If Locksmith does not identify RSAT installed, it will attempt to install the relevant modules, else will fail.
 
@@ -69,7 +69,7 @@ function Invoke-ADScanner {
       function Install-PSPKI {
         $PSPKI = Get-Module -ListAvailable -Name PSPKI
         if ($PSPKI -eq $null) {
-            
+            Install-Module -Name PSPKI -Force
         }
       }
 

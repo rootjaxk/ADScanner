@@ -35,7 +35,6 @@ function Find-ESC7 {
   #Dynamically retrieve CA name(e.g. test-CA-CA)
   $CAname = $(Find-ADCS -domain $domain).displayname
 
-  
   #Find users with ManageCA or ManageCertificatese right - parsing ACLs
   foreach ($ace in $CAACL) {
   $Principal = New-Object System.Security.Principal.NTAccount($ace.IdentityReference)
@@ -54,10 +53,9 @@ function Find-ESC7 {
       Technique             = 'ESC7'
     }
     $Issue
+    }
   }
 }
-}
-
 
   #$acl = Get-Acl -Path 'AD:CN=ESC3-template,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=test,DC=local'; foreach ( $ace in $acl.access ) { $ace}
  # Get-ADObject -SearchBase $CAsearchBase -LDAPFilter '(&(objectCategory=pKIEnrollmentService))' -properties * |  ForEach-Object {

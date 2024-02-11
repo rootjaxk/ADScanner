@@ -30,21 +30,46 @@ specifies which AD principals have specific permissions over the template.
   #Get all ADCS objects
   $ADCSobjects = Find-ADCSobjects -Domain $Domain
 
-  #Unsafe rights over template (Everyone, Authenticated Users, Domain Users, Domain Computers)
-  $LowPrivilegedUsers = 'S-1-1-0|-11$|-513$|-515$'
-   
+  #####################################
+  # Dynamically find privileged users #
+  #####################################
+
   #Safe rights over template
   $PrivilegedUsers = '-500$|-512$|-519$|-544$|-18$|-517$|-516$|-9$|-526$|-527$|S-1-5-10'
-  #Dynamically find privileged uers (from find-privilegedgroups) and highlight any users not in them that has dangerous rights over the template. or maybe when classify tiers can do it
 
+  # Define privileged groups
+  $privilegedgroups = @("Administrators", "Enterprise Admins", "Domain Admins")
 
-  #Unsafe rights over template (WriteProperty required to enrol)
-  $DangerousRights = 'GenericAll|WriteOwner|WriteDacl'
+  # Initialize array to store members
+  $PrivilegedGroupMembers = @()
+  $PrivilegedGroupMemberSIDs = @()
+
+  foreach ($group in $privilegedgroups) {
+    # Get members of the group and select only the SamAccountName
+    $members = Get-ADGroupMember -Identity $group -Recursive | Select-Object -ExpandProperty SamAccountName
+    # Add members to the array
+    $PrivilegedGroupMembers += $members
+  }
+
+  # Remove duplicates from the array
+  $PrivilegedGroupMembers = $PrivilegedGroupMembers | Select-Object -Unique
+  
+  #Find SIDs of privileged group members
+  foreach ($member in $PrivilegedGroupMembers) {
+    $member = New-Object System.Security.Principal.NTAccount($member)
+    if ($member -match '^(S-1|O:)') {
+      $SID = $member
+    } else {
+      $SID = ($member.Translate([System.Security.Principal.SecurityIdentifier])).Value
+    }
+    $PrivilegedGroupMemberSIDs += $SID
+  }
 
   ##########
   # Owners #
   ##########
-  #Unsafe owner of template - will allow privilege escalation
+
+   # Unsafe owner of template - will allow privilege escalation
    $ADCSObjects | ForEach-Object {
     $Principal = New-Object System.Security.Principal.NTAccount($_.nTSecurityDescriptor.Owner)
     if ($Principal -match '^(S-1|O:)') {
@@ -53,7 +78,15 @@ specifies which AD principals have specific permissions over the template.
         $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
     }
 
-    if ( ($_.objectClass -eq 'pKICertificateTemplate') -and ($SID -match $LowPrivilegedUsers) ) {
+    $privilegedGroupMatch = $false
+    foreach ($i in $PrivilegedGroupMemberSIDs) {
+        if ($SID -match $i) {
+            $privilegedGroupMatch = $true
+            break
+        }
+    }
+    # filter owner rights removing all domain/enterprise admin users (as they might have owner rights if they created template)
+    if ( ($_.objectClass -eq 'pKICertificateTemplate') -and ($SID -notmatch $PrivilegedUsers) -and ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch)) {
         $Issue = [pscustomobject]@{
             Forest                = $Domain
             Name                  = $_.Name
@@ -64,12 +97,15 @@ specifies which AD principals have specific permissions over the template.
         $Issue
       }
     }
-    
 
   ###########
   #  ACLs   #
   ###########
- #Unsafe ACLs over template - will allow privilege escalation
+
+  #Unsafe rights over template (WriteProperty required to enrol)
+  $DangerousRights = 'GenericAll|WriteOwner|WriteDacl'
+
+  #Unsafe ACLs over template - will allow privilege escalation
   $ADCSObjects | ForEach-Object {
     foreach ($entry in $_.nTSecurityDescriptor.Access) {
     $Principal = New-Object System.Security.Principal.NTAccount($entry.IdentityReference)
@@ -92,7 +128,7 @@ specifies which AD principals have specific permissions over the template.
             Technique             = 'ESC4'
         }
         $Issue
+       }
+     }
     }
-  }
-  }
   }
