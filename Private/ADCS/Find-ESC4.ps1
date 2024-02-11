@@ -7,7 +7,7 @@ specifies which AD principals have specific permissions over the template.
   ESC4 relates to insecure permissions on certificate templates. This allows a low-privileged user to edit security settings on a certificate template and escalate their privileges.
   This can be either insecure template owners or insecure ACL rights over the template.
 
-  This function improves logic from https://github.com/TrimarcJake/Locksmith.
+  This function improves logic from https://github.com/TrimarcJake/Locksmith. Low-priivleged users are defined dynamically to remove false-postiives. 
 
   .PARAMETER Domain
   The domain to run against, in case of a multi-domain environment
@@ -77,7 +77,7 @@ specifies which AD principals have specific permissions over the template.
     } else {
         $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
     }
-
+    #check if owner is a low-privileged user
     $privilegedGroupMatch = $false
     foreach ($i in $PrivilegedGroupMemberSIDs) {
         if ($SID -match $i) {
@@ -86,7 +86,7 @@ specifies which AD principals have specific permissions over the template.
         }
     }
     # filter owner rights removing all domain/enterprise admin users (as they might have owner rights if they created template)
-    if ( ($_.objectClass -eq 'pKICertificateTemplate') -and ($SID -notmatch $PrivilegedUsers) -and ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch)) {
+    if ( ($_.objectClass -eq 'pKICertificateTemplate') -and ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch)) {
         $Issue = [pscustomobject]@{
             Forest                = $Domain
             Name                  = $_.Name
@@ -114,8 +114,16 @@ specifies which AD principals have specific permissions over the template.
     } else {
         $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
     }
+    #check if user rights are a low-privileged user
+    $privilegedGroupMatch = $false
+    foreach ($i in $PrivilegedGroupMemberSIDs) {
+        if ($SID -match $i) {
+            $privilegedGroupMatch = $true
+            break
+        }
+    }
     if ( ($_.objectClass -eq 'pKICertificateTemplate') -and
-        ($SID -match $LowPrivilegedUsers) -and
+        ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch) -and
         ($entry.ActiveDirectoryRights -match $DangerousRights)
         ) {
         $Issue = [pscustomobject]@{

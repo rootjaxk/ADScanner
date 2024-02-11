@@ -24,11 +24,48 @@ function Find-ESC5 {
 
   Write-Host '[*] Finding ESC5...' -ForegroundColor Yellow
 
+  #####################################
+  # Dynamically find privileged users #
+  #####################################
+  
   #Unsafe privileges over CA
   $DangerousRights = 'GenericAll|WriteOwner|WriteDacl|WriteProperty'
 
   #Safe user rights over CA
   $PrivilegedUsers = '-500$|-512$|-519$|-544$|-18$|-517$|-516$|-9$|-526$|-527$|S-1-5-10'
+
+  # Define privileged groups
+  $privilegedgroups = @("Administrators", "Enterprise Admins", "Domain Admins")
+
+  # Initialize array to store members
+  $PrivilegedGroupMembers = @()
+  $PrivilegedGroupMemberSIDs = @()
+
+  foreach ($group in $privilegedgroups) {
+    # Get members of the group and select only the SamAccountName
+    $members = Get-ADGroupMember -Identity $group -Recursive | Select-Object -ExpandProperty SamAccountName
+    # Add members to the array
+    $PrivilegedGroupMembers += $members
+  }
+
+  # Remove duplicates from the array
+  $PrivilegedGroupMembers = $PrivilegedGroupMembers | Select-Object -Unique
+  
+  #Find SIDs of privileged group members
+  foreach ($member in $PrivilegedGroupMembers) {
+    $member = New-Object System.Security.Principal.NTAccount($member)
+    if ($member -match '^(S-1|O:)') {
+      $SID = $member
+    } else {
+      $SID = ($member.Translate([System.Security.Principal.SecurityIdentifier])).Value
+    }
+    $PrivilegedGroupMemberSIDs += $SID
+  }
+
+
+
+
+
   
   #Dynamically retrieve CA hostname (e.g. CA.test.local)
   $CAhostname = (Find-ADCS -domain $domain).dnshostname
@@ -47,8 +84,16 @@ function Find-ESC5 {
     } else {
         $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
     }
+    #check if user rights are a low-privileged user
+    $privilegedGroupMatch = $false
+    foreach ($i in $PrivilegedGroupMemberSIDs) {
+        if ($SID -match $i) {
+            $privilegedGroupMatch = $true
+            break
+        }
+    }
    # if any low-privileged users have dangerous rights over the CA object, ESC5
-   if (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedUsers)){
+   if (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch)){
       $Issue = [pscustomobject]@{
         Forest                = $Domain
         Name                  = $CAComputername
