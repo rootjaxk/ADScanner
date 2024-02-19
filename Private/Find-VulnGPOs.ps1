@@ -1,0 +1,1 @@
+# permissions over GPO should be found in find-ACL check. This check is for GPOs that give rogue permissions (i.e sebackupprivilige) to users

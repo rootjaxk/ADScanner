@@ -34,7 +34,7 @@ function Find-WebDAV {
   #Array to store multiple machine having WebDAV enabled
   $results = @()
 
-  #Check each for presence of the spooler named pipe
+  #Check each for presence of the WebDAV named pipe
   foreach ($computer in $Computers) {
     try {
         $webdav = Get-ChildItem "\\$computer\pipe\DAV RPC SERVICE" -ErrorAction Ignore

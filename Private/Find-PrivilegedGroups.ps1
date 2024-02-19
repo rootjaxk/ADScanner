@@ -40,6 +40,7 @@ foreach ($group in $groupMembers.GetEnumerator()) {
     Write-Host ""
 }
 
+#if member of any of the operator groups - HIGH RISK, default privileges is insane
 
 
 

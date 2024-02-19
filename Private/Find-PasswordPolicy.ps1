@@ -73,7 +73,7 @@ function Find-PasswordPolicy {
   # Update PSCustomObject with any issues
   if ($Complexity -eq "False" -or $LengthIssue -eq $true -or $LockoutIssue -eq $true -or $MinPwdAgeIssue -eq $true -or $MaxPwdAgeIssue -eq $true -or $PasswordHistoryIssue -eq $true -or $LockoutDurationIssue -eq $true -or $ReverseEncryption -eq "True"){
     $Issue.Issues = "The following issues were found with the password policy:"
-    $Issue.Technique = 'Weak Password Policy'
+    $Issue.Technique = '[HIGH] Weak Password Policy'
 
     if ($Complexity -eq "False"){
         $Issue.Issues += "`r`n[HIGH] The password complexity requirement is not enabled."
