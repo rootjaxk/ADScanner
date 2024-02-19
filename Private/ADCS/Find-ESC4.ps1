@@ -7,7 +7,7 @@ specifies which AD principals have specific permissions over the template.
   ESC4 relates to insecure permissions on certificate templates. This allows a low-privileged user to edit security settings on a certificate template and escalate their privileges.
   This can be either insecure template owners or insecure ACL rights over the template.
 
-  This function improves logic from https://github.com/TrimarcJake/Locksmith. Low-priivleged users are defined dynamically to remove false-postiives. 
+  This function improves logic from https://github.com/TrimarcJake/Locksmith. Low-privileged users are defined dynamically to remove false-postiives. 
 
   .PARAMETER Domain
   The domain to run against, in case of a multi-domain environment
@@ -70,7 +70,7 @@ specifies which AD principals have specific permissions over the template.
   ##########
 
    # Unsafe owner of template - will allow privilege escalation
-   $ADCSObjects | ForEach-Object {
+  $ADCSObjects | ForEach-Object {
     $Principal = New-Object System.Security.Principal.NTAccount($_.nTSecurityDescriptor.Owner)
     if ($Principal -match '^(S-1|O:)') {
         $SID = $Principal
@@ -85,7 +85,7 @@ specifies which AD principals have specific permissions over the template.
             break
         }
     }
-    # filter owner rights removing all domain/enterprise admin users (as they might have owner rights if they created template)
+    # filter owner rights removing all members of domain/enterprise admins group (as they might have owner rights if they created template)
     if ( ($_.objectClass -eq 'pKICertificateTemplate') -and ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch)) {
         $Issue = [pscustomobject]@{
             Forest                = $Domain
@@ -122,6 +122,7 @@ specifies which AD principals have specific permissions over the template.
             break
         }
     }
+    #filter ACL rights removing all members of domain/enterprise admins group
     if ( ($_.objectClass -eq 'pKICertificateTemplate') -and
         ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch) -and
         ($entry.ActiveDirectoryRights -match $DangerousRights)

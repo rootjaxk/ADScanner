@@ -62,10 +62,9 @@ function Find-ESC5 {
     $PrivilegedGroupMemberSIDs += $SID
   }
 
-
-
-
-
+  ##############
+  # ACL checks #
+  ##############
   
   #Dynamically retrieve CA hostname (e.g. CA.test.local)
   $CAhostname = (Find-ADCS -domain $domain).dnshostname
