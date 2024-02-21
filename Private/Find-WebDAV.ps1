@@ -51,4 +51,6 @@ function Find-WebDAV {
     }
   }
   $results
+
+  #check if ldap signing not required & webdav enabled - HIGH high risk, else low risk
 }

@@ -2,8 +2,8 @@ function Find-ACLs {
     <#
   .SYNOPSIS
   Searches for low-privileged users with dangerous rights over every single object within the Active Directory domain. 
-  Automatically excludes default privileged groups which shoulD not be utilised (separate finding)
-  Will find dangerous rights including DCSync rights, write privileged over GPOs & accounts and RBCD rights over computer objects.
+  Automatically excludes default privileged groups that have set ACLs protected by the AdminSDHolder which should not be utilised (separate finding) - https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-c--protected-accounts-and-groups-in-active-directory
+  Will find dangerous rights including low-privileged principals with DCSync rights, unsafe privileges to modify GPOs or accounts and RBCD rights over computer objects.
 
   .PARAMETER Domain
   The domain to run against, in case of a multi-domain environment
@@ -33,19 +33,19 @@ function Find-ACLs {
   # Dynamically find privileged users #
   #####################################
   
-  #Unsafe privileges
+  #Unsafe privileges for ACLs
   $DangerousRights = 'AllExtendedRights|GenericAll|GenericWrite|Owns|WriteDacl|WriteOwner|GpLink|Write|Create'
 
   #Dynamically get DNSAdmins SID (has variable RID)
   $DNSAdminsSID = (Get-ADGroup -Filter { Name -eq 'DNSAdmins' }).SID.Value
 
-  #Safe user rights (mostly default groups) - https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers
+  #Safe user rights (mostly default groups with ACLs protected by AdminSDHolder) - https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers
   $PrivilegedACLUsers = '-500$|-512$|-519$|-544$|-18$|-517$|-516$|-9$|-526$|-527$|S-1-5-10|-561$|-520$|S-1-3-0|-550$|-548$'
 
-  # Define privileged groups - tier 0
+  # Define privileged groups that can DCSync by default - tier 0
   $privilegedgroups = @("Administrators", "Enterprise Admins", "Domain Admins", "Domain Controllers")
 
-  # Initialize array to store members
+  # Initialize arrays to store members
   $PrivilegedGroupMembers = @()
   $PrivilegedGroupMemberSIDs = @()
 
@@ -98,11 +98,23 @@ function Find-ACLs {
               break
           }
       }
-     # if any low-privileged users have dangerous rights over object
-     if (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)){
+     #check for RBCD (write over computer object) - if computer object then RBCD
+     if (($object -match "CN=Computers") -and ($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)){
         $Issue = [pscustomobject]@{
           Forest                = $Domain
-          ObjectDistinguishedName     = ($DomainACLs.path -split '/')[-1]
+          ObjectName            = ($DomainACLs.path -split '/')[-1]
+          IdentityReference     = $ace.IdentityReference
+          ActiveDirectoryRights = $ace.ActiveDirectoryRights
+          Issue                 = "$($ace.IdentityReference) has dangerous RBCD privileges ($($ace.ActiveDirectoryRights)) over $object"
+          Technique             = '[CRITICAL] Low privileged principal with dangerous rights'
+      }
+      $Issue
+      }
+     # if any low-privileged users have dangerous rights over object
+     elseif (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)){
+        $Issue = [pscustomobject]@{
+          Forest                = $Domain
+          ObjectName            = ($DomainACLs.path -split '/')[-1]
           IdentityReference     = $ace.IdentityReference
           ActiveDirectoryRights = $ace.ActiveDirectoryRights
           Issue                 = "$($ace.IdentityReference) has dangerous ($($ace.ActiveDirectoryRights)) rights over $object"
@@ -114,7 +126,7 @@ function Find-ACLs {
       elseif (($ace.ObjectType -match '1131f6ad-9c07-11d1-f79f-00c04fc2dcd2') -and ($SID -notmatch $PrivilegedACLUsers -and $SID -notmatch $privilegedGroupMatch)){
         $Issue = [pscustomobject]@{
             Forest                = $Domain
-            ObjectDistinguishedName     = ($DomainACLs.path -split '/')[-1]
+            ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
             Issue                 = "$($ace.IdentityReference) has DCSync ($($ace.ActiveDirectoryRights)) rights over $searchBase" #   need to add dcsync
@@ -122,25 +134,15 @@ function Find-ACLs {
           }
           $Issue
         }
-        #Check for specifically RBCD (write over specifically computer object) $computer = Get-ADComputer -Identity $object - if computer then RBCD
       }
     }
   }
 }
 
+  #potential - todo
 
-
-
-
+  #Design tiering system first
   
- #Design tiering system first
-  
-
-  
-
-  #Get ACLs over computer objects (RBCD) - loop over all computer accounts, check ACLs match dangerous rights and not member of privileged groups
-
-
   #Check for tiering violations (with ACLs over all user/group/OU objects)
 
   #Tier 1/2 over tier 0
