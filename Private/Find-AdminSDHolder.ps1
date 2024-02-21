@@ -58,7 +58,7 @@ function Find-AdminSDHolder {
   }
 
   #get users with admincount set
-  $adminCount = Get-ADObject -LDAPFilter "(adminCount=1)" -properties samaccountname
+  $adminCount = Get-ADObject -searchBase $searchBase -LDAPFilter "(adminCount=1)" -properties samaccountname
 
   #Translate members to SIDs
   $adminCount | ForEach-Object {

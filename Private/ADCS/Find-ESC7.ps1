@@ -35,7 +35,7 @@ function Find-ESC7 {
   #Dynamically retrieve CA name(e.g. test-CA-CA)
   $CAname = $(Find-ADCS -domain $domain).displayname
 
-  #Find users with ManageCA or ManageCertificatese right - parsing ACLs
+  #Find users with ManageCA or ManageCertificate right - parsing ACLs
   foreach ($ace in $CAACL) {
   $Principal = New-Object System.Security.Principal.NTAccount($ace.IdentityReference)
   if ($Principal -match '^(S-1|O:)') {

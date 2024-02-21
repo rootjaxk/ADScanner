@@ -4,6 +4,7 @@ function Find-ACLs {
   Searches for low-privileged users with dangerous rights over every single object within the Active Directory domain. 
   Automatically excludes default privileged groups that have set ACLs protected by the AdminSDHolder which should not be utilised (separate finding) - https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-c--protected-accounts-and-groups-in-active-directory
   Will find dangerous rights including low-privileged principals with DCSync rights, unsafe privileges to modify GPOs or accounts and RBCD rights over computer objects.
+  Will take longer on very large domains, as iterates over all domain objects.
 
   .PARAMETER Domain
   The domain to run against, in case of a multi-domain environment
