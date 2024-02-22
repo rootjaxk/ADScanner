@@ -129,3 +129,6 @@ function Invoke-ADScanner {
     $elapsedTime = $endTime - $startTime
     Write-Host "Script took $($elapsedTime.TotalSeconds) seconds to run."
 }
+
+
+#script may run better with local admin privileges (has permission to find more information), but is not required for 99% of findings

@@ -60,7 +60,6 @@ function Find-ASREProast {
           break
         }
       }
-          
       if ($IsPrivileged) {
         $Issue = [pscustomobject]@{
           Domain           = $Domain
@@ -72,6 +71,7 @@ function Find-ASREProast {
         }
         $Issue
       }
+      #else standard asrep-roastable user
       else {
         $Issue = [pscustomobject]@{
           Domain    = $Domain
