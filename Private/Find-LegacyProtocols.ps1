@@ -1,18 +1,20 @@
-function to_yellow ($msg) {
-    "$([char]0x1b)[93m$msg$([char]0x1b)[0m"
+function to_red ($msg) {
+    "$([char]0x1b)[91m$msg$([char]0x1b)[0m"
 }
-
-function Find-SMBSigning {
+function Find-LegacyProtocols {
     <#
   .SYNOPSIS
-  Searches all computers / servers in AD to find those that do not not require SMB signing
-  Inspired from https://github.com/tmenochet/PowerScan/blob/master/Recon/Get-SmbStatus.ps1
+  Searches for legacy protocols within AD that are no longer considered secure. These protocols include LLMNR, NBT-NS, and MDNS, NTLMv1 and SMBv1
+  LLMNR, NBT-NS and mDNS are registry checks as should be disabled on all devices via GPO.
+  NTLMv1 is checked if the LMcompati via GPO
+  SMBv1 is checked by negotiating an SMB connection which each domain computer, inspired from https://github.com/tmenochet/PowerScan/blob/master/Recon/Get-SmbStatus.ps1
+
 
   .PARAMETER Domain
   The domain to run against, in case of a multi-domain environment
 
   .EXAMPLE 
-  Find-SMBSigning -Domain test.local
+  Find-LegacyProtocols -Domain test.local
 
   #>
  
@@ -24,34 +26,122 @@ function Find-SMBSigning {
         $Domain
     )
 
-    Write-Host '[*] Finding SMB signing...' -ForegroundColor Yellow
+    Write-Host '[*] Finding legacy protocols..' -ForegroundColor Yellow
   
     #Dynamically produce searchbase from domain parameter
     $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
     $searchBase = $SearchBaseComponents -join ','
 
-    #Get all computers in domain to check for smbsigning
-    $ADComputers = (Get-ADComputer -SearchBase $SearchBase -LDAPFilter '(objectCategory=computer)').dnshostname
- 
-    #Remove any null values (as will make SMBsigning run for a very long time)
-    $ADComputers = $ADComputers | ? { $_ }
 
-    #call all functions from this one
-    function Get-SMBSigning {
+    #########
+    # LLMNR #
+    #########
+    try {
+        $llmnr = Get-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows NT\DNSClient" -name EnableMulticast -ErrorAction Ignore
+        if ($llmnr.EnableMulticast -ne 0) {
+            $Issue = [pscustomobject]@{
+                Domain    = $Domain
+                Issue     = "LLMNR is a legacy name resolution protocol not disabled in $domain via GPO"
+                Technique = (to_red "[HIGH]") + " LLMNR is vulnerable to layer 2 poisoning attacks"
+            }
+            $Issue
+        }
+    }
+    catch {
+        Write-Error $_  #LLMNR is not configured
+    }
+
+    ##########
+    # NBT-NS #
+    ##########
+    $nbtns = Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\netbt\Parameters\interfaces\tcpip_*' -name NetBiosOptions -ErrorAction Ignore
+    if ($nbtns.NetBiosOptions -ne 2) {
+        $Issue = [pscustomobject]@{
+            Domain    = $Domain
+            Issue     = "NBT-NS is a legacy name resolution protocol not disabled in $domain via GPO"
+            Technique = (to_red "[HIGH]") + " NBT-NS is vulnerable to layer 2 poisoning attacks"
+        }
+        $Issue
+    }
+    else {
+        #NBT-NS is configured - maybe include in report as good thing
+    }
+
+    ########
+    # mDNS #
+    ########
+    try {
+        $mdns = Get-ItemProperty -path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\' -name EnableMDNS -ErrorAction Ignore
+        if ($mdns.EnableMulticast -ne 0) {
+            $Issue = [pscustomobject]@{
+                Domain    = $Domain
+                Issue     = "mDNS is a legacy name resolution protocol not disabled in $domain via GPO"
+                Technique = (to_red "[HIGH]") + " mDNS is vulnerable to layer 2 poisoning attacks"
+            }
+            $Issue
+        } 
+    }
+    catch {
+        Write-Error $_    #mDNS is not configured
+    }
+
+    ##########
+    # NTLMv1 #   
+    ##########
+    #LMCompatibilityLevel likely to be set in these GPOs, if configured
+    $report = Get-GPOReport -Name 'Default Domain Controllers Policy' -ReportType html
+    $report += Get-GPOReport -Name 'Default Domain Policy' -ReportType html
+    
+    # Use regex to find the line containing "the LMCompatiilitylevel" and extract content within <td> tags
+    $pattern = 'Network security: LAN Manager authentication level<\/td><td>(.*?)<\/td>'
+    $LMcompatibilitylevel = $report | Select-String -Pattern $pattern -AllMatches | ForEach-Object { $_.Matches.Groups[1].Value }
+
+    #Get domain controllers OS version
+    Get-ADDomainController -Filter * | ForEach-Object {
+        $dcOS = $_.OperatingSystem
+    }
+
+
+    #if not explitly configured, NTLMv1 can be permitted depending on the OS version
+    if ($null -eq $LMcompatibilitylevel -and ($dcOS -notmatch "2016" -and $dcOS -notmatch "2019" )) {
+        $Issue = [pscustomobject]@{
+            Domain               = $Domain
+            LMCompatibilityLevel = "Default"
+            DomainControllerOS   = $dcOS
+            Issue                = "NTLMv1 is permitted by default for authentication negotiation with domain controllers. The LM Compatibility level is not set to 5 via the Default Domain Controllers GPO, taking the insecure default to accept NTLMv1 negotiations"
+            Technique            = (to_red "[HIGH]") + " NTLMv1 is not disabled on domain controllers"
+        }
+        $Issue
+    }
+    #check if NTLMv1 is refused
+    elseif ($null -ne $LMcompatibilitylevel -and $LMcompatibilitylevel -ne "Send NTLMv2 response only. Refuse LM &amp; NTLM" ) {
+        $Issue = [pscustomobject]@{
+            Domain               = $Domain
+            LMCompatibilityLevel = $LMcompatibilitylevel
+            Issue                = "NTLMv1 is permitted for authentication negotiation with domain controllers. The LM Compatibility level is not set to 'Send NTLMv2 response only. Refuse LM & NTLM' in the Default Domain Controllers GPO"
+            Technique            = (to_red "[HIGH]") + " NTLMv1 is not disabled on domain controllers"
+        }
+        $Issue
+    }
+    
+    #####################################################
+    # SMBv1  - modified version of SMB signing function #
+    #####################################################
+    function Get-SMBv1 {
         Param (
             $ComputerName, 
             $Timeout
         )
-
-        $SMB1 = Get-SmbVersionStatus -ComputerName $ComputerName -SmbVersion 'SMB1' -Timeout $Timeout
-        $SMB2 = Get-SmbVersionStatus -ComputerName $ComputerName -SmbVersion 'SMB2' -Timeout $Timeout
-
-        if ($SMB1.SigningStatus -or $SMB2.SigningStatus) {
-            $Signing = "required" 
-        } else { 
-            $Signing = "not required"
+        $SMBv1 = Get-SmbVersionStatus -ComputerName $ComputerName -SmbVersion 'SMB1' -Timeout $Timeout
+        if ($SMBv1 -eq $true) {
+            $Issue = [pscustomobject]@{
+                Domain    = $Domain
+                Computer  = $ComputerName
+                Issue     = "SMBv1 is enabled on $ComputerName"
+                Technique = (to_red "[HIGH]") + " SMBv1 is vulnerable to EternalBlue and other exploits"
+            }
+            $Issue
         }
-        return $Signing
     }
 
     #convert raw SMB packet to byte array
@@ -68,7 +158,6 @@ function Find-SMBSigning {
             $packet_header_length,
             $packet_data_length
         )
-
         [Byte[]] $packet_netbios_session_service_length = [BitConverter]::GetBytes($packet_header_length + $packet_data_length)
         $packet_NetBIOS_session_service_length = $packet_netbios_session_service_length[2..0]
         $packet_NetBIOSSessionService = New-Object Collections.Specialized.OrderedDictionary
@@ -126,15 +215,13 @@ function Find-SMBSigning {
         }
         return $packet_SMBNegotiateProtocolRequest
     }
-    #get signing status from SMB negotiation
+    #get SMB version from SMB negotiation
     function Get-SmbVersionStatus {
         Param (
             $ComputerName,
             $SmbVersion = 'SMB2',
             $Timeout
         )
-
-        $signingStatus = $false
 
         $process_ID = [Diagnostics.Process]::GetCurrentProcess() | Select-Object -ExpandProperty Id
         $process_ID = [BitConverter]::ToString([BitConverter]::GetBytes($process_ID))
@@ -167,12 +254,10 @@ function Find-SMBSigning {
                             if ([BitConverter]::ToString($SMB_client_receive[4..7]) -eq 'ff-53-4d-42') {
                                 $SmbVersion = 'SMB1'
                                 $SMB_client_stage = 'NTLMSSPNegotiate'
+                                $SMBv1_enabled = $true
                             }
                             else {
                                 $SMB_client_stage = 'NegotiateSMB2'
-                            }
-                            if (($SmbVersion -eq 'SMB1' -and [BitConverter]::ToString($SMB_client_receive[39]) -eq '0f') -or ($SmbVersion -ne 'SMB1' -and [BitConverter]::ToString($SMB_client_receive[70]) -eq '03')) {
-                                $signingStatus = $true
                             }
                             $tcpClient.Close()
                             $SMB_client_receive = $null
@@ -185,108 +270,18 @@ function Find-SMBSigning {
 
         catch { return "Unable to connect" }
         finally { $tcpClient.Close() }
-        return ([PSCustomObject]@{SigningStatus = $signingStatus })
+        return $SMBv1_enabled
     }
     
+    #Get all computers in domain to check for smbsigning
+    $ADComputers = (Get-ADComputer -SearchBase $SearchBase -LDAPFilter '(objectCategory=computer)').dnshostname
+ 
+    #Remove any null values (as will make SMB checks run for a long time)
+    $ADComputers = $ADComputers | ? { $_ }
+
     #check all computers in domain for SMB signing
     foreach ($computer in $ADComputers) {
         Write-Host "Checking $computer..." -ForegroundColor Yellow
-        $Signingresult = Get-SMBSigning -ComputerName $computer -Timeout 2     
-        if ($Signingresult -eq "not required") {      
-            $Issue = [pscustomobject]@{
-                Forest    = $Domain
-                Computer  = $computer
-                Issue     = "SMB signing not enforced on $computer"
-                Technique = (to_yellow "[MEDIUM]") + " SMB signing is not enforced"
-            }
-            $Issue
-        }
+        Get-SMBv1 -ComputerName $computer -Timeout 2     
     }
 }
-
-
-
-function Find-LDAPSigning {
-    <#
-  .SYNOPSIS
-  Tests to see if LDAP signing & channel binding is required for LDAP binds to on the domain controller. Search GPO domain controllers policy?
-  Inspired from https://evotec.xyz/testing-ldap-and-ldaps-connectivity-with-powershell/ 
-
-  .PARAMETER Domain
-  The domain to run against, in case of a multi-domain environment
-
-  .EXAMPLE 
-  Find-LDAPSigning -Domain test.local
-
-  #>
- 
-    #Add mandatory domain parameter
-    [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory = $true)]
-        [String]
-        $Domain
-    )
-
-    Write-Host '[*] Finding LDAP signing & channel binding...' -ForegroundColor Yellow
-
-    $GCPortLDAP = '3268'
-    $GCPortLDAPSSL = '3269'
-    $PortLDAP = '389'
-    $PortLDAPS = '636'
-
-    #get domain controllers
-    $ServerName = (Get-ADDomainController).hostname
-
-    function Test-LDAPPorts {
-        [CmdletBinding()]
-        param(
-            [string] $ServerName,
-            [int] $Port
-        )
-        #try to bind to ldap using COM interface (ADSI) on specified port
-        try {
-            $LDAP = "LDAP://" + $ServerName + ':' + $Port
-            $Connection = [ADSI]($LDAP)
-            $Connection.Close()
-            return $true
-        }
-        catch {
-            if ($_.Exception.ToString() -match "The server is not operational") {
-                Write-Warning "Can't open $ServerName`:$Port."
-            }
-            else {
-                Write-Warning -Message $_
-            }
-        }
-        return $False
-    }
-   
-    #account for multiple domain controllers, but binds will be consistent (as set via GPO)
-    foreach ($dc in $ServerName) {
-        $GlobalCatalogSSL = Test-LDAPPorts -ServerName $dc -Port $GCPortLDAPSSL
-        $GlobalCatalogNonSSL = Test-LDAPPorts -ServerName $dc -Port $GCPortLDAP
-        $ConnectionLDAPS = Test-LDAPPorts -ServerName $dc -Port $PortLDAPS
-        $ConnectionLDAP = Test-LDAPPorts -ServerName $dc -Port $PortLDAP
-        
-        $LDAPinfo = [pscustomobject]@{
-            ComputerFQDN       = $dc
-            GlobalCatalogLDAP  = $GlobalCatalogNonSSL
-            GlobalCatalogLDAPS = $GlobalCatalogSSL
-            LDAP               = $ConnectionLDAP
-            LDAPS              = $ConnectionLDAPS
-        }
-        $LDAPinfo
-        if ($globalcatalogLDAP -eq $true -or $connectionLDAP -eq $true) {
-            $Issue = [pscustomobject]@{
-                Forest           = $Domain
-                DomainController = $dc
-                Issue            = "LDAP bind without SSL was not rejected by $dc"
-                Technique        = (to_yellow "[Medium]") + " LDAP signing or channel binding is not enforced"
-            }
-            $Issue
-        }
-    }
-}
-
-#could also parse the default domain policy to check for domain controller LDAP signing requirements
