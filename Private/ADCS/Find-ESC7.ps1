@@ -19,9 +19,9 @@ function Find-ESC7 {
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   Write-Host '[*] Finding ESC7...' -ForegroundColor Yellow
@@ -37,26 +37,27 @@ function Find-ESC7 {
 
   #Find users with ManageCA or ManageCertificate right - parsing ACLs
   foreach ($ace in $CAACL) {
-  $Principal = New-Object System.Security.Principal.NTAccount($ace.IdentityReference)
-  if ($Principal -match '^(S-1|O:)') {
+    $Principal = New-Object System.Security.Principal.NTAccount($ace.IdentityReference)
+    if ($Principal -match '^(S-1|O:)') {
       $SID = $Principal
-  } else {
-      $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
-  }
-  if (($ace.Rights -match 'ManageCA' -OR $ace.Rights -match 'ManageCertificates') -and ($SID -notmatch $PrivilegedUsers)){
-    $Issue = [pscustomobject]@{
-      Forest                = $Domain
-      Name                  = $CAname
-      IdentityReference     = $ace.IdentityReference
-      ActiveDirectoryRights = $ace.Rights
-      Issue                 = "$($ace.IdentityReference) has $($ace.Rights) rights over this CA object"
-      Technique             = 'ESC7'
     }
-    $Issue
+    else {
+      $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
+    }
+    if (($ace.Rights -match 'ManageCA' -OR $ace.Rights -match 'ManageCertificates') -and ($SID -notmatch $PrivilegedUsers)) {
+      $Issue = [pscustomobject]@{
+        Forest                = $Domain
+        Name                  = $CAname
+        IdentityReference     = $ace.IdentityReference
+        ActiveDirectoryRights = $ace.Rights
+        Issue                 = "$($ace.IdentityReference) has $($ace.Rights) rights over this CA object"
+        Technique             = 'ESC7'
+      }
+      $Issue
     }
   }
 }
 
-  #$acl = Get-Acl -Path 'AD:CN=ESC3-template,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=test,DC=local'; foreach ( $ace in $acl.access ) { $ace}
- # Get-ADObject -SearchBase $CAsearchBase -LDAPFilter '(&(objectCategory=pKIEnrollmentService))' -properties * |  ForEach-Object {
-  #      foreach ($entry in $_.nTSecurityDescriptor.Access) { $entry }}
+#$acl = Get-Acl -Path 'AD:CN=ESC3-template,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=test,DC=local'; foreach ( $ace in $acl.access ) { $ace}
+# Get-ADObject -SearchBase $CAsearchBase -LDAPFilter '(&(objectCategory=pKIEnrollmentService))' -properties * |  ForEach-Object {
+#      foreach ($entry in $_.nTSecurityDescriptor.Access) { $entry }}

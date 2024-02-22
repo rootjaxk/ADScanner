@@ -20,9 +20,9 @@ specifies which AD principals have specific permissions over the template.
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   Write-Host '[*] Finding ESC4...' -ForegroundColor Yellow
@@ -59,7 +59,8 @@ specifies which AD principals have specific permissions over the template.
     $member = New-Object System.Security.Principal.NTAccount($member)
     if ($member -match '^(S-1|O:)') {
       $SID = $member
-    } else {
+    }
+    else {
       $SID = ($member.Translate([System.Security.Principal.SecurityIdentifier])).Value
     }
     $PrivilegedGroupMemberSIDs += $SID
@@ -69,34 +70,35 @@ specifies which AD principals have specific permissions over the template.
   # Owners #
   ##########
 
-   # Unsafe owner of template - will allow privilege escalation
+  # Unsafe owner of template - will allow privilege escalation
   $ADCSObjects | ForEach-Object {
     $Principal = New-Object System.Security.Principal.NTAccount($_.nTSecurityDescriptor.Owner)
     if ($Principal -match '^(S-1|O:)') {
-        $SID = $Principal
-    } else {
-        $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
+      $SID = $Principal
+    }
+    else {
+      $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
     }
     #check if owner is a low-privileged user
     $privilegedGroupMatch = $false
     foreach ($i in $PrivilegedGroupMemberSIDs) {
-        if ($SID -match $i) {
-            $privilegedGroupMatch = $true
-            break
-        }
+      if ($SID -match $i) {
+        $privilegedGroupMatch = $true
+        break
+      }
     }
     # filter owner rights removing all members of domain/enterprise admins group (as they might have owner rights if they created template)
     if ( ($_.objectClass -eq 'pKICertificateTemplate') -and ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch)) {
-        $Issue = [pscustomobject]@{
-            Forest                = $Domain
-            Name                  = $_.Name
-            DistinguishedName     = $_.DistinguishedName
-            Issue                 = "$($_.nTSecurityDescriptor.Owner) has Owner rights on this template"
-            Technique             = 'ESC4'
-        }
-        $Issue
+      $Issue = [pscustomobject]@{
+        Forest            = $Domain
+        Name              = $_.Name
+        DistinguishedName = $_.DistinguishedName
+        Issue             = "$($_.nTSecurityDescriptor.Owner) has Owner rights on this template"
+        Technique         = 'ESC4'
       }
+      $Issue
     }
+  }
 
   ###########
   #  ACLs   #
@@ -108,36 +110,37 @@ specifies which AD principals have specific permissions over the template.
   #Unsafe ACLs over template - will allow privilege escalation
   $ADCSObjects | ForEach-Object {
     foreach ($entry in $_.nTSecurityDescriptor.Access) {
-    $Principal = New-Object System.Security.Principal.NTAccount($entry.IdentityReference)
-    if ($Principal -match '^(S-1|O:)') {
+      $Principal = New-Object System.Security.Principal.NTAccount($entry.IdentityReference)
+      if ($Principal -match '^(S-1|O:)') {
         $SID = $Principal
-    } else {
+      }
+      else {
         $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
-    }
-    #check if user rights are a low-privileged user
-    $privilegedGroupMatch = $false
-    foreach ($i in $PrivilegedGroupMemberSIDs) {
+      }
+      #check if user rights are a low-privileged user
+      $privilegedGroupMatch = $false
+      foreach ($i in $PrivilegedGroupMemberSIDs) {
         if ($SID -match $i) {
-            $privilegedGroupMatch = $true
-            break
+          $privilegedGroupMatch = $true
+          break
         }
-    }
-    #filter ACL rights removing all members of domain/enterprise admins group
-    if ( ($_.objectClass -eq 'pKICertificateTemplate') -and
+      }
+      #filter ACL rights removing all members of domain/enterprise admins group
+      if ( ($_.objectClass -eq 'pKICertificateTemplate') -and
         ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch) -and
         ($entry.ActiveDirectoryRights -match $DangerousRights)
-        ) {
+      ) {
         $Issue = [pscustomobject]@{
-            Forest                = $_.CanonicalName.split('/')[0]
-            Name                  = $_.Name
-            DistinguishedName     = $_.DistinguishedName
-            IdentityReference     = $entry.IdentityReference
-            ActiveDirectoryRights = $entry.ActiveDirectoryRights
-            Issue                 = "$($entry.IdentityReference) has $($entry.ActiveDirectoryRights) rights on this template"
-            Technique             = 'ESC4'
+          Forest                = $_.CanonicalName.split('/')[0]
+          Name                  = $_.Name
+          DistinguishedName     = $_.DistinguishedName
+          IdentityReference     = $entry.IdentityReference
+          ActiveDirectoryRights = $entry.ActiveDirectoryRights
+          Issue                 = "$($entry.IdentityReference) has $($entry.ActiveDirectoryRights) rights on this template"
+          Technique             = 'ESC4'
         }
         $Issue
-       }
-     }
+      }
     }
   }
+}

@@ -17,9 +17,9 @@ function Find-ESC5 {
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   Write-Host '[*] Finding ESC5...' -ForegroundColor Yellow
@@ -56,7 +56,8 @@ function Find-ESC5 {
     $member = New-Object System.Security.Principal.NTAccount($member)
     if ($member -match '^(S-1|O:)') {
       $SID = $member
-    } else {
+    }
+    else {
       $SID = ($member.Translate([System.Security.Principal.SecurityIdentifier])).Value
     }
     $PrivilegedGroupMemberSIDs += $SID
@@ -77,32 +78,33 @@ function Find-ESC5 {
   #Parse the security descriptor over the CA object
   $CAacl | ForEach-Object {
     foreach ($ace in $CAacl.access) {
-    $Principal = New-Object System.Security.Principal.NTAccount($ace.IdentityReference)
-    if ($Principal -match '^(S-1|O:)') {
+      $Principal = New-Object System.Security.Principal.NTAccount($ace.IdentityReference)
+      if ($Principal -match '^(S-1|O:)') {
         $SID = $Principal
-    } else {
-        $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
-    }
-    #check if user rights are a low-privileged user
-    $privilegedGroupMatch = $false
-    foreach ($i in $PrivilegedGroupMemberSIDs) {
-        if ($SID -match $i) {
-            $privilegedGroupMatch = $true
-            break
-        }
-    }
-   # if any low-privileged users have dangerous rights over the CA object, ESC5
-   if (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch)){
-      $Issue = [pscustomobject]@{
-        Forest                = $Domain
-        Name                  = $CAComputername
-        DistinguishedName     = $CAdistinguishedname
-        IdentityReference     = $ace.IdentityReference
-        ActiveDirectoryRights = $ace.ActiveDirectoryRights
-        Issue                 = "$($ace.IdentityReference) has $($ace.ActiveDirectoryRights) rights over this CA object"
-        Technique             = 'ESC5'
       }
-      $Issue
+      else {
+        $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
+      }
+      #check if user rights are a low-privileged user
+      $privilegedGroupMatch = $false
+      foreach ($i in $PrivilegedGroupMemberSIDs) {
+        if ($SID -match $i) {
+          $privilegedGroupMatch = $true
+          break
+        }
+      }
+      # if any low-privileged users have dangerous rights over the CA object, ESC5
+      if (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch)) {
+        $Issue = [pscustomobject]@{
+          Forest                = $Domain
+          Name                  = $CAComputername
+          DistinguishedName     = $CAdistinguishedname
+          IdentityReference     = $ace.IdentityReference
+          ActiveDirectoryRights = $ace.ActiveDirectoryRights
+          Issue                 = "$($ace.IdentityReference) has $($ace.ActiveDirectoryRights) rights over this CA object"
+          Technique             = 'ESC5'
+        }
+        $Issue
       }
     }
   }

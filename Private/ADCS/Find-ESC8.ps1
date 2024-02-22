@@ -23,9 +23,9 @@ function Find-ESC8 {
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   Write-Host '[*] Finding ESC8...' -ForegroundColor Yellow
@@ -48,9 +48,10 @@ function Find-ESC8 {
   Write-Host "Testing HTTP" -ForegroundColor Yellow
   $httpresponse = cmd /c "curl $httpurl -verbose --connect-timeout 3 2>&1" 
 
-  if ($httpresponse -match "Timed Out"){
+  if ($httpresponse -match "Timed Out") {
     $httpresponse = $null
-  } else {
+  }
+  else {
     #parse response code from response using regex - HTTP + digit + . + digit + space + 3 digits
     $httpResponseCode = ($httpresponse | Select-String -Pattern 'HTTP/\d\.\d\s+(\d{3})').Matches.Groups[1].Value
   }
@@ -58,9 +59,10 @@ function Find-ESC8 {
   #test response of https cert endpoint
   Write-Host "Testing HTTPS" -ForegroundColor Yellow
   $httpsresponse = cmd /c "curl $httpsurl -k -verbose --connect-timeout 3 2>&1" 
-  if ($httpsresponse -match "Timed Out"){
+  if ($httpsresponse -match "Timed Out") {
     $httpsresponse = $null
-  } else {
+  }
+  else {
     #parse response code from response using regex - HTTP + digit + . + digit + space + 3 digits
     $httpsResponseCode = ($httpsresponse | Select-String -Pattern 'HTTP/\d\.\d\s+(\d{3})').Matches.Groups[1].Value
   }
@@ -76,39 +78,40 @@ function Find-ESC8 {
   ##################
 
   #Possible ESC8 on HTTP (200 or 401 indicate endpoint is reachable)
-  if(($httpResponseCode -eq 200 -or $httpResponseCode -eq 401) ){
+  if (($httpResponseCode -eq 200 -or $httpResponseCode -eq 401) ) {
     $httpwwwAuthenticate = $httpresponse | Select-String -Pattern 'WWW-Authenticate: (.*)' | ForEach-Object { $_.Matches.Groups[1].Value }
     #Check first if kerberos is disabled on http
     if ($httpwwwAuthenticate -match 'NTLM') {
       $Issue = [pscustomobject]@{
-          Forest                = $Domain
-          Name                  = $CAname
-          Issue                 = "$httpurl is vulnerable to NTLM relay attacks"
-          Technique             = 'ESC8'
-        }
-        $Issue
+        Forest    = $Domain
+        Name      = $CAname
+        Issue     = "$httpurl is vulnerable to NTLM relay attacks"
+        Technique = 'ESC8'
       }
-    elseif ($httpwwwAuthenticate -match 'Negotiate' -and $httpwwwAuthenticate -notmatch 'NTLM'){
+      $Issue
+    }
+    elseif ($httpwwwAuthenticate -match 'Negotiate' -and $httpwwwAuthenticate -notmatch 'NTLM') {
       Write-Host "Kerberos is enforced on HTTP" -ForegroundColor Green   #Successful Mitigation
     } 
   }
  
   #Possible ESC8 on HTTPS, check if mitigations are effective
-  if(($httpsResponseCode -eq 200 -or $httpsResponseCode -eq 401) ) {
+  if (($httpsResponseCode -eq 200 -or $httpsResponseCode -eq 401) ) {
     #parse www-authenticate header from curl output
     $httpswwwAuthenticate = $httpsresponse | Select-String -Pattern 'WWW-Authenticate: (.*)' | ForEach-Object { $_.Matches.Groups[1].Value }
 
     # Check if HTTPS & Extended Protection is enabled (full channel binding mitigation)
     if ($httpswwwAuthenticate -match 'NTLM') {
       $Issue = [pscustomobject]@{
-        Forest                = $Domain
-        Name                  = $CAname
-        Issue                 = "$httpsurl is possibly vulnerable to NTLM relay attacks if Extended Protection for Authentication (EPA) is not enforced"
-        Technique             = 'ESC8'
+        Forest    = $Domain
+        Name      = $CAname
+        Issue     = "$httpsurl is possibly vulnerable to NTLM relay attacks if Extended Protection for Authentication (EPA) is not enforced"
+        Technique = 'ESC8'
       }
       $Issue
-    } elseif ($httpswwwAuthenticate -match 'Negotiate' -and $httpswwwAuthenticate -notmatch 'NTLM') {
-        Write-Output "Only Kerberos authentication is permitted on $httpsurl."  #Successful mitigation
+    }
+    elseif ($httpswwwAuthenticate -match 'Negotiate' -and $httpswwwAuthenticate -notmatch 'NTLM') {
+      Write-Output "Only Kerberos authentication is permitted on $httpsurl."  #Successful mitigation
     }
   }
 }

@@ -1,5 +1,5 @@
 function Find-Delegations {
-    <#
+  <#
   .SYNOPSIS
   Searches LDAP to return computers that have unconstrained / constrained / resource-based constrained delegation set within Active Directory. 
 
@@ -14,9 +14,9 @@ function Find-Delegations {
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   Write-Host '[*] Finding Delegations...' -ForegroundColor Yellow

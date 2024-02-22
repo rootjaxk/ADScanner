@@ -1,5 +1,5 @@
 function Find-AdminSDHolder {
-    <#
+  <#
   .SYNOPSIS
   Searches Active Directory for all accounts with the adminCount attribute set to 1. Any user added to default privileged groups (e.g. Domain Admins) will have their adminCount attribute set to 1. 
   This attribute is used to protect privileged accounts from being modified by non-privileged users.
@@ -17,9 +17,9 @@ function Find-AdminSDHolder {
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   Write-Host '[*] Finding AdminSDHolder..' -ForegroundColor Yellow
@@ -51,7 +51,8 @@ function Find-AdminSDHolder {
     $member = New-Object System.Security.Principal.NTAccount($member)
     if ($member -match '^(S-1|O:)') {
       $SID = $member
-    } else {
+    }
+    else {
       $SID = ($member.Translate([System.Security.Principal.SecurityIdentifier])).Value
     }
     $PrivilegedGroupMemberSIDs += $SID
@@ -63,31 +64,31 @@ function Find-AdminSDHolder {
   #Translate members to SIDs
   $adminCount | ForEach-Object {
     foreach ($entry in $_.samaccountname) {
-    $Principal = New-Object System.Security.Principal.NTAccount($entry)
-    if ($Principal -match '^(S-1|O:)') {
-      $SID = $Principal
-    } else {
-      $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
-    }
-    #check if user rights are a low-privileged user
-    $privilegedGroupMatch = $false
-    foreach ($i in $PrivilegedGroupMemberSIDs) {
-      if ($SID -match $i) {
+      $Principal = New-Object System.Security.Principal.NTAccount($entry)
+      if ($Principal -match '^(S-1|O:)') {
+        $SID = $Principal
+      }
+      else {
+        $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
+      }
+      #check if user rights are a low-privileged user
+      $privilegedGroupMatch = $false
+      foreach ($i in $PrivilegedGroupMemberSIDs) {
+        if ($SID -match $i) {
           $privilegedGroupMatch = $true
           break
+        }
       }
-    }
-    #filter admincount removing default protected groups and members of them
-    if (($SID -notmatch $adminCountGroupSIDs) -and (!$privilegedGroupMatch))
-      {
-      $Issue = [pscustomobject]@{
-          Domain                = $domain
-          Name                  = $_.Name
-          Issue                 = "$($_.DistinguishedName) has admincount set to 1 and is not a member of default privileged groups"
-          Technique             = "Suspicious / legacy admin account"
+      #filter admincount removing default protected groups and members of them
+      if (($SID -notmatch $adminCountGroupSIDs) -and (!$privilegedGroupMatch)) {
+        $Issue = [pscustomobject]@{
+          Domain    = $domain
+          Name      = $_.Name
+          Issue     = "$($_.DistinguishedName) has admincount set to 1 and is not a member of default privileged groups"
+          Technique = "Suspicious / legacy admin account"
+        }
+        $Issue
       }
-      $Issue
-     }
     }
   }
 }

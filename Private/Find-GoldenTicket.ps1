@@ -1,5 +1,5 @@
 function Find-GoldenTicket {
-    <#
+  <#
   .SYNOPSIS
   Searches LDAP to return the date the krbtgt password was last changed within Active Directory. Microsoft recommends resetting the KRBTGT account password at least every 180 days
 
@@ -14,9 +14,9 @@ function Find-GoldenTicket {
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   Write-Host '[*] Finding potential golden tickets...' -ForegroundColor Yellow
@@ -34,10 +34,10 @@ function Find-GoldenTicket {
 
   if ($isPwdExpired -gt 180) {
     $Issue = [pscustomobject]@{
-      Forest                = $Domain
-      Name                  = "krbtgt"
-      Issue                 = "The krbtgt password was last changed $isPwdExpired days ago. Microsoft reccomends changing the krbtgt account password every 180 days"
-      Technique             = "Golden ticket attack"
+      Forest    = $Domain
+      Name      = "krbtgt"
+      Issue     = "The krbtgt password was last changed $isPwdExpired days ago. Microsoft reccomends changing the krbtgt account password every 180 days"
+      Technique = "Golden ticket attack"
     }
     $Issue  
   }

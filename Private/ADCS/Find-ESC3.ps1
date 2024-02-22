@@ -24,9 +24,9 @@ function Find-ESC3 {
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   Write-Host '[*] Finding ESC3...' -ForegroundColor Yellow
@@ -58,28 +58,28 @@ function Find-ESC3 {
   #Parse the security descriptor to find users who can enroll in the template
   ForEach-Object {
     foreach ($entry in $_.nTSecurityDescriptor.Access) {
-        $Principal = New-Object System.Security.Principal.NTAccount($entry.IdentityReference)
-        #check if principal is in SID format 
-        if ($Principal -match '^(S-1|O:)') {
-            $SID = $Principal
-        } 
-        #if not, convert principal name to SID
-        else {
-            $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
-        }
-        # Parse to find SID if any low-privileged users can enroll in the template (ExtendedRight = Enroll and/or Autoenroll for a certificate)
-        if ( ($SID -notmatch $PrivilegedUsers) -and ($entry.ActiveDirectoryRights -match 'ExtendedRight') ) {
-            $adcsIssue = [pscustomobject]@{
-                Domain                = $Domain
-                Name                  = $_.Name
-                DistinguishedName     = $_.DistinguishedName
-                IdentityReference     = $entry.IdentityReference
-                ActiveDirectoryRights = $entry.ActiveDirectoryRights
-                Issue = "$($entry.IdentityReference) can enroll in this template on behalf of another user"
-                Technique = 'ESC3'
-            }
-            $adcsIssue
-        }
+      $Principal = New-Object System.Security.Principal.NTAccount($entry.IdentityReference)
+      #check if principal is in SID format 
+      if ($Principal -match '^(S-1|O:)') {
+        $SID = $Principal
       } 
-    }
+      #if not, convert principal name to SID
+      else {
+        $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
+      }
+      # Parse to find SID if any low-privileged users can enroll in the template (ExtendedRight = Enroll and/or Autoenroll for a certificate)
+      if ( ($SID -notmatch $PrivilegedUsers) -and ($entry.ActiveDirectoryRights -match 'ExtendedRight') ) {
+        $adcsIssue = [pscustomobject]@{
+          Domain                = $Domain
+          Name                  = $_.Name
+          DistinguishedName     = $_.DistinguishedName
+          IdentityReference     = $entry.IdentityReference
+          ActiveDirectoryRights = $entry.ActiveDirectoryRights
+          Issue                 = "$($entry.IdentityReference) can enroll in this template on behalf of another user"
+          Technique             = 'ESC3'
+        }
+        $adcsIssue
+      }
+    } 
   }
+}

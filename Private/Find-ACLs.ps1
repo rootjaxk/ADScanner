@@ -1,5 +1,5 @@
 function Find-ACLs {
-    <#
+  <#
   .SYNOPSIS
   Searches for low-privileged users with dangerous rights over every single object within the Active Directory domain. 
   Automatically excludes default privileged groups that have set ACLs protected by the AdminSDHolder which should not be utilised (separate finding) - https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-c--protected-accounts-and-groups-in-active-directory
@@ -17,9 +17,9 @@ function Find-ACLs {
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   Write-Host '[*] Finding vulnerable ACLs..' -ForegroundColor Yellow
@@ -65,7 +65,8 @@ function Find-ACLs {
     $member = New-Object System.Security.Principal.NTAccount($member)
     if ($member -match '^(S-1|O:)') {
       $SID = $member
-    } else {
+    }
+    else {
       $SID = ($member.Translate([System.Security.Principal.SecurityIdentifier])).Value
     }
     $PrivilegedGroupMemberSIDs += $SID
@@ -80,52 +81,53 @@ function Find-ACLs {
   $Alldomainobjects = (Get-ADObject -SearchBase $searchBase -LDAPFilter '(&(objectClass=*))').distinguishedname
 
   #Get ACLs over iterating over all domain objects
-  foreach ($object in $Alldomainobjects){
+  foreach ($object in $Alldomainobjects) {
     $DomainACLs = Get-Acl -Path "AD:$object"
     #Parse the security descriptor over the object
     $DomainACLs | ForEach-Object {
       foreach ($ace in $DomainACLS.access) {
-      $Principal = New-Object System.Security.Principal.NTAccount($ace.IdentityReference)
-      if ($Principal -match '^(S-1|O:)') {
+        $Principal = New-Object System.Security.Principal.NTAccount($ace.IdentityReference)
+        if ($Principal -match '^(S-1|O:)') {
           $SID = $Principal
-      } else {
+        }
+        else {
           $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
-      }
-      #check if user rights are a low-privileged user
-      $privilegedGroupMatch = $false
-      foreach ($i in $PrivilegedGroupMemberSIDs) {
+        }
+        #check if user rights are a low-privileged user
+        $privilegedGroupMatch = $false
+        foreach ($i in $PrivilegedGroupMemberSIDs) {
           if ($SID -match $i) {
-              $privilegedGroupMatch = $true
-              break
+            $privilegedGroupMatch = $true
+            break
           }
-      }
-     #check for RBCD (write over computer object) - if computer object then RBCD
-     if (($object -match "CN=Computers") -and ($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)){
-        $Issue = [pscustomobject]@{
-          Forest                = $Domain
-          ObjectName            = ($DomainACLs.path -split '/')[-1]
-          IdentityReference     = $ace.IdentityReference
-          ActiveDirectoryRights = $ace.ActiveDirectoryRights
-          Issue                 = "$($ace.IdentityReference) has dangerous RBCD privileges ($($ace.ActiveDirectoryRights)) over $object"
-          Technique             = '[CRITICAL] Low privileged principal with dangerous rights'
-      }
-      $Issue
-      }
-     # if any low-privileged users have dangerous rights over object
-     elseif (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)){
-        $Issue = [pscustomobject]@{
-          Forest                = $Domain
-          ObjectName            = ($DomainACLs.path -split '/')[-1]
-          IdentityReference     = $ace.IdentityReference
-          ActiveDirectoryRights = $ace.ActiveDirectoryRights
-          Issue                 = "$($ace.IdentityReference) has dangerous ($($ace.ActiveDirectoryRights)) rights over $object"
-          Technique             = '[CRITICAL] Low privileged principal with dangerous rights'
         }
-        $Issue
+        #check for RBCD (write over computer object) - if computer object then RBCD
+        if (($object -match "CN=Computers") -and ($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
+          $Issue = [pscustomobject]@{
+            Forest                = $Domain
+            ObjectName            = ($DomainACLs.path -split '/')[-1]
+            IdentityReference     = $ace.IdentityReference
+            ActiveDirectoryRights = $ace.ActiveDirectoryRights
+            Issue                 = "$($ace.IdentityReference) has dangerous RBCD privileges ($($ace.ActiveDirectoryRights)) over $object"
+            Technique             = '[CRITICAL] Low privileged principal with dangerous rights'
+          }
+          $Issue
         }
-      #Parse DCSync (not in standard AD rights, need to search for matching ACL GUID)
-      elseif (($ace.ObjectType -match '1131f6ad-9c07-11d1-f79f-00c04fc2dcd2') -and ($SID -notmatch $PrivilegedACLUsers -and $SID -notmatch $privilegedGroupMatch)){
-        $Issue = [pscustomobject]@{
+        # if any low-privileged users have dangerous rights over object
+        elseif (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
+          $Issue = [pscustomobject]@{
+            Forest                = $Domain
+            ObjectName            = ($DomainACLs.path -split '/')[-1]
+            IdentityReference     = $ace.IdentityReference
+            ActiveDirectoryRights = $ace.ActiveDirectoryRights
+            Issue                 = "$($ace.IdentityReference) has dangerous ($($ace.ActiveDirectoryRights)) rights over $object"
+            Technique             = '[CRITICAL] Low privileged principal with dangerous rights'
+          }
+          $Issue
+        }
+        #Parse DCSync (not in standard AD rights, need to search for matching ACL GUID)
+        elseif (($ace.ObjectType -match '1131f6ad-9c07-11d1-f79f-00c04fc2dcd2') -and ($SID -notmatch $PrivilegedACLUsers -and $SID -notmatch $privilegedGroupMatch)) {
+          $Issue = [pscustomobject]@{
             Forest                = $Domain
             ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference
@@ -140,12 +142,12 @@ function Find-ACLs {
   }
 }
 
-  #potential - todo
+#potential - todo
 
-  #Design tiering system first
+#Design tiering system first
   
-  #Check for tiering violations (with ACLs over all user/group/OU objects)
+#Check for tiering violations (with ACLs over all user/group/OU objects)
 
-  #Tier 1/2 over tier 0
+#Tier 1/2 over tier 0
 
-  #Tier 2 over tier 1
+#Tier 2 over tier 1

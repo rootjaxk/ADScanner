@@ -16,9 +16,9 @@ function Find-ESC6 {
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   #Retrieve CA info
@@ -31,15 +31,15 @@ function Find-ESC6 {
 
   #Check if the EDITF_ATTRIBUTESUBJECTALTNAME2 flag is set - put output in similar $Issue variable?
   $pattern = 'EDITF_ATTRIBUTESUBJECTALTNAME2'
-  $match = $ESC6 | Select-String -Pattern $pattern -allmatches | ForEach-Object { $_.Matches.Groups[0].value}
+  $match = $ESC6 | Select-String -Pattern $pattern -allmatches | ForEach-Object { $_.Matches.Groups[0].value }
 
   if ($match -eq $pattern) {
     $Issue = [pscustomobject]@{
-      Forest                = $Domain
-      CAName                = $ADCSinfo.displayname
-      CAhostname            = $ADCSinfo.dnshostname
-      Issue                 = "$(($ADCSinfo).DisplayName) has the 'EDITF_ATTRIBUTESUBJECTALTNAME2' flag set"
-      Technique             = 'ESC6'
+      Forest     = $Domain
+      CAName     = $ADCSinfo.displayname
+      CAhostname = $ADCSinfo.dnshostname
+      Issue      = "$(($ADCSinfo).DisplayName) has the 'EDITF_ATTRIBUTESUBJECTALTNAME2' flag set"
+      Technique  = 'ESC6'
     }
     $Issue
   } 

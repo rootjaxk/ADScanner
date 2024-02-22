@@ -14,9 +14,9 @@ function Find-ADCS {
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   Write-Host '[*] Finding CA info...' -ForegroundColor Yellow
@@ -46,13 +46,13 @@ function Find-ADCSobjects {
   Find-ADCSobjects -Domain test.local
   #>  
 
-    #Add mandatory domain parameter
-    [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$true)]
-        [String]
-        $Domain
-    )
+  #Add mandatory domain parameter
+  [CmdletBinding()]
+  Param(
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
+  )
 
   Write-Host '[*] Finding ADCS objects ...' -ForegroundColor Yellow
 

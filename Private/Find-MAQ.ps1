@@ -1,5 +1,13 @@
+function to_red ($msg) {
+  "$([char]0x1b)[91m$msg$([char]0x1b)[0m"
+}
+
+function to_yellow ($msg) {
+  "$([char]0x1b)[93m$msg$([char]0x1b)[0m"
+}
+
 function Find-MAQ {
-    <#
+  <#
   .SYNOPSIS
   Searches LDAP returning the machine account quota (MAQ). Also checks the default domain controller policy to see who has permission to add workstations to the domain as the MAQ might be
   10 but might be restricted to 'domain admins' which mitigates any attack efforts. By default this is 'NT AUTHORITY\Authenticated Users'. 
@@ -15,9 +23,9 @@ function Find-MAQ {
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   Write-Host '[*] Finding MachineAccountQuota...' -ForegroundColor Yellow
@@ -26,17 +34,39 @@ function Find-MAQ {
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
   $searchBase = $SearchBaseComponents -join ','
 
-  #Retrieve MAQ
-  $MAQ = Get-ADObject $searchBase -Properties ms-DS-MachineAccountQuota | select-object  ms-DS-MachineAccountQuota
-  Write-Host "MAQ = $MAQ"
+  # Define privileged groups that should have permission to add machines to othe domain
+  $privilegedgroups = @("Administrators", "Enterprise Admins", "Domain Admins", "Server Operators", "Backup Operators", "Server Operators")
+
+  #Retrieve MAQ from domain
+  $MAQ = (Get-ADObject $searchBase -Properties ms-DS-MachineAccountQuota).'ms-DS-MachineAccountQuota'
 
   #Also check default domain controller group policy to see who has permission to add workstations to domain
   $report = Get-GPOReport -Name 'Default Domain Controllers Policy' -ReportType html
   
   # Use regex to find the line containing "Add workstations to domain" and extract content within <td> tags
   $pattern = 'Add workstations to domain<\/td><td>(.*?)<\/td>'
-  $match = $report | Select-String -Pattern $pattern -AllMatches | ForEach-Object { $_.Matches.Groups[1].Value }
+  $additionprivileges = $report | Select-String -Pattern $pattern -AllMatches | ForEach-Object { $_.Matches.Groups[1].Value }
 
-  Write-Host "$match can add workstations to the domain"
-
+  #Check if the MAQ is default
+  if ($MAQ -ne 0 -and $additionprivileges -eq "NT AUTHORITY\Authenticated Users") {
+    $Issue = [pscustomobject]@{
+      Domain                      = $Domain
+      MachineAccountQuota         = $MAQ
+      PermissiontoAddWorkstations = $additionprivileges
+      Issue                       = "$additionprivileges can add $MAQ machines to $domain"
+      Technique                   = (to_red "[HIGH]") + " Non-admin users can add computers to the domain"
+    } 
+    $Issue
+  }
+  #If group changed to a custom group, may be mitigated but need to check - lower risk
+  elseif ($MAQ -ne 0 -and $additionprivileges -ne "NT AUTHORITY\Authenticated Users" -and $additionprivileges -notmatch  $privilegedgroups) {
+    $Issue = [pscustomobject]@{
+      Domain                      = $Domain
+      MachineAccountQuota         = $MAQ
+      PermissiontoAddWorkstations = $additionprivileges
+      Issue                       = "$additionprivileges can add $MAQ machines to $domain - check this group is restricted to tier 0 only" #[TODO] - check this group is restricted to tier 0 only
+      Technique                   = (to_yellow "[MEDIUM]") + " Potential for non-admin users can add computers to the domain"
+    }
+    $Issue
+  }
 }

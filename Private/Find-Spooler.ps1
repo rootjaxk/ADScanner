@@ -1,5 +1,9 @@
+function to_red ($msg) {
+  "$([char]0x1b)[91m$msg$([char]0x1b)[0m"
+}
+
 function Find-Spooler {
-    <#
+  <#
   .SYNOPSIS
   Searches for servers within AD that have the print spooler service enabled. The print spooler service on servers exposes the named pipe - \\<netbiosname>\pipe\spoolss
 
@@ -14,9 +18,9 @@ function Find-Spooler {
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   Write-Host '[*] Finding spooler..' -ForegroundColor Yellow
@@ -34,17 +38,21 @@ function Find-Spooler {
   #Check each for presence of the spooler named pipe
   foreach ($computer in $Computers) {
     try {
-        $spooler = Get-ChildItem "\\$computer\pipe\spoolss" -ErrorAction Ignore
+      $spooler = Get-ChildItem "\\$computer\pipe\spoolss" -ErrorAction Ignore
 
-         # If the spooler exists, add a custom object with hostname and spooler status to results
-         if ($spooler) {
-            $results += [pscustomobject]@{
-                Hostname = $computer
-                SpoolerEnabled = $true
-            }
+      # If the spooler exists, add a custom object with hostname and spooler status to results
+      if ($spooler) {
+        $results += [pscustomobject]@{
+          Domain         = $Domain
+          Computer       = $computer
+          SpoolerEnabled = $true
+          Issue          = "Spooler service is enabled"
+          Technique      = (to_red "[High]") + " Spooler service is vulnerale to printerbug (authentication coercion)"
         }
-    } catch{
-       Write-Error $_
+      }
+    }
+    catch {
+      Write-Error $_
     }
   }
   $results

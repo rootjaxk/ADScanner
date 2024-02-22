@@ -1,3 +1,8 @@
+
+function to_yellow ($msg) {
+    "$([char]0x1b)[93m$msg$([char]0x1b)[0m"
+}
+
 function Find-SMBSigning {
     <#
   .SYNOPSIS
@@ -12,39 +17,45 @@ function Find-SMBSigning {
 
   #>
  
-  #Add mandatory domain parameter
-  [CmdletBinding()]
-  Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
-  )
+    #Add mandatory domain parameter
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory = $true)]
+        [String]
+        $Domain
+    )
 
-  Write-Host '[*] Finding SMB signing...' -ForegroundColor Yellow
+    Write-Host '[*] Finding SMB signing...' -ForegroundColor Yellow
   
-  #Dynamically produce searchbase from domain parameter
-  $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
-  $searchBase = $SearchBaseComponents -join ','
+    #Dynamically produce searchbase from domain parameter
+    $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
+    $searchBase = $SearchBaseComponents -join ','
 
   
-  #Get all computers in domain to check for smbsigning
-  $ADComputers = (Get-ADComputer -SearchBase $SearchBase -LDAPFilter '(objectCategory=computer)').dnshostname
+    #Get all computers in domain to check for smbsigning
+    $ADComputers = (Get-ADComputer -SearchBase $SearchBase -LDAPFilter '(objectCategory=computer)').dnshostname
  
-  #Remove any null values (as will make SMBsigning run for a very long time)
-  $ADComputers = $ADComputers | ? { $_ }
+    #Remove any null values (as will make SMBsigning run for a very long time)
+    $ADComputers = $ADComputers | ? { $_ }
 
-  function Get-SMBSigning {
-    Param ([string]$ComputerName, $Timeout)
+    #call all functions from this one
+    function Get-SMBSigning {
+        Param (
+            $ComputerName, 
+            $Timeout
+        )
 
-    $SMB1 = Get-SmbVersionStatus -ComputerName $ComputerName -SmbVersion 'SMB1' -Timeout $Timeout
-    $SMB2 = Get-SmbVersionStatus -ComputerName $ComputerName -SmbVersion 'SMB2' -Timeout $Timeout
+        $SMB1 = Get-SmbVersionStatus -ComputerName $ComputerName -SmbVersion 'SMB1' -Timeout $Timeout
+        $SMB2 = Get-SmbVersionStatus -ComputerName $ComputerName -SmbVersion 'SMB2' -Timeout $Timeout
 
-    if ($SMB1.SigningStatus -or $SMB2.SigningStatus) {
-        $Signing = "required" 
-    } else { $Signing = "not required" }
-    return $Signing
+        if ($SMB1.SigningStatus -or $SMB2.SigningStatus) {
+            $Signing = "required" 
+        }
+        else { $Signing = "not required" }
+        return $Signing
     }
 
+    #convert raw SMB packet to byte array
     function ConvertFrom-PacketOrderedDictionary ($packet_ordered_dictionary) {
         $byte_array = @()
         foreach ($field in $packet_ordered_dictionary.Values) {
@@ -55,8 +66,8 @@ function Find-SMBSigning {
 
     function Get-PacketNetBIOSSessionService {
         Param (
-            [Int] $packet_header_length,
-            [Int] $packet_data_length
+            $packet_header_length,
+            $packet_data_length
         )
 
         [Byte[]] $packet_netbios_session_service_length = [BitConverter]::GetBytes($packet_header_length + $packet_data_length)
@@ -67,14 +78,15 @@ function Find-SMBSigning {
         return $packet_NetBIOSSessionService
     }
 
+    #get SMB header
     function Get-PacketSMBHeader {
         Param (
-            [Byte[]] $packet_command,
-            [Byte[]] $packet_flags,
-            [Byte[]] $packet_flags2,
-            [Byte[]] $packet_tree_ID,
-            [Byte[]] $packet_process_ID,
-            [Byte[]] $packet_user_ID
+            $packet_command,
+            $packet_flags,
+            $packet_flags2,
+            $packet_tree_ID,
+            $packet_process_ID,
+            $packet_user_ID
         )
 
         $packet_SMBHeader = New-Object Collections.Specialized.OrderedDictionary
@@ -94,7 +106,7 @@ function Find-SMBSigning {
         $packet_SMBHeader.Add("SMBHeader_MultiplexID", [Byte[]](0x00, 0x00))
         return $packet_SMBHeader
     }
-
+    #negotiate SMB version
     function Get-PacketSMBNegotiateProtocolRequest ($packet_version) {
         if ($packet_version -eq 'SMB1') {
             [Byte[]] $packet_byte_count = 0x0c, 0x00
@@ -115,11 +127,11 @@ function Find-SMBSigning {
         }
         return $packet_SMBNegotiateProtocolRequest
     }
-
+    #get signing status from SMB negotiation
     function Get-SmbVersionStatus {
         Param (
-            [string] $ComputerName,
-            [string] $SmbVersion = 'SMB2',
+            $ComputerName,
+            $SmbVersion = 'SMB2',
             $Timeout
         )
 
@@ -136,8 +148,6 @@ function Find-SMBSigning {
         try {
             $tcpClient.Connect($ComputerName, "445")
             if ($tcpClient.connected) {
-                $serviceStatus = $true
-
                 $SMB_relay_challenge_stream = $tcpClient.GetStream()
                 $SMB_client_receive = New-Object Byte[] 1024
                 $SMB_client_stage = 'NegotiateSMB'
@@ -178,24 +188,22 @@ function Find-SMBSigning {
         finally { $tcpClient.Close() }
         return ([PSCustomObject]@{SigningStatus = $signingStatus })
     }
-    $Signing = $null
-    foreach ($computer in $ADComputers){
+    
+    #check all computers in domain for SMB signing
+    foreach ($computer in $ADComputers) {
         Write-Host "Checking $computer..." -ForegroundColor Yellow
-        $a = Get-SMBSigning -ComputerName $computer -Timeout 2           # timeout doesn't seem to work
-        if ($a -eq "not required"){       #do need to return signing == true?
+        $Signingresult = Get-SMBSigning -ComputerName $computer -Timeout 2     
+        if ($Signingresult -eq "not required") {      
             $Issue = [pscustomobject]@{
-                Forest                = $Domain
-                Computer              = $computer
-                Issue                 = "SMB signing not enforced on $computer"
-                Technique             = "[MEDIUM] SMB signing is not enforced"
+                Forest    = $Domain
+                Computer  = $computer
+                Issue     = "SMB signing not enforced on $computer"
+                Technique = (to_yellow "[MEDIUM]") + " SMB signing is not enforced"
             }
             $Issue
         }
-      }
+    }
 }
-
-
-
 
 
 
@@ -213,29 +221,29 @@ function Find-LDAPSigning {
 
   #>
  
-  #Add mandatory domain parameter
-  [CmdletBinding()]
-  Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
-  )
-
-  Write-Host '[*] Finding LDAP signing & channel binding...' -ForegroundColor Yellow
-
-  $GCPortLDAP = '3268'
-  $GCPortLDAPSSL = '3269'
-  $PortLDAP = '389'
-  $PortLDAPS = '636'
-
-  #get domain controllers
-  $ServerName = (Get-ADDomainController).hostname
-
-  function Test-LDAPPorts {
+    #Add mandatory domain parameter
     [CmdletBinding()]
-    param(
-        [string] $ServerName,
-        [int] $Port
+    Param(
+        [Parameter(Mandatory = $true)]
+        [String]
+        $Domain
+    )
+
+    Write-Host '[*] Finding LDAP signing & channel binding...' -ForegroundColor Yellow
+
+    $GCPortLDAP = '3268'
+    $GCPortLDAPSSL = '3269'
+    $PortLDAP = '389'
+    $PortLDAPS = '636'
+
+    #get domain controllers
+    $ServerName = (Get-ADDomainController).hostname
+
+    function Test-LDAPPorts {
+        [CmdletBinding()]
+        param(
+            [string] $ServerName,
+            [int] $Port
         )
         #try to bind to ldap using COM interface (ADSI) on specified port
         try {
@@ -243,10 +251,12 @@ function Find-LDAPSigning {
             $Connection = [ADSI]($LDAP)
             $Connection.Close()
             return $true
-        } catch {
+        }
+        catch {
             if ($_.Exception.ToString() -match "The server is not operational") {
                 Write-Warning "Can't open $ServerName`:$Port."
-            } else {
+            }
+            else {
                 Write-Warning -Message $_
             }
         }
@@ -254,7 +264,7 @@ function Find-LDAPSigning {
     }
    
     #account for multiple domain controllers, but binds will be consistent (as set via GPO)
-    foreach ($dc in $ServerName){
+    foreach ($dc in $ServerName) {
         $GlobalCatalogSSL = Test-LDAPPorts -ServerName $dc -Port $GCPortLDAPSSL
         $GlobalCatalogNonSSL = Test-LDAPPorts -ServerName $dc -Port $GCPortLDAP
         $ConnectionLDAPS = Test-LDAPPorts -ServerName $dc -Port $PortLDAPS
@@ -268,14 +278,16 @@ function Find-LDAPSigning {
             LDAPS              = $ConnectionLDAPS
         }
         $LDAPinfo
-        if ($globalcatalogLDAP -eq $true -or $connectionLDAP -eq $true){
+        if ($globalcatalogLDAP -eq $true -or $connectionLDAP -eq $true) {
             $Issue = [pscustomobject]@{
-                Forest                = $Domain
-                DomainController      = $dc
-                Issue                 = "LDAP bind without SSL was not rejected by $dc"
-                Technique             = "[Medium] LDAP signing or channel binding is not enforced"
+                Forest           = $Domain
+                DomainController = $dc
+                Issue            = "LDAP bind without SSL was not rejected by $dc"
+                Technique        = (to_yellow "[Medium]") + " LDAP signing or channel binding is not enforced"
             }
             $Issue
         }
     }
- }
+}
+
+#could also parse the default domain policy to check for domain controller LDAP signing requirements
