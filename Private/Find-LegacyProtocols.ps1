@@ -6,7 +6,7 @@ function Find-LegacyProtocols {
   .SYNOPSIS
   Searches for legacy protocols within AD that are no longer considered secure. These protocols include LLMNR, NBT-NS, and MDNS, NTLMv1 and SMBv1
   LLMNR, NBT-NS and mDNS are registry checks as should be disabled on all devices via GPO.
-  NTLMv1 is checked if the LMcompati via GPO
+  NTLMv1 is checked if the LMcompatibilitylevel via GPO
   SMBv1 is checked by negotiating an SMB connection which each domain computer, inspired from https://github.com/tmenochet/PowerScan/blob/master/Recon/Get-SmbStatus.ps1
 
 
@@ -103,7 +103,7 @@ function Find-LegacyProtocols {
 
 
     #if not explitly configured, NTLMv1 can be permitted depending on the OS version
-    if ($null -eq $LMcompatibilitylevel -and ($dcOS -notmatch "2016" -and $dcOS -notmatch "2019" )) {
+    if ($null -eq $LMcompatibilitylevel -and ($dcOS -notmatch "2016" -and $dcOS -notmatch "2019" -and $dcOS -notmatch "2022" )) {
         $Issue = [pscustomobject]@{
             Domain               = $Domain
             LMCompatibilityLevel = "Default"
