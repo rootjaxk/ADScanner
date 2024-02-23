@@ -78,7 +78,7 @@ function Invoke-ADScanner {
         Import-Module ActiveDirectory
     } else {
         Write-Host "RSAT is not installed. Please install RSAT as an elevated user before running this script."
-        Write-Host "Command: Install-WindowsFeature -Name RSAT-AD-PowerShell"
+        Write-Host "Command: Install-WindowsFeature -Name RSAT-AD-PowerShell" #- only works on servers, on workstaions need to do Add-WindowsCapability -Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0 -Online (see locksmith) - https://github.com/TrimarcJake/Locksmith/blob/main/Private/Install-RSATADPowerShell.ps1
         return
     }   
     
@@ -130,5 +130,3 @@ function Invoke-ADScanner {
     Write-Host "Script took $($elapsedTime.TotalSeconds) seconds to run."
 }
 
-
-#script may run better with local admin privileges (has permission to find more information), but is not required for 99% of findings

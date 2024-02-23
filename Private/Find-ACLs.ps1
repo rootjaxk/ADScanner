@@ -102,11 +102,12 @@ function Find-ACLs {
           }
         }
         #check for RBCD (write over computer object) - if computer object then RBCD
-        if (($object -match "CN=Computers") -and ($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
+        if (($object -match "CN=Computers") -and ($ace.AccessControlType -eq "Allow") -and ($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
           $Issue = [pscustomobject]@{
             Forest                = $Domain
             ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference
+            AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
             Issue                 = "$($ace.IdentityReference) has dangerous RBCD privileges ($($ace.ActiveDirectoryRights)) over $object"
             Technique             = '[CRITICAL] Low privileged principal with dangerous rights'
@@ -114,11 +115,12 @@ function Find-ACLs {
           $Issue
         }
         # if any low-privileged users have dangerous rights over object
-        elseif (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
+        elseif (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($ace.AccessControlType -eq "Allow") -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
           $Issue = [pscustomobject]@{
             Forest                = $Domain
             ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference
+            AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
             Issue                 = "$($ace.IdentityReference) has dangerous ($($ace.ActiveDirectoryRights)) rights over $object"
             Technique             = '[CRITICAL] Low privileged principal with dangerous rights'
@@ -126,11 +128,12 @@ function Find-ACLs {
           $Issue
         }
         #Parse DCSync (not in standard AD rights, need to search for matching ACL GUID)
-        elseif (($ace.ObjectType -match '1131f6ad-9c07-11d1-f79f-00c04fc2dcd2') -and ($SID -notmatch $PrivilegedACLUsers -and $SID -notmatch $privilegedGroupMatch)) {
+        elseif (($ace.ObjectType -match '1131f6ad-9c07-11d1-f79f-00c04fc2dcd2') -and ($ace.AccessControlType -eq "Allow") -and ($SID -notmatch $PrivilegedACLUsers -and $SID -notmatch $privilegedGroupMatch)) {
           $Issue = [pscustomobject]@{
             Forest                = $Domain
             ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference
+            AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
             Issue                 = "$($ace.IdentityReference) has DCSync ($($ace.ActiveDirectoryRights)) rights over $searchBase" #   need to add dcsync
             Technique             = '[CRITICAL] Low privileged principal with DCSync rights'
