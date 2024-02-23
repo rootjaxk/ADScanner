@@ -44,39 +44,40 @@ function Find-SensitiveInfo {
 
     #find hardcoded creds or secrets in scripts
     foreach ($script in $LogonScripts) {
-        $Credentials = Get-Content -Path $script.FullName -ErrorAction SilentlyContinue | Select-String -Pattern "/user:", "-AsPlainText", "passw", "admin", "key" -AllMatches
+        $Credentials = Get-Content -Path $script.FullName -ErrorAction SilentlyContinue | Select-String -Pattern "/user:", "-AsPlainText", "passw", "admin", "key", "secret" -AllMatches
         if ($Credentials) {
             $Credentials | ForEach-Object {
-                $Results = [ordered] @{
-                    Type       = 'Credentials'
+                $Issue = [pscustomobject]@{
+                    Domain     = $Domain
                     File       = $script.FullName
                     Credential = $_
+                    Technique  = (to_red "[HIGH]") + " plaintext credentials found readable by low privileged user"
                 }
-                [pscustomobject] $Results | Sort-Object -Unique # issue plaintext credentials found readable by low privileged user
+                $Issue
             }
         }
     }
     
     #finds insecure ACLs on scripts
-    $SafeUsers = 'NT AUTHORITY\\SYSTEM|Administrator|NT SERVICE\\TrustedInstaller|Domain Admins|Server Operators|Enterprise Admins|CREATOR OWNER'
-    $UnsafeRights = 'FullControl|Modify|Write'
-    $SafeUsers = $SafeUsersList
+    $SafeUsers = "NT AUTHORITY\\SYSTEM|Administrator|NT SERVICE\\TrustedInstaller|Domain Admins|Server Operators|Enterprise Admins|Administrators|CREATOR OWNER"
+    $UnsafeRights = "FullControl|Modify|Write"
     foreach ($script in $LogonScripts) {
-        Write-Host "Checking $($script.FullName) for unsafe permissions.." -ForegroundColor Yellow
+        Write-Host "Checking $($script.FullName) for unsafe permissions..." -ForegroundColor Yellow
         #Get ACL for each script
-        $ACL = (Get-Acl $script.FullName -ErrorAction SilentlyContinue).Access
+        $ACL = (Get-Acl $script.FullName).Access
         foreach ($entry in $ACL) {
             if ($entry.FileSystemRights -match $UnsafeRights -and $entry.AccessControlType -eq "Allow" -and $entry.IdentityReference -notmatch $SafeUsers) {
-                $Results = [ordered] @{
-                    Type   = 'UnsafeLogonScriptPermission'
-                    File   = $script.FullName
-                    User   = $entry.IdentityReference.Value
-                    Rights = $entry.FileSystemRights
+                $Issue = [pscustomobject] @{
+                    Domain    = $Domain
+                    File      = $script.FullName
+                    User      = $entry.IdentityReference.Value
+                    Rights    = $entry.FileSystemRights
+                    Issue     = "$($entry.IdentityReference.Value) has $($entry.FileSystemRights) over $($script.FullName)"
+                    Technique = (to_red "[HIGH]") + " modifiable logon script - see baby2 for example exploitation"
                 }
-                [pscustomobject] $Results | Sort-Object -Unique # Issue = modifiable logon script - see baby2 for example
+                $Issue
             }
         }
-    }
-
-  
+    } 
 }
+

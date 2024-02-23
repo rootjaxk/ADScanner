@@ -1,3 +1,6 @@
+function to_red ($msg) {
+  "$([char]0x1b)[91m$msg$([char]0x1b)[0m"
+}
 function Find-Delegations {
   <#
   .SYNOPSIS
@@ -26,15 +29,50 @@ function Find-Delegations {
   $searchBase = $SearchBaseComponents -join ','
 
   #Constrained delegation - 'msDS-AllowedToDelegateTo'
-  Get-ADObject -SearchBase $searchBase -LDAPFilter '(&(objectCategory=*)(msDS-AllowedToDelegateTo=*))' -properties * | 
-  Select-Object SamAccountName, Enabled, msDS-AllowedToDelegateTo, MemberOf, LastLogonDate, SID | Format-List 
+  $constrained = Get-ADObject -SearchBase $searchBase -LDAPFilter '(&(objectCategory=*)(msDS-AllowedToDelegateTo=*))' -properties *
+
+  if ($constrained) {
+    foreach ($delegation in $constrained) {
+      $Issue = [pscustomobject]@{
+        Domain              = $Domain
+        Object              = $delegation.SamAccountName
+        AllowedToDelegateTo = $delegation.'msDS-AllowedToDelegateTo'
+        Issue               = "$($delegation.samaccountname) has constrained delegation to $($delegation.'msDS-AllowedToDelegateTo')"
+        Technique           = (to_red "[HIGH]") + " Constrained delegation"
+      }
+      $Issue
+    }
  
-  #Unconstrained delegation - UAC set to TRUSTED_FOR_DELEGATION on users / computers
-  Get-ADObject -SearchBase $searchBase -LDAPFilter '(&(objectCategory=*)(userAccountControl:1.2.840.113556.1.4.803:=524288))'
+    #Unconstrained delegation - UAC set to TRUSTED_FOR_DELEGATION on users / computers
+    $unconstrained = Get-ADObject -SearchBase $searchBase -LDAPFilter '(&(objectCategory=*)(userAccountControl:1.2.840.113556.1.4.803:=524288))' -properties *
 
-  #Resource-based constrained delegation - 'msDS-AllowedToActOnBehalfOfOtherIdentity'  
-  Get-ADObject -SearchBase $searchBase -LDAPFilter '(&(objectCategory=*)(msDS-AllowedToActOnBehalfOfOtherIdentity=*))'
+    if ($unconstrained) {
+      foreach ($delegation in $unconstrained) {
+        $Issue = [pscustomobject]@{
+          Domain    = $Domain
+          Object    = $delegation.SamAccountName
+          Issue     = "$($delegation.samaccountname) has unconstrained delegation set"
+          Technique = (to_red "[HIGH]") + " Unconstrained delegation"
+        }
+        $Issue
+      }
+    }
+
+    #Resource-based constrained delegation - 'msDS-AllowedToActOnBehalfOfOtherIdentity'  
+    $resourcebased = Get-ADObject -SearchBase $searchBase -LDAPFilter '(&(objectCategory=*)(msDS-AllowedToActOnBehalfOfOtherIdentity=*))'
+
+    if ($resourcebased) {
+      foreach ($delegation in $resourcebased) {
+        $Issue = [pscustomobject]@{
+          Domain    = $Domain
+          Object    = $delegation.SamAccountName
+          Issue     = "$($delegation.SamAccountName) has resource-based nconstrained delegation set from "
+          Technique = (to_red "[HIGH]") + " Resource-based constrained delegation"
+        }
+        $Issue
+      }
+    }
   
-  #Also need to check for GenericAll / WriteDACL permissions on computer objects
-
+    #Additional check for for GenericAll / WriteDACL permissions on computer objects is done in Find-ACL
+  }
 }
