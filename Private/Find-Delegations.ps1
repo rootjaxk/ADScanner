@@ -59,20 +59,20 @@ function Find-Delegations {
     }
 
     #Resource-based constrained delegation - 'msDS-AllowedToActOnBehalfOfOtherIdentity'  
-    $resourcebased = Get-ADObject -SearchBase $searchBase -LDAPFilter '(&(objectCategory=*)(msDS-AllowedToActOnBehalfOfOtherIdentity=*))'
+    $resourcebased = Get-ADObject -SearchBase $searchBase -LDAPFilter '(&(objectCategory=*)(msDS-AllowedToActOnBehalfOfOtherIdentity=*))' -properties *
 
+    #Additional check for for GenericAll / WriteDACL permissions on computer objects is done in Find-ACL
     if ($resourcebased) {
       foreach ($delegation in $resourcebased) {
         $Issue = [pscustomobject]@{
-          Domain    = $Domain
-          Object    = $delegation.SamAccountName
-          Issue     = "$($delegation.SamAccountName) has resource-based nconstrained delegation set from "
-          Technique = (to_red "[HIGH]") + " Resource-based constrained delegation"
+          Domain                                     = $Domain
+          Object                                     = $delegation.SamAccountName
+          'msDS-AllowedToActOnBehalfOfOtherIdentity' = $delegation.'msDS-AllowedToActOnBehalfOfOtherIdentity'.access.identityreference.value
+          Issue                                      = "$($delegation.SamAccountName) has the msDS-AllowedToActOnBehalfOfOtherIdentity property set to $($delegation.'msDS-AllowedToActOnBehalfOfOtherIdentity'.access.identityreference.value). `n$($delegation.'msDS-AllowedToActOnBehalfOfOtherIdentity'.access.identityreference.value) can delegate to any resource on $($delegation.SamAccountName) (can fully compromise it)"
+          Technique                                  = (to_red "[HIGH]") + " Resource-based constrained delegation"
         }
         $Issue
       }
     }
-  
-    #Additional check for for GenericAll / WriteDACL permissions on computer objects is done in Find-ACL
   }
 }
