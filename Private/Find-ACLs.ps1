@@ -3,7 +3,7 @@ function Find-ACLs {
   .SYNOPSIS
   Searches for low-privileged users with dangerous rights over every single object within the Active Directory domain. 
   Automatically excludes default privileged groups that have set ACLs protected by the AdminSDHolder which should not be utilised (separate finding) - https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/plan/security-best-practices/appendix-c--protected-accounts-and-groups-in-active-directory
-  Will find dangerous rights including low-privileged principals with DCSync rights, unsafe privileges to modify GPOs or accounts and RBCD rights over computer objects.
+  Will find dangerous rights including low-privileged principals with DCSync rights, unsafe privileges to modify GPOs/accounts, RBCD rights over computer objects and ability to read LAPS passwords.
   Will take longer on very large domains, as iterates over all domain objects.
 
   .PARAMETER Domain
@@ -41,7 +41,7 @@ function Find-ACLs {
   $DNSAdminsSID = (Get-ADGroup -Filter { Name -eq 'DNSAdmins' }).SID.Value
 
   #Safe user rights (mostly default groups with ACLs protected by AdminSDHolder) - https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers
-  $PrivilegedACLUsers = '-500$|-512$|-519$|-544$|-18$|-517$|-516$|-9$|-526$|-527$|S-1-5-10|-561$|-520$|S-1-3-0|-550$|-548$'
+  $PrivilegedACLUsers = '-500$|-512$|-519$|-544$|-18$|-517$|-516$|-9$|-526$|-527$|S-1-5-10|-561$|-520$|S-1-3-0|-550$|-548$|-553'
 
   # Define privileged groups that can DCSync by default - tier 0
   $privilegedgroups = @("Administrators", "Enterprise Admins", "Domain Admins", "Domain Controllers")
@@ -102,7 +102,7 @@ function Find-ACLs {
           }
         }
         #check for RBCD (write over computer object) - if computer object then RBCD
-        if (($object -match "CN=Computers") -and ($ace.AccessControlType -eq "Allow") -and ($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
+        if (($object -match "CN=Computers" -or $object -match "OU=Domain Controllers") -and ($ace.AccessControlType -eq "Allow") -and ($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
           $Issue = [pscustomobject]@{
             Forest                = $Domain
             ObjectName            = ($DomainACLs.path -split '/')[-1]
@@ -110,7 +110,7 @@ function Find-ACLs {
             AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
             Issue                 = "$($ace.IdentityReference) has dangerous RBCD privileges ($($ace.ActiveDirectoryRights)) over $object"
-            Technique             = (to_red "[CRITICAL]") + " Low privileged principal with dangerous rights"
+            Technique             = (to_red "[CRITICAL]") + " [RBCD] Low privileged principal with dangerous RBCD rights"
           }
           $Issue
         }
@@ -123,7 +123,7 @@ function Find-ACLs {
             AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
             Issue                 = "$($ace.IdentityReference) has dangerous ($($ace.ActiveDirectoryRights)) rights over $object"
-            Technique             = (to_red "[CRITICAL]") + " Low privileged principal with dangerous rights"
+            Technique             = (to_red "[CRITICAL]") + " [RIGHTS] - Low privileged principal with dangerous rights"
           }
           $Issue
         }
@@ -136,7 +136,20 @@ function Find-ACLs {
             AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
             Issue                 = "$($ace.IdentityReference) has DCSync ($($ace.ActiveDirectoryRights)) rights over $searchBase" #   need to add dcsync
-            Technique             = (to_red "[CRITICAL]") + " Low privileged principal with DCSync rights"
+            Technique             = (to_red "[CRITICAL]") + " [DCSync] - Low privileged principal with DCSync rights"
+          }
+          $Issue
+        }
+        #check for LAPS permissions read - f9d1c024-f837-441c-bcd1-767420543ec7 - read ms-mcs-admpwd
+        elseif (($object -match "CN=Computers" -or ($object -match "OU=Domain Controllers" -and $object -notmatch "CN=.*,OU=Domain Controllers")) -and ($ace.ObjectType -eq "f9d1c024-f837-441c-bcd1-767420543ec7") -and ($ace.ActiveDirectoryRights -match "ReadProperty") -and ($SID -notmatch $PrivilegedACLUsers -and $SID -notmatch $privilegedGroupMatch)) {
+          $Issue = [pscustomobject]@{
+            Forest                = $Domain
+            ObjectName            = ($DomainACLs.path -split '/')[-1]
+            IdentityReference     = $ace.IdentityReference
+            AccessControlType     = $ace.AccessControlType
+            ActiveDirectoryRights = $ace.ActiveDirectoryRights
+            Issue                 = "$($ace.IdentityReference) can read LAPS password over over $object"
+            Technique             = (to_red "[CRITICAL]") + " [LAPS] - low privileged principal can LAPS password"
           }
           $Issue
         }
