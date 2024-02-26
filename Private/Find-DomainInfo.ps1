@@ -101,7 +101,7 @@ function Find-DomainInfo {
       Forest    = $Domain
       EmptyOUs  = $emptyOU.count
       Issue     = "There are $($emptyOU.count) empty OUs within the domain. The domain structure can be reduced by approximately $([math]::Round(($emptyOU.count / $numOU * 100), 2))%. Removing complexity eases administration and reduces risk of misconfigurations"
-      Technique = "Domain effiency impprovement - empty Organizational Units"
+      Technique =  (to_cyan "[INFORMATIONAL]") + " Domain effiency impprovement - empty Organizational Units"
     }
     $Issue  
   }
@@ -110,7 +110,7 @@ function Find-DomainInfo {
       Forest    = $Domain
       OU        = $empty.DistinguishedName
       Issue     = "The OU $($empty.Name) is empty and can be removed"
-      Technique = "Domain effiency impprovement - empty Organizational Units"
+      Technique =  (to_cyan "[INFORMATIONAL]") + " Domain effiency impprovement - empty Organizational Units"
     }
     $emptyIssue
   }
@@ -129,7 +129,7 @@ function Find-DomainInfo {
         Totalunlinked = $totalunlinked
         'GPO name'    = $GPO.DisplayName
         Issue         = "$($GPO.DisplayName) is not linked to any OUs within the domain. Unlinked GPOs are not used and can be removed to reduce complexity and reduce risk of misconfigurations"
-        Technique     = "Domain effiency impprovement - unlinked GPOs"
+        Technique     = (to_cyan "[INFORMATIONAL]")  + " Domain effiency impprovement - unlinked GPOs"
       }
       $Issue
     }

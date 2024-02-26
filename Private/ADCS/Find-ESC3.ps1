@@ -76,7 +76,7 @@ function Find-ESC3 {
           IdentityReference     = $entry.IdentityReference
           ActiveDirectoryRights = $entry.ActiveDirectoryRights
           Issue                 = "$($entry.IdentityReference) can enroll in this template on behalf of another user"
-          Technique             = 'ESC3'
+          Technique             = (to_red "[CRITICAL]") + " ESC3"
         }
         $adcsIssue
       }

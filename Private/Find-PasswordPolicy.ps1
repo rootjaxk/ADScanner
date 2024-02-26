@@ -73,31 +73,31 @@ function Find-PasswordPolicy {
   # Update PSCustomObject with any issues
   if ($Complexity -eq "False" -or $LengthIssue -eq $true -or $LockoutIssue -eq $true -or $MinPwdAgeIssue -eq $true -or $MaxPwdAgeIssue -eq $true -or $PasswordHistoryIssue -eq $true -or $LockoutDurationIssue -eq $true -or $ReverseEncryption -eq "True"){
     $Issue.Issues = "The following issues were found with the password policy:"
-    $Issue.Technique = '[HIGH] Weak Password Policy'
+    $Issue.Technique = (to_red "[HIGH]") + " Weak Password Policy"
 
     if ($Complexity -eq "False"){
-        $Issue.Issues += "`r`n[HIGH] The password complexity requirement is not enabled."
+        $Issue.Issues += "`r`n" + (to_red "[HIGH]") + " The password complexity requirement is not enabled."
     }
     if ($LengthIssue -eq $true){
-        $Issue.Issues += "`r`n[HIGH] The minimum password length requirement is less than 14 characters."
+        $Issue.Issues += "`r`n" + (to_red "[HIGH]") + " The minimum password length requirement is less than 14 characters."
     }
     if ($LockoutIssue -eq $true){
-        $Issue.Issues += "`r`n[HIGH] The account lockout threshold is greater than 10."
+        $Issue.Issues += "`r`n" + (to_red "[HIGH]") + " The account lockout threshold is greater than 10."
     }
     if ($MinPwdAgeIssue -eq $true){
-        $Issue.Issues += "`r`n[MEDIUM] The minimum password age is less than 1 day." #otherwise user can rotate back to previous password - https://www.tenable.com/audits/items/CIS_MS_Windows_Server_2008_R2_MS_Level_1_v3.3.0.audit:f6acf617d6b6a9efd90267aba213653b 
+        $Issue.Issues += "`r`n" + (to_yellow "[MEDIUM]") + " The minimum password age is less than 1 day." #otherwise user can rotate back to previous password - https://www.tenable.com/audits/items/CIS_MS_Windows_Server_2008_R2_MS_Level_1_v3.3.0.audit:f6acf617d6b6a9efd90267aba213653b 
     }
     if ($MaxPwdAgeIssue -eq $true){
-        $Issue.Issues += "`r`n[HIGH] The maximum password age is less than 365 days." #guidance is should not expire
+        $Issue.Issues += "`r`n" + (to_red "[HIGH]") + " The maximum password age is less than 365 days." #guidance is should not expire
     }
     if ($PasswordHistoryIssue -eq $true){
-        $Issue.Issues += "`r`n[MEDIUM] The password history count is less than 24."
+        $Issue.Issues += "`r`n" + (to_yellow "[MEDIUM]") + " The password history count is less than 24."
     }
     if ($LockoutDurationIssue -eq $true){
-        $Issue.Issues += "`r`n[MEDIUM] The account lockout duration is less than 15 minutes."
+        $Issue.Issues += "`r`n" + (to_yellow "[MEDIUM]") + " The account lockout duration is less than 15 minutes."
     }
     if ($ReverseEncryption -eq "True"){
-        $Issue.Issues += "`r`n[HIGH] Reversible encryption is enabled." # encrypted passwords stored can be decrypted
+        $Issue.Issues += "`r`n" + (to_red "[HIGH]") + " Reversible encryption is enabled." # encrypted passwords stored can be decrypted
     }
   }
   $Issue

@@ -102,7 +102,7 @@ function Find-ESC5 {
           IdentityReference     = $ace.IdentityReference
           ActiveDirectoryRights = $ace.ActiveDirectoryRights
           Issue                 = "$($ace.IdentityReference) has $($ace.ActiveDirectoryRights) rights over this CA object"
-          Technique             = 'ESC5'
+          Technique             = (to_red "[CRITICAL]") + " ESC5"
         }
         $Issue
       }

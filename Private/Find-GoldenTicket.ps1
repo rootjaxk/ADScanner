@@ -1,3 +1,7 @@
+function to_red ($msg) {
+  "$([char]0x1b)[91m$msg$([char]0x1b)[0m"
+}
+
 function Find-GoldenTicket {
   <#
   .SYNOPSIS
@@ -34,11 +38,11 @@ function Find-GoldenTicket {
 
   if ($isPwdExpired -gt 180) {
     $Issue = [pscustomobject]@{
-      Forest    = $Domain
-      Name      = "krbtgt"
+      Forest     = $Domain
+      Name       = "krbtgt"
       Pwdlastset = $isPwdExpired
-      Issue     = "The krbtgt password was last changed $isPwdExpired days ago. Microsoft reccomends changing the krbtgt account password every 180 days"
-      Technique = "Golden ticket attack"
+      Issue      = "The krbtgt password was last changed $isPwdExpired days ago. Microsoft recommends changing the krbtgt account password every 180 days"
+      Technique  = (to_red "[HIGH]") + " Golden ticket attack"
     }
     $Issue  
   }

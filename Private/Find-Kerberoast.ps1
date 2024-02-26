@@ -1,10 +1,3 @@
-function to_red ($msg) {
-  "$([char]0x1b)[91m$msg$([char]0x1b)[0m"
-}
-function to_green ($msg) {
-  "$([char]0x1b)[92m$msg$([char]0x1b)[0m"
-}
-
 function Find-Kerberoast {
     <#
   .SYNOPSIS

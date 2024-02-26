@@ -62,7 +62,7 @@ function Find-ESC8 {
   if ($httpsresponse -match "Timed Out") {
     $httpsresponse = $null
   }
-  else {
+  elseif ($httpsreponse){
     #parse response code from response using regex - HTTP + digit + . + digit + space + 3 digits
     $httpsResponseCode = ($httpsresponse | Select-String -Pattern 'HTTP/\d\.\d\s+(\d{3})').Matches.Groups[1].Value
   }
@@ -86,7 +86,7 @@ function Find-ESC8 {
         Forest    = $Domain
         Name      = $CAname
         Issue     = "$httpurl is vulnerable to NTLM relay attacks"
-        Technique = 'ESC8'
+        Technique = (to_red "[CRITICAL]") + " ESC8"
       }
       $Issue
     }
@@ -106,7 +106,7 @@ function Find-ESC8 {
         Forest    = $Domain
         Name      = $CAname
         Issue     = "$httpsurl is possibly vulnerable to NTLM relay attacks if Extended Protection for Authentication (EPA) is not enforced"
-        Technique = 'ESC8'
+        Technique = (to_red "[CRITICAL]") + " ESC8"
       }
       $Issue
     }

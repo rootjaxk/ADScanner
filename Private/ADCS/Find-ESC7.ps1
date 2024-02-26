@@ -51,7 +51,7 @@ function Find-ESC7 {
         IdentityReference     = $ace.IdentityReference
         ActiveDirectoryRights = $ace.Rights
         Issue                 = "$($ace.IdentityReference) has $($ace.Rights) rights over this CA object"
-        Technique             = 'ESC7'
+        Technique             = (to_red "[CRITICAL]") + " ESC7"
       }
       $Issue
     }

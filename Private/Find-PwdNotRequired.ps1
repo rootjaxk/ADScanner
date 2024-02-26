@@ -41,7 +41,7 @@ function Find-PwdNotRequired {
         User      = $user.SamAccountName
         Enabled   = $user.Enabled
         Issue     = "$($user.SamAccountName) does not require a password but is disabled"
-        Technique = (to_green "[Low]") + " Disabled account not requiring a password"
+        Technique = (to_green "[LOW]") + " Disabled account not requiring a password"
       }
       $Issue
     }

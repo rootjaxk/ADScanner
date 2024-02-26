@@ -110,7 +110,7 @@ function Find-ACLs {
             AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
             Issue                 = "$($ace.IdentityReference) has dangerous RBCD privileges ($($ace.ActiveDirectoryRights)) over $object"
-            Technique             = '[CRITICAL] Low privileged principal with dangerous rights'
+            Technique             = (to_red "[CRITICAL]") + " Low privileged principal with dangerous rights"
           }
           $Issue
         }
@@ -123,7 +123,7 @@ function Find-ACLs {
             AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
             Issue                 = "$($ace.IdentityReference) has dangerous ($($ace.ActiveDirectoryRights)) rights over $object"
-            Technique             = '[CRITICAL] Low privileged principal with dangerous rights'
+            Technique             = (to_red "[CRITICAL]") + " Low privileged principal with dangerous rights"
           }
           $Issue
         }
@@ -136,7 +136,7 @@ function Find-ACLs {
             AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
             Issue                 = "$($ace.IdentityReference) has DCSync ($($ace.ActiveDirectoryRights)) rights over $searchBase" #   need to add dcsync
-            Technique             = '[CRITICAL] Low privileged principal with DCSync rights'
+            Technique             = (to_red "[CRITICAL]") + " Low privileged principal with DCSync rights"
           }
           $Issue
         }

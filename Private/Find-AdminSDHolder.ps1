@@ -85,7 +85,7 @@ function Find-AdminSDHolder {
           Domain    = $domain
           Name      = $_.Name
           Issue     = "$($_.DistinguishedName) has admincount set to 1 and is not a member of default privileged groups"
-          Technique = "Suspicious / legacy admin account"
+          Technique = (to_red "[HIGH]") + " Suspicious / legacy admin account"
         }
         $Issue
       }

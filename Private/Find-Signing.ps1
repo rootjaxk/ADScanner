@@ -1,7 +1,3 @@
-function to_yellow ($msg) {
-    "$([char]0x1b)[93m$msg$([char]0x1b)[0m"
-}
-
 function Find-SMBSigning {
     <#
   .SYNOPSIS
@@ -282,7 +278,7 @@ function Find-LDAPSigning {
                 Forest           = $Domain
                 DomainController = $dc
                 Issue            = "LDAP bind without SSL was not rejected by $dc"
-                Technique        = (to_yellow "[Medium]") + " LDAP signing or channel binding is not enforced"
+                Technique        = (to_yellow "[MEDIUM]") + " LDAP signing or channel binding is not enforced"
             }
             $Issue
         }

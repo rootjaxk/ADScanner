@@ -1,10 +1,6 @@
 # Anonymous / open shares - try and list shares with no credentials
 # Anonymous RPC - equivalent to RPCclient on windows? - only works with rpcclient
 # Anonymous LDAP - bind with no credentials - only works with ldapsearch
-
-function to_red ($msg) {
-    "$([char]0x1b)[91m$msg$([char]0x1b)[0m"
-}
   
 function Find-AnonymousAccess {
     <#
@@ -43,7 +39,7 @@ function Find-AnonymousAccess {
             Domain    = $Domain
             Account   = $domainguest.distinguishedname
             Issue     = "Domain Guest account is enabled"
-            Technique = (to_red "[High]") + " Domain anonymous access is permitted allowing anonymous access to the domain"
+            Technique = (to_red "[HIGH]") + " Domain anonymous access is permitted allowing anonymous access to the domain"
         }
         $Issue
     }

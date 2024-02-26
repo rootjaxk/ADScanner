@@ -68,7 +68,7 @@ function Find-ESC2 {
           IdentityReference     = $entry.IdentityReference
           ActiveDirectoryRights = $entry.ActiveDirectoryRights
           Issue                 = "$($entry.IdentityReference) can enroll in this template and use it for any purpose, e.g. request certificate template on behalf of another prinicpal (ESC3)"
-          Technique             = 'ESC2'
+          Technique             = (to_red "[CRITICAL]") + " ESC2"
         }
         $adcsIssue
       }

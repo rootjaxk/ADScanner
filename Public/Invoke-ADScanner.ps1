@@ -29,9 +29,10 @@ function Invoke-ADScanner {
 
     .OUTPUTS
     Different report output types (compliance with different report formats):
-    1. HTML
-    2. CSV
-    3. PDF
+    1. To console
+    2. HTML
+    3. CSV
+    4. PDF???
 
     .EXAMPLE 
     Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\temp\
@@ -45,6 +46,20 @@ function Invoke-ADScanner {
         [String]
         $Domain
     )
+
+    #Colours for console output
+    function to_red ($msg) {
+        "$([char]0x1b)[91m$msg$([char]0x1b)[0m"
+    }
+    function to_yellow ($msg) {
+        "$([char]0x1b)[93m$msg$([char]0x1b)[0m"
+    }
+    function to_cyan ($msg) {
+        "$([char]0x1b)[36m$msg$([char]0x1b)[0m"
+    }
+    function to_green ($msg) {
+        "$([char]0x1b)[92m$msg$([char]0x1b)[0m"
+    }
 
     #Add a check to see if RSAT is installed, if not, say to install it before importing AD module
     function Test-RSAT-Installed {

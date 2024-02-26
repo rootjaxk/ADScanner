@@ -35,8 +35,8 @@ function Find-LAPS {
     $Issue = [pscustomobject]@{
       Domain    = $Domain
       Computer = $hostname
-      Issue     = "LAPS is not installed"
-      Technique = "LAPS"
+      Issue     = "LAPS is not installed on $hostname. Lateral movement opportunities may exist through reuse of the local administrator password"
+      Technique = (to_red "[HIGH]") + " LAPS is not utilized on all computers."
     }
     $Issue
   }

@@ -78,7 +78,7 @@ function Find-ESC1 {
           IdentityReference     = $entry.IdentityReference
           ActiveDirectoryRights = $entry.ActiveDirectoryRights
           Issue                 = "$($entry.IdentityReference) can enroll in this Client Authentication template using a SAN without Manager Approval"
-          Technique             = 'ESC1'
+          Technique             = (to_red "[CRITICAL]") + " ESC1"
         }
         $adcsIssue
       }

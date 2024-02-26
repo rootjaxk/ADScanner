@@ -39,7 +39,7 @@ function Find-ESC6 {
       CAName     = $ADCSinfo.displayname
       CAhostname = $ADCSinfo.dnshostname
       Issue      = "$(($ADCSinfo).DisplayName) has the 'EDITF_ATTRIBUTESUBJECTALTNAME2' flag set"
-      Technique  = 'ESC6'
+      Technique  = (to_red "[CRITICAL]") + " ESC6"
     }
     $Issue
   } 

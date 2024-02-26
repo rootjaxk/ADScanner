@@ -1,7 +1,3 @@
-function to_red ($msg) {
-  "$([char]0x1b)[91m$msg$([char]0x1b)[0m"
-}
-
 function Find-Spooler {
   <#
   .SYNOPSIS
@@ -47,7 +43,7 @@ function Find-Spooler {
           Computer       = $computer
           SpoolerEnabled = $true
           Issue          = "Spooler service is enabled"
-          Technique      = (to_red "[High]") + " Spooler service is vulnerale to printerbug (authentication coercion)"
+          Technique      = (to_red "[HIGH]") + " Spooler service is vulnerale to printerbug (authentication coercion)"
         }
       }
     }

@@ -54,9 +54,8 @@ function Find-OutboundAccess {
         Forest                = $Domain
         Name                  = $hostname
         User                  = $userrun
-        Issue                 = "[CRITICAL] administrator account $userrun has internet access on $hostname."
-        Remediation           = "Block internet access for all administrative users"  
-        Technique             = "Unrestricted outbound access"
+        Issue                 = "Administrator account $userrun has internet access on $hostname. Block internet access for all administrative users"
+        Technique             = (to_red "[CRITICAL]") + " Unrestricted outbound access"
       }
       $Issue
     }
@@ -65,8 +64,8 @@ function Find-OutboundAccess {
         Forest                = $Domain
         Name                  = $hostname
         User                  = $userrun
-        Issue                 = "[HIGH] $userrun has unrestricted outbound internet access on $hostname"
-        Technique             = "Unrestricted outbound access"
+        Issue                 = "$userrun has unrestricted outbound internet access on $hostname"
+        Technique             = (to_red "[HIGH]") + " Unrestricted outbound access"
       }
       $Issue
     } 
@@ -75,11 +74,9 @@ function Find-OutboundAccess {
         Forest                = $Domain
         Name                  = $hostname
         User                  = $userrun
-        Issue                 = "[MEDIUM] $userrun can access non-essential buisness sites on $hostname"
-        Technique             = "Unrestricted outbound access"
+        Issue                 = "$userrun can access non-essential buisness sites on $hostname"
+        Technique             = (to_red "[HIGH]") + " Unrestricted outbound access"
       }
       $Issue
     }
   }
-
- 

@@ -47,7 +47,7 @@ function Find-ASREProast {
         User      = $ASREPuser.SamAccountName
         Enabled   = $ASREPuser.Enabled
         Issue     = "$($ASREPuser.SamAccountName) does not require Kerberos pre-authentication but is disabled"
-        Technique = (to_green "[Low]") + " Disabled ASREP-roastable user"
+        Technique = (to_green "[LOW]") + " Disabled ASREP-roastable user"
       }
       $Issue
     }
