@@ -34,7 +34,7 @@ function Find-WebDAV {
   #Array to store multiple machine having WebDAV enabled
   $results = @()
 
-  #check if ldap signing not required & webdav enabled (to accurately assess risk) - HIGH high risk, else low risk - probably move to invoke-adscanner.ps1
+  #check if ldap signing not required & webdav enabled (to accurately assess risk) - HIGH high risk, else low risk - might move to invoke-adscanner.ps1
   $checkldapsigning = Find-LDAPSigning -Domain $Domain
 
   #Check each for presence of the WebDAV named pipe
@@ -42,7 +42,7 @@ function Find-WebDAV {
     try {
         $webdav = Get-ChildItem "\\$computer\pipe\DAV RPC SERVICE" -ErrorAction Ignore
 
-         # If the webdav exists, add a custom object with hostname and spooler status to results
+         # If the webdav exists check for severity of issue
          if ($webdav) {
             #check if ldap signing returns true
             if($checkldapsigning){
