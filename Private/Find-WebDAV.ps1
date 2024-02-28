@@ -22,7 +22,7 @@ function Find-WebDAV {
       $Domain
   )
 
-  Write-Host '[*] Finding WebDAV..' -ForegroundColor Yellow
+  Write-Host '[*] Finding WebDAV...' -ForegroundColor Yellow
   
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
@@ -34,6 +34,9 @@ function Find-WebDAV {
   #Array to store multiple machine having WebDAV enabled
   $results = @()
 
+  #check if ldap signing not required & webdav enabled (to accurately assess risk) - HIGH high risk, else low risk - probably move to invoke-adscanner.ps1
+  $checkldapsigning = Find-LDAPSigning -Domain $Domain
+
   #Check each for presence of the WebDAV named pipe
   foreach ($computer in $Computers) {
     try {
@@ -41,16 +44,28 @@ function Find-WebDAV {
 
          # If the webdav exists, add a custom object with hostname and spooler status to results
          if ($webdav) {
-            $results += [pscustomobject]@{
-                Hostname = $computer
-                WebDAVEnabled = $true
+            #check if ldap signing returns true
+            if($checkldapsigning){
+              $Issue = [pscustomobject]@{
+                  Domain    = $domain
+                  Hostname = $computer
+                  WebDAVEnabled = $true
+                  Issue     = "WebDAV is enabled and LDAP signing is not required. $computer can be remotely be fully compromised via WebDAV to LDAP to RBCD authentication relay"
+                  Technique = (to_red "[CRITICAL]") + " Admin compromise of $computer via WebDAV to LDAP to RBCD authentication relay"
+              }
+            } else{
+              $Issue = [pscustomobject]@{
+                  Domain    = $domain
+                  Hostname = $computer
+                  WebDAVEnabled = $true
+                  Issue     = "$computer has WebDAV is enabled but LDAP signing is required mitigating relaying attacks. Check if the WebClient service is required as unnecessary services should be disabled"
+                  Technique = (to_green "[LOW]") + " WebDAV service is running - this is the default on workstations"
+              }
             }
+            $Issue
         }
     } catch{
        Write-Error $_
     }
   }
-  $results
-
-  #check if ldap signing not required & webdav enabled - HIGH high risk, else low risk
 }

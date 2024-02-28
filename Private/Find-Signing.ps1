@@ -272,7 +272,7 @@ function Find-LDAPSigning {
             LDAP               = $ConnectionLDAP
             LDAPS              = $ConnectionLDAPS
         }
-        $LDAPinfo
+       # $LDAPinfo - if want to output or not in domain info section
         if ($globalcatalogLDAP -eq $true -or $connectionLDAP -eq $true) {
             $Issue = [pscustomobject]@{
                 Forest           = $Domain
@@ -281,8 +281,17 @@ function Find-LDAPSigning {
                 Technique        = (to_yellow "[MEDIUM]") + " LDAP signing or channel binding is not enforced"
             }
             $Issue
+            return $true
         }
     }
+    #return for use in WebDAV function
+    return $false
 }
 
 #could also parse the default domain policy to check for domain controller LDAP signing requirements
+
+# unit tests for documentation 
+#ldap signing - true
+#ldap channel binding - true
+#not ldap signing - false
+#not ldap channel binding - false
