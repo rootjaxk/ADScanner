@@ -41,7 +41,7 @@ function Find-ACLs {
   $DNSAdminsSID = (Get-ADGroup -Filter { Name -eq 'DNSAdmins' }).SID.Value
 
   #Safe user rights (mostly default groups with ACLs protected by AdminSDHolder) - https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers
-  $PrivilegedACLUsers = '-500$|-512$|-519$|-544$|-18$|-517$|-516$|-9$|-526$|-527$|S-1-5-10|-561$|-520$|S-1-3-0|-550$|-548$|-553'
+  $PrivilegedACLUsers = '-500$|-512$|-519$|-544$|-18$|-517$|-516$|S-1-5-9|-526$|-527$|S-1-5-10|-561$|-520$|S-1-3-0|-550$|-548$|-553$'
 
   # Define privileged groups that can DCSync by default - tier 0
   $privilegedgroups = @("Administrators", "Enterprise Admins", "Domain Admins", "Domain Controllers")
@@ -140,7 +140,7 @@ function Find-ACLs {
           }
           $Issue
         }
-        #check for LAPS permissions read - f9d1c024-f837-441c-bcd1-767420543ec7 - read ms-mcs-admpwd
+        #check for LAPS permissions read - f00000000-0000-0000-0000-000000000000 GUID - (read all properties - can read ms-mcs-admpwd) - keep hardcoded for now and come back to it
         elseif (($object -match "CN=Computers" -or ($object -match "OU=Domain Controllers" -and $object -notmatch "CN=.*,OU=Domain Controllers")) -and ($ace.ObjectType -eq "f9d1c024-f837-441c-bcd1-767420543ec7") -and ($ace.ActiveDirectoryRights -match "ReadProperty") -and ($SID -notmatch $PrivilegedACLUsers -and $SID -notmatch $privilegedGroupMatch)) {
           $Issue = [pscustomobject]@{
             Forest                = $Domain

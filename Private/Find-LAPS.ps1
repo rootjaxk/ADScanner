@@ -23,11 +23,51 @@ function Find-LAPS {
 
   Write-Host '[*] Finding LAPS...' -ForegroundColor Yellow
 
+  #Dynamically produce searchbase from domain parameter
+  $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
+  $searchBase = $SearchBaseComponents -join ','
+
+  $domainControllers = "OU=Domain Controllers,$searchBase"
+  $domainComputers = "CN=Computers,$searchBase"
+  
   #Check LAPS on local machine
   $hostname = (Get-ADComputer -Identity $env:COMPUTERNAME).dnshostname
 
   $LAPS = Get-ChildItem "C:\Program Files\LAPS\CSE" -ErrorAction Ignore
 
+  #Safe user rights to read LAPS
+  $PrivilegedACLUsers = '-500$|-512$|-519$|-544$|-18$|-516$|S-1-5-9'
+
+  # Define tier 0 privileged groups that would be allowed to read LAPS
+  $privilegedgroups = @("Administrators", "Enterprise Admins", "Domain Admins", "Domain Controllers")
+
+  # Initialize arrays to store members
+  $PrivilegedGroupMembers = @()
+  $PrivilegedGroupMemberSIDs = @()
+
+  foreach ($group in $privilegedgroups) {
+    # Get members of the group and select only the SamAccountName
+    $members = Get-ADGroupMember -Identity $group -Recursive | Select-Object -ExpandProperty SamAccountName
+    # Add members to the array
+    $PrivilegedGroupMembers += $members
+  }
+
+  # Remove duplicates from the array
+  $PrivilegedGroupMembers = $PrivilegedGroupMembers | Select-Object -Unique
+
+  #Find SIDs of privileged group members
+  foreach ($member in $PrivilegedGroupMembers) {
+    $member = New-Object System.Security.Principal.NTAccount($member)
+    if ($member -match '^(S-1|O:)') {
+      $SID = $member
+    }
+    else {
+      $SID = ($member.Translate([System.Security.Principal.SecurityIdentifier])).Value
+    }
+    $PrivilegedGroupMemberSIDs += $SID
+  }
+
+  #check if LAPS is installed on device
   if ($LAPS -notmatch 'AdmPwd.dll') {
     $Issue = [pscustomobject]@{
       Domain    = $Domain
@@ -36,5 +76,70 @@ function Find-LAPS {
       Technique = (to_red "[HIGH]") + " LAPS is not utilized on all computers."
     }
     $Issue
+  }
+  else {
+    #do additional checks - enumerate who can read LAPS passwords on computers + domain controllers if LAPS module is installed. TODO - dynamically find servers OU based off tiering system
+    try {
+      $domaincontrollerLAPS = (Find-AdmPwdExtendedRights -Identity $domainControllers).ExtendedRightHolders
+      $domaincomputerLAPS = (Find-AdmPwdExtendedRights -Identity $domainComputers).ExtendedRightHolders
+    }
+    catch {}
+    #Check for low privileged accounts can read LAPS
+    foreach ($user in $domaincontrollerLAPS) {
+      $Principal = New-Object System.Security.Principal.NTAccount($user)
+      if ($Principal -match '^(S-1|O:)') {
+        $SID = $Principal
+      }
+      else {
+        $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
+      }
+      #check if user rights are a low-privileged user
+      $privilegedGroupMatch = $false
+      foreach ($i in $PrivilegedGroupMemberSIDs) {
+        if ($SID -match $i) {
+          $privilegedGroupMatch = $true
+          break
+        }
+      }
+      #check for LAPS read
+      if ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch) {
+        $Issue = [pscustomobject]@{
+          Forest            = $Domain
+          IdentityReference = $user
+          LAPScomputer      = $domainControllers
+          Issue             = "$user has read LAPS password rights on $domainControllers"
+          Technique         = (to_red "[CRITICAL]") + " Low privileged principal can read LAPS password on $domainControllers"
+        }
+        $Issue
+      }
+    }
+    foreach ($user in $domaincomputerLAPS) {
+      $Principal = New-Object System.Security.Principal.NTAccount($user)
+      if ($Principal -match '^(S-1|O:)') {
+        $SID = $Principal
+      }
+      else {
+        $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
+      }
+      #check if user rights are a low-privileged user
+      $privilegedGroupMatch = $false
+      foreach ($i in $PrivilegedGroupMemberSIDs) {
+        if ($SID -match $i) {
+          $privilegedGroupMatch = $true
+          break
+        }
+      }
+      #check for LAPS read
+      if ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch) {
+        $Issue = [pscustomobject]@{
+          Forest            = $Domain
+          IdentityReference = $user
+          LAPScomputer      = $domainComputers
+          Issue             = "$user has read LAPS password rights on $domainComputers"
+          Technique         = (to_red "[CRITICAL]") + " Low privileged principal can read LAPS password on $domainComputers"
+        }
+        $Issue
+      }
+    }
   }
 }
