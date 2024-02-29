@@ -61,6 +61,10 @@ function Invoke-ADScanner {
         "$([char]0x1b)[92m$msg$([char]0x1b)[0m"
     }
 
+    #First enter chatGPT API key (dynamically build from command to avoid hardcoding in script)
+    #$APIkey = Read-Host "Enter your ChatGPT API key"
+
+
     #Add a check to see if RSAT is installed, if not, say to install it before importing AD module
     function Test-RSAT-Installed {
         $RSAT = Get-WindowsFeature -Name RSAT-AD-PowerShell
@@ -123,9 +127,54 @@ function Invoke-ADScanner {
     #Perform vulnerability checks
     Write-Host '[*] Scanning AD...' -ForegroundColor Yellow 
     Find-DomainInfo -Domain $Domain
+   
+   
+    #Kerberos
     Find-Kerberoast -Domain $Domain
     Find-ASREProast -Domain $Domain
+    Find-Delegations -Domain $Domain
+    Find-GoldenTicket -Domain $Domain
+
+    #PKI - ADCS
+    Find-ESC1 -Domain $Domain
+    Find-ESC2 -Domain $Domain
+    Find-ESC3 -Domain $Domain
+    Find-ESC4 -Domain $Domain
+    Find-ESC5 -Domain $Domain
+    Find-ESC6 -Domain $Domain
+    Find-ESC7 -Domain $Domain
+    Find-ESC8 -Domain $Domain
+
+    #RBAC
+    Find-PrivilegedGroups -Domain $Domain
+    Find-AdminSDHolder -Domain $Domain
+    Find-InactiveAccounts -Domain $Domain
+    
+
+    #ACLs
+    Find-ACLs -Domain $Domain
+
+    #MISC
+    Find-MAQ -Domain $Domain
+    Find-OutboundAccess -Domain $Domain
+    Find-PasswordPolicy -Domain $Domain
     Find-PwdNotRequired -Domain $Domain
+    Find-LAPS -Domain $Domain
+    Find-SMBSigning -Domain $Domain
+    Find-LDAPSigning -Domain $Domain
+    Find-Spooler -Domain $Domain
+    Find-WebDAV -Domain $Domain
+    Find-SensitiveInfo -Domain $Domain
+    #Find-UserDescriptions -Domain $Domain -APIKey $APIkey
+    
+
+    #Legacy
+    Find-LegacyProtocols -Domain $Domain
+    Find-UnsupportedOS -Domain $Domain
+
+
+
+ 
     #wont output to screen in order as different ones take different amount of time, but when testing this is ok. real will save to variable for use in report
 
     #Attribute risk score - maybe have own file - attribute it here or elsewhere?
@@ -136,7 +185,7 @@ function Invoke-ADScanner {
 
 
     #Produce report
-    Generate-Report
+    #Generate-Report
 
 
     #Calculate time to run

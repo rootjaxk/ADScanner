@@ -14,7 +14,6 @@ Account Operators    - 0
 Print Operators      - 0
 Remote Desktop Users - 0
 Schema Admins        - 0
-Cert Publishers      - 0
 
 .PARAMETER Domain
 The domain to run against, in case of a multi-domain environment
@@ -93,9 +92,6 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Schema Admins" -and $userCount -gt 0) {
       $Issue.Issue = (to_red "[HIGH]") + " Schema Admins group does not meet the benchmark (0 users required)."
-    }
-    elseif ($groupName -eq "Cert Publishers" -and $userCount -gt 0) {
-      $Issue.Issue = (to_red "[HIGH]") + " Cert Publishers group does not meet the benchmark (0 users required)."
     }
     else {
       $Issue.Issue = (to_cyan "[INFO]") + " Benchmark achieved"

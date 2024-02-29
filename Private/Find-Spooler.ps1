@@ -42,7 +42,7 @@ function Find-Spooler {
           Domain         = $Domain
           Computer       = $computer
           SpoolerEnabled = $true
-          Issue          = "Spooler service is enabled"
+          Issue          = "Spooler service is enabled. If on server this is high risk"
           Technique      = (to_red "[HIGH]") + " Spooler service is vulnerale to printerbug (authentication coercion)"
         }
       }

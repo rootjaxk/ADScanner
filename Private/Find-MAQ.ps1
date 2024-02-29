@@ -65,7 +65,7 @@ function Find-MAQ {
       MachineAccountQuota         = $MAQ
       PermissiontoAddWorkstations = $additionprivileges
       Issue                       = "$additionprivileges can add $MAQ machines to $domain - check this group is restricted to tier 0 only" #[TODO] - check this group is restricted to tier 0 only
-      Technique                   = (to_yellow "[MEDIUM]") + " Potential for non-admin users can add computers to the domain"
+      Technique                   = (to_green "[LOW]") + " Potential for non-admin users can add computers to the domain"
     }
     $Issue
   }

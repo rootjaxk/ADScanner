@@ -23,7 +23,7 @@ function Find-LegacyProtocols {
         $Domain
     )
 
-    Write-Host '[*] Finding legacy protocols..' -ForegroundColor Yellow
+    Write-Host '[*] Finding legacy protocols...' -ForegroundColor Yellow
   
     #Dynamically produce searchbase from domain parameter
     $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }

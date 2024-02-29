@@ -135,13 +135,13 @@ function Find-ACLs {
             IdentityReference     = $ace.IdentityReference
             AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
-            Issue                 = "$($ace.IdentityReference) has DCSync ($($ace.ActiveDirectoryRights)) rights over $searchBase" #   need to add dcsync
+            Issue                 = "$($ace.IdentityReference) has DCSync ($($ace.ActiveDirectoryRights)) rights over $searchBase"
             Technique             = (to_red "[CRITICAL]") + " [DCSync] - Low privileged principal with DCSync rights"
           }
           $Issue
         }
-        #check for LAPS permissions read - f00000000-0000-0000-0000-000000000000 GUID - (read all properties - can read ms-mcs-admpwd) - keep hardcoded for now and come back to it
-        elseif (($object -match "CN=Computers" -or ($object -match "OU=Domain Controllers" -and $object -notmatch "CN=.*,OU=Domain Controllers")) -and ($ace.ObjectType -eq "f9d1c024-f837-441c-bcd1-767420543ec7") -and ($ace.ActiveDirectoryRights -match "ReadProperty") -and ($SID -notmatch $PrivilegedACLUsers -and $SID -notmatch $privilegedGroupMatch)) {
+        #check for LAPS permissions read - f00000000-0000-0000-0000-000000000000 GUID - (read all properties - can read ms-mcs-admpwd) 
+        elseif (($object -match "CN=Computers" -or ($object -match "OU=Domain Controllers" -and $object -notmatch "CN=.*,OU=Domain Controllers")) -and ($ace.ObjectType -eq "00000000-0000-0000-0000-000000000000") -and ($ace.ActiveDirectoryRights -match "ExtendedRights") -and ($SID -notmatch $PrivilegedACLUsers -and $SID -notmatch $privilegedGroupMatch)) {
           $Issue = [pscustomobject]@{
             Forest                = $Domain
             ObjectName            = ($DomainACLs.path -split '/')[-1]

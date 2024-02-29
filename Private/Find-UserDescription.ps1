@@ -11,9 +11,13 @@ function Find-UserDescription {
 
   #>
  
-  #Add mandatory domain parameter
+  #Add mandatory domain parameter & APIkey
   [CmdletBinding()]
   Param(
+    [Parameter(Mandatory = $true)]
+    [String]
+    $APIkey,
+
     [Parameter(Mandatory = $true)]
     [String]
     $Domain
@@ -31,16 +35,25 @@ function Find-UserDescription {
   $descriptions = $userswithdescription.description
 
   #Send to generative AI for analysis
-  $possible_sensitive_descriptions = #chatgpt stuff
+  $prompt = "which of these descriptions contain password information which should not be readable by all users? `r`n$descriptions If no passwords are found return only 'No passwords found'" #chatgpt stuff
 
-  if ($possible_sensitive_descriptions -eq $true) {
-    $Issue = [pscustomobject]@{
-      Domain      = $Domain
-      User        = $userswithdescription.SamAccountName
-      Description = $userswithdescription.descriptions
-      Issue       = "$($userswithdescription.samaccountname) has the description $($userswithdescription.descriptions)"
-      Technique   = (to_red "[HIGH]") + " plaintext credentials found in Active Directory description field"
+  #send to API
+  $userdescriptionresponse = Connect-ChatGPT -APIkey $APIkey -Prompt $prompt
+
+  if ($userdescriptionresponse -notmatch "No passwords found") {
+    #match description back to user
+    foreach($pwd in $userdesscriptionresponse){
+      $user = $userswithdescription | Where-Object { $_.description -match $pwd }
+      $Issue = [pscustomobject]@{
+        Domain    = $Domain
+        User      = $user.SamAccountName
+        Description = $user.description
+        Issue     = "$($user.SamAccountName) has the description $($user.description) which contains a password"
+        Technique = (to_red "[CRITICAL]") + " plaintext credentials found in Active Directory description field"
+      }
+      $Issue
     }
-    $Issue
   }
 }
+
+#test how accurately GPT finds sensitive information in descriptions

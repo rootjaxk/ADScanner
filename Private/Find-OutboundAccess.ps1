@@ -69,12 +69,13 @@ function Find-OutboundAccess {
       }
       $Issue
     } 
+  #if run on server this will be high
   elseif ($socialURLresponse -match "200 OK" -or $nonessentialbuisnessURLresponse -match "200 OK"){
     $Issue = [pscustomobject]@{
         Forest                = $Domain
         Name                  = $hostname
         User                  = $userrun
-        Issue                 = "$userrun can access non-essential buisness sites on $hostname"
+        Issue                 = "$userrun can access non-essential buisness sites on $hostname. If this is a server, block internet access for all users"
         Technique             = (to_red "[HIGH]") + " Unrestricted outbound access"
       }
       $Issue

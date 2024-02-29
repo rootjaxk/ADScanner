@@ -29,7 +29,7 @@ function Find-ESC5 {
   #####################################
   
   #Unsafe privileges over CA
-  $DangerousRights = 'GenericAll|WriteOwner|WriteDacl|WriteProperty'
+  $DangerousRights = 'GenericAll|WriteOwner|WriteDacl|WriteProperty|Owns'
 
   #Safe user rights over CA
   $PrivilegedUsers = '-500$|-512$|-519$|-544$|-18$|-517$|-516$|-9$|-526$|-527$|S-1-5-10'
