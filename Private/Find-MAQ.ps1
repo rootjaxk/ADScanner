@@ -1,11 +1,3 @@
-function to_red ($msg) {
-  "$([char]0x1b)[91m$msg$([char]0x1b)[0m"
-}
-
-function to_yellow ($msg) {
-  "$([char]0x1b)[93m$msg$([char]0x1b)[0m"
-}
-
 function Find-MAQ {
   <#
   .SYNOPSIS

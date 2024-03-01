@@ -57,7 +57,3 @@ function Find-ESC7 {
     }
   }
 }
-
-#$acl = Get-Acl -Path 'AD:CN=ESC3-template,CN=Certificate Templates,CN=Public Key Services,CN=Services,CN=Configuration,DC=test,DC=local'; foreach ( $ace in $acl.access ) { $ace}
-# Get-ADObject -SearchBase $CAsearchBase -LDAPFilter '(&(objectCategory=pKIEnrollmentService))' -properties * |  ForEach-Object {
-#      foreach ($entry in $_.nTSecurityDescriptor.Access) { $entry }}

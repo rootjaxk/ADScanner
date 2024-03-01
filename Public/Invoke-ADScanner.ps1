@@ -31,8 +31,6 @@ function Invoke-ADScanner {
     Different report output types (compliance with different report formats):
     1. To console
     2. HTML
-    3. CSV
-    4. PDF???
 
     .EXAMPLE 
     Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\temp\
@@ -70,43 +68,58 @@ function Invoke-ADScanner {
         $RSAT = Get-WindowsFeature -Name RSAT-AD-PowerShell
         if ($RSAT.Installed -eq $true) {
             return $true
-        } else {
+        }
+        else {
             return $false
         }
     }
-
     #required for esc7 check
     function Test-RSATADCS-Installed {
         $RSAT = Get-WindowsFeature -Name RSAT-ADCS
         if ($RSAT.Installed -eq $true) {
             return $true
-        } else {
+        }
+        else {
             return $false
         }
-      }
-
-      function Install-PSPKI {
+    }
+    function Test-PSPKI-Installed {
         $PSPKI = Get-Module -ListAvailable -Name PSPKI
         if ($PSPKI -eq $null) {
-            Install-Module -Name PSPKI -Force
+            return $false
         }
-      }
+        else {
+            return $true
+        }
+    }
 
     if (Test-RSAT-Installed) {
         Write-Host "RSAT is installed. Importing ActiveDirectory module..."
         Import-Module ActiveDirectory
-    } else {
+    }
+    else {
         Write-Host "RSAT is not installed. Please install RSAT as an elevated user before running this script."
         Write-Host "Command: Install-WindowsFeature -Name RSAT-AD-PowerShell" #- only works on servers, on workstaions need to do Add-WindowsCapability -Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0 -Online (see locksmith) - https://github.com/TrimarcJake/Locksmith/blob/main/Private/Install-RSATADPowerShell.ps1
+        Write-Host "Command: Install-WindowsFeature -Name GPMC"         #For GPOs
         return
     }   
     
     if (Test-RSATADCS-Installed) {
         Write-Host "RSAT ADCS is installed."
-        Install-PSPKI
-    } else {
+        
+    }
+    else {
         Write-Host "RSAT is not installed. Please install RSAT as an elevated user before running this script."
         Write-Host "Command: Install-WindowsFeature -Name RSAT-ADCS"
+        return
+
+    if (Test-PSPKI-Installed){
+        Write-Host "PSPKI is installed. Importing PSPKI module..."
+        Import-Module PSPKI
+    }
+    else {
+        Write-Host "PSPKI is not installed. Please install PSPKI as an elevated user before running this script."
+        Write-Host "Command: Install-Module -Name PSPKI -Force"
         return
     }   
     
@@ -122,20 +135,43 @@ function Invoke-ADScanner {
         return
     }
 
+    #add functionality to do individual scans (for prioritised remediation)
+
+
+
     $startTime = Get-Date
 
     #Perform vulnerability checks
     Write-Host '[*] Scanning AD...' -ForegroundColor Yellow 
+
+
+    #Domain info
+    Write-Host @"
+#####################################################################################
+#                                    Domain Info                                    #
+#####################################################################################
+"@
+
     Find-DomainInfo -Domain $Domain
    
    
     #Kerberos
+    Write-Host @"
+#####################################################################################
+#                                    Kerberos                                       #
+#####################################################################################
+"@
     Find-Kerberoast -Domain $Domain
     Find-ASREProast -Domain $Domain
     Find-Delegations -Domain $Domain
     Find-GoldenTicket -Domain $Domain
 
     #PKI - ADCS
+    Write-Host @"
+#####################################################################################
+#                                       PKI                                         #
+#####################################################################################
+"@
     Find-ESC1 -Domain $Domain
     Find-ESC2 -Domain $Domain
     Find-ESC3 -Domain $Domain
@@ -146,15 +182,30 @@ function Invoke-ADScanner {
     Find-ESC8 -Domain $Domain
 
     #RBAC
+    Write-Host @"
+#####################################################################################
+#                                       RBAC                                        #
+#####################################################################################
+"@
     Find-PrivilegedGroups -Domain $Domain
-    Find-AdminSDHolder -Domain $Domain
-    Find-InactiveAccounts -Domain $Domain
+    Find-AdminSDHolder -Domain $Domain | fl
+    Find-InactiveAccounts -Domain $Domain | fl
     
 
     #ACLs
+    Write-Host @"
+#####################################################################################
+#                                       ACLs                                        #
+#####################################################################################
+"@
     Find-ACLs -Domain $Domain
 
     #MISC
+    Write-Host @"
+#####################################################################################
+#                                       MISC                                        #
+#####################################################################################
+"@
     Find-MAQ -Domain $Domain
     Find-OutboundAccess -Domain $Domain
     Find-PasswordPolicy -Domain $Domain
@@ -169,6 +220,11 @@ function Invoke-ADScanner {
     
 
     #Legacy
+    Write-Host @"
+#####################################################################################
+#                                       LEGACY                                      #
+#####################################################################################
+"@
     Find-LegacyProtocols -Domain $Domain
     Find-UnsupportedOS -Domain $Domain
 
@@ -193,4 +249,4 @@ function Invoke-ADScanner {
     $elapsedTime = $endTime - $startTime
     Write-Host "Script took $($elapsedTime.TotalSeconds) seconds to run."
 }
-
+}

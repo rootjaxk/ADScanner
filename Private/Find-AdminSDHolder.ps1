@@ -22,7 +22,7 @@ function Find-AdminSDHolder {
     $Domain
   )
 
-  Write-Host '[*] Finding AdminSDHolder..' -ForegroundColor Yellow
+  Write-Host '[*] Finding AdminSDHolder...' -ForegroundColor Yellow
   
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
@@ -63,22 +63,25 @@ function Find-AdminSDHolder {
 
   #Translate members to SIDs
   $adminCount | ForEach-Object {
-    foreach ($entry in $_.samaccountname) {
-      $Principal = New-Object System.Security.Principal.NTAccount($entry)
-      if ($Principal -match '^(S-1|O:)') {
-        $SID = $Principal
-      }
-      else {
-        $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
-      }
-      #check if user rights are a low-privileged user
-      $privilegedGroupMatch = $false
-      foreach ($i in $PrivilegedGroupMemberSIDs) {
-        if ($SID -match $i) {
-          $privilegedGroupMatch = $true
-          break
+    try {
+      foreach ($entry in $_.samaccountname) {
+        $Principal = New-Object System.Security.Principal.NTAccount($entry)
+        if ($Principal -match '^(S-1|O:)') {
+          $SID = $Principal
+        }
+        else {
+          $SID = ($Principal.Translate([System.Security.Principal.SecurityIdentifier])).Value
+        }
+        #check if user rights are a low-privileged user
+        $privilegedGroupMatch = $false
+        foreach ($i in $PrivilegedGroupMemberSIDs) {
+          if ($SID -match $i) {
+            $privilegedGroupMatch = $true
+            break
+          }
         }
       }
+    } catch {}
       #filter admincount removing default protected groups and members of them
       if (($SID -notmatch $adminCountGroupSIDs) -and (!$privilegedGroupMatch)) {
         $Issue = [pscustomobject]@{
@@ -91,4 +94,3 @@ function Find-AdminSDHolder {
       }
     }
   }
-}
