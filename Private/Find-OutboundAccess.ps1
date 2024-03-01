@@ -21,7 +21,7 @@ function Find-OutboundAccess {
       $Domain
   )
 
-  Write-Host '[*] Finding outbound access..' -ForegroundColor Yellow
+  Write-Host '[*] Finding Outbound Access...' -ForegroundColor Yellow
   
   #Dynamically extract hostname that script is run on
   $hostname = (Get-ADComputer -Identity $env:COMPUTERNAME).dnshostname
@@ -35,7 +35,9 @@ function Find-OutboundAccess {
   $nonessentialbuisnessURL = "https://www.bbc.co.uk/"
 
   #test repsonses just using head to get HTTP response code
+  Write-Host "Checking access to malicious sites..." -ForegroundColor Yellow
   $exploitresponse = cmd /c "curl $exploitDB --head --verbose --connect-timeout 3 2>&1" 
+  Write-Host "Checking access to non-essential business sites..." -ForegroundColor Yellow
   $socialURLresponse = cmd /c "curl $socialURL --head --verbose --connect-timeout 3 2>&1"
   $nonessentialbuisnessURLresponse = cmd /c "curl $nonessentialbuisnessURL --head --verbose --connect-timeout 3 2>&1"
  
@@ -75,7 +77,7 @@ function Find-OutboundAccess {
         Forest                = $Domain
         Name                  = $hostname
         User                  = $userrun
-        Issue                 = "$userrun can access non-essential buisness sites on $hostname. If this is a server, block internet access for all users"
+        Issue                 = "$userrun can access non-essential business sites on $hostname. If this is a server, block internet access for all users"
         Technique             = (to_red "[HIGH]") + " Unrestricted outbound access"
       }
       $Issue

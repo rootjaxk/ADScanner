@@ -21,7 +21,7 @@ function Find-SensitiveInfo {
         $Domain
     )
   
-    Write-Host '[*] Finding sensitive info..' -ForegroundColor Yellow
+    Write-Host '[*] Finding sensitive info...' -ForegroundColor Yellow
     
     #Dynamically produce searchbase from domain parameter
     $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }

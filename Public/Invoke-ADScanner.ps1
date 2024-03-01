@@ -112,11 +112,12 @@ function Invoke-ADScanner {
         Write-Host "RSAT is not installed. Please install RSAT as an elevated user before running this script."
         Write-Host "Command: Install-WindowsFeature -Name RSAT-ADCS"
         return
-
-    if (Test-PSPKI-Installed){
-        Write-Host "PSPKI is installed. Importing PSPKI module..."
-        Import-Module PSPKI
     }
+
+    if (Test-PSPKI-Installed) {
+            Write-Host "PSPKI is installed. Importing PSPKI module..."
+            Import-Module PSPKI
+        }
     else {
         Write-Host "PSPKI is not installed. Please install PSPKI as an elevated user before running this script."
         Write-Host "Command: Install-Module -Name PSPKI -Force"
@@ -124,129 +125,151 @@ function Invoke-ADScanner {
     }   
     
 
-    # Display help menu if ran incorrectly
-    if (-not $Domain) {
-        Write-Host "Example Usage:  Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\temp\
+        # Display help menu if ran incorrectly
+        if (-not $Domain) {
+            Write-Host "Example Usage:  Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\temp\
                 -Domain     The domain to scan. If don't know scanner will automatically use the current domain the system is joined to (Get-ADDomain)
                 -Scans      The scan type to choose
                 -Format     The report format
                 -OutputPath The location to save the report
         " 
-        return
-    }
+            return
+        }
 
-    #add functionality to do individual scans (for prioritised remediation)
-
-
-
-    $startTime = Get-Date
-
-    #Perform vulnerability checks
-    Write-Host '[*] Scanning AD...' -ForegroundColor Yellow 
+        #TO-DO - add functionality to do individual scans (for prioritised remediation)
 
 
-    #Domain info
-    Write-Host @"
+
+    
+        # Create variables to store the findings
+        $DomainInfo = @()
+        $Kerberos = @()
+        $PKI = @()
+        $RBAC = @()
+        $ACLs = @()
+        $MISC = @()
+        $Legacy = @()
+
+        #Perform vulnerability checks
+        $startTime = Get-Date
+        Write-Host '[*] Scanning AD...' -ForegroundColor Yellow 
+
+        # Domain info
+        $DomainInfo = Find-DomainInfo -Domain $Domain
+
+        # Kerberos
+        $Kerberos += Find-Kerberoast -Domain $Domain
+        $Kerberos += Find-ASREProast -Domain $Domain
+        $Kerberos += Find-Delegations -Domain $Domain
+        $Kerberos += Find-GoldenTicket -Domain $Domain
+
+        # PKI - ADCS
+        $PKI += Find-ESC1 -Domain $Domain
+        $PKI += Find-ESC2 -Domain $Domain
+        $PKI += Find-ESC3 -Domain $Domain
+        $PKI += Find-ESC4 -Domain $Domain
+        $PKI += Find-ESC5 -Domain $Domain
+        $PKI += Find-ESC6 -Domain $Domain
+        $PKI += Find-ESC7 -Domain $Domain
+        $PKI += Find-ESC8 -Domain $Domain
+
+        # RBAC
+        $RBAC += Find-PrivilegedGroups -Domain $Domain
+        $RBAC += Find-AdminSDHolder -Domain $Domain | fl
+        $RBAC += Find-InactiveAccounts -Domain $Domain | fl
+        $RBAC += Find-AnonymousAccess -Domain $Domain
+
+        # ACLs
+        $ACLs += Find-ACLs -Domain $Domain
+
+        # MISC
+        $MISC += Find-MAQ -Domain $Domain
+        $MISC += Find-OutboundAccess -Domain $Domain
+        $MISC += Find-PasswordPolicy -Domain $Domain
+        $MISC += Find-PwdNotRequired -Domain $Domain
+        $MISC += Find-LAPS -Domain $Domain
+        $MISC += Find-SMBSigning -Domain $Domain
+        $MISC += Find-LDAPSigning -Domain $Domain
+        $MISC += Find-Spooler -Domain $Domain
+        $MISC += Find-WebDAV -Domain $Domain
+        $MISC += Find-SensitiveInfo -Domain $Domain
+
+        # Legacy
+        $Legacy += Find-LegacyProtocols -Domain $Domain
+        $Legacy += Find-UnsupportedOS -Domain $Domain | fl
+
+
+
+        # Output all findings in separate sections
+        Write-Host @"
 #####################################################################################
 #                                    Domain Info                                    #
 #####################################################################################
 "@
+        $DomainInfo | Out-String
 
-    Find-DomainInfo -Domain $Domain
-   
-   
-    #Kerberos
-    Write-Host @"
+        Write-Host @"
 #####################################################################################
 #                                    Kerberos                                       #
 #####################################################################################
 "@
-    Find-Kerberoast -Domain $Domain
-    Find-ASREProast -Domain $Domain
-    Find-Delegations -Domain $Domain
-    Find-GoldenTicket -Domain $Domain
+        $Kerberos | Out-String
 
-    #PKI - ADCS
-    Write-Host @"
+        Write-Host @"
 #####################################################################################
 #                                       PKI                                         #
 #####################################################################################
 "@
-    Find-ESC1 -Domain $Domain
-    Find-ESC2 -Domain $Domain
-    Find-ESC3 -Domain $Domain
-    Find-ESC4 -Domain $Domain
-    Find-ESC5 -Domain $Domain
-    Find-ESC6 -Domain $Domain
-    Find-ESC7 -Domain $Domain
-    Find-ESC8 -Domain $Domain
+        $PKI | Out-String
 
-    #RBAC
-    Write-Host @"
+        Write-Host @"
 #####################################################################################
 #                                       RBAC                                        #
 #####################################################################################
 "@
-    Find-PrivilegedGroups -Domain $Domain
-    Find-AdminSDHolder -Domain $Domain | fl
-    Find-InactiveAccounts -Domain $Domain | fl
-    
+        $RBAC | Out-String
 
-    #ACLs
-    Write-Host @"
+        Write-Host @"
 #####################################################################################
 #                                       ACLs                                        #
 #####################################################################################
 "@
-    Find-ACLs -Domain $Domain
+        $ACLs | Out-String
 
-    #MISC
-    Write-Host @"
+        Write-Host @"
 #####################################################################################
 #                                       MISC                                        #
 #####################################################################################
 "@
-    Find-MAQ -Domain $Domain
-    Find-OutboundAccess -Domain $Domain
-    Find-PasswordPolicy -Domain $Domain
-    Find-PwdNotRequired -Domain $Domain
-    Find-LAPS -Domain $Domain
-    Find-SMBSigning -Domain $Domain
-    Find-LDAPSigning -Domain $Domain
-    Find-Spooler -Domain $Domain
-    Find-WebDAV -Domain $Domain
-    Find-SensitiveInfo -Domain $Domain
-    #Find-UserDescriptions -Domain $Domain -APIKey $APIkey
-    
+        $MISC | Out-String
 
-    #Legacy
-    Write-Host @"
+        Write-Host @"
 #####################################################################################
 #                                       LEGACY                                      #
 #####################################################################################
 "@
-    Find-LegacyProtocols -Domain $Domain
-    Find-UnsupportedOS -Domain $Domain
+        $Legacy | Out-String
 
+
+
+        #Find-UserDescriptions -Domain $Domain -APIKey $APIkey
 
 
  
-    #wont output to screen in order as different ones take different amount of time, but when testing this is ok. real will save to variable for use in report
+        #wont output to screen in order as different ones take different amount of time, but when testing this is ok. real will save to variable for use in report
 
-    #Attribute risk score - maybe have own file - attribute it here or elsewhere?
+        #Attribute risk score - maybe have own file - attribute it here or elsewhere?
   
-    # Caclulate-risk-score
+        # Caclulate-risk-score
 
-    #Get generative AI input
-
-
-    #Produce report
-    #Generate-Report
+        #Get generative AI input
 
 
-    #Calculate time to run
-    $endTime = Get-Date
-    $elapsedTime = $endTime - $startTime
-    Write-Host "Script took $($elapsedTime.TotalSeconds) seconds to run."
-}
-}
+        #Produce report
+        #Generate-Report
+
+        #Calculate time to run
+        $endTime = Get-Date
+        $elapsedTime = $endTime - $startTime
+        Write-Host "ADScanner took $($elapsedTime.TotalSeconds) seconds to run."
+    }

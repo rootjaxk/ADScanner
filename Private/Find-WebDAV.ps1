@@ -30,6 +30,7 @@ function Find-WebDAV {
 
   #Get computers
   $Computers = (Get-ADComputer -SearchBase $searchBase -filter *).dnshostname
+  $Computers = $Computers | ? { $_ }
 
   #Array to store multiple machine having WebDAV enabled
   $results = @()
@@ -40,6 +41,7 @@ function Find-WebDAV {
   #Check each for presence of the WebDAV named pipe
   foreach ($computer in $Computers) {
     try {
+        Write-Host "Checking \\$computer\pipe\DAV RPC SERVICE" -ForegroundColor Yellow
         $webdav = Get-ChildItem "\\$computer\pipe\DAV RPC SERVICE" -ErrorAction Ignore
 
          # If the webdav exists check for severity of issue

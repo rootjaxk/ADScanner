@@ -22,7 +22,7 @@ function Find-ACLs {
     $Domain
   )
 
-  Write-Host '[*] Finding vulnerable ACLs... (may take a while depending on size of domain)' -ForegroundColor Yellow
+  Write-Host '[*] Finding Vulnerable ACLs... (may take a while depending on size of domain)' -ForegroundColor Yellow
 
    
   #Dynamically produce searchbase from domain parameter

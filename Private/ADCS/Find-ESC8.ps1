@@ -45,7 +45,7 @@ function Find-ESC8 {
   $httpsurl = "https://$CAendpoint"
 
   #test repsonse of http cert endpoint  useing curl (not alias of iwr) to retrieve raw HTTP headers (www-authenticate) as invoke-webrequest doesnt support response of all headers
-  Write-Host "Testing HTTP" -ForegroundColor Yellow
+  Write-Host "Testing $httpurl" -ForegroundColor Yellow
   $httpresponse = cmd /c "curl $httpurl -verbose --connect-timeout 3 2>&1" 
 
   if ($httpresponse -match "Timed Out") {
@@ -57,7 +57,7 @@ function Find-ESC8 {
   }
 
   #test response of https cert endpoint
-  Write-Host "Testing HTTPS" -ForegroundColor Yellow
+  Write-Host "Testing $httpsurl" -ForegroundColor Yellow
   $httpsresponse = cmd /c "curl $httpsurl -k -verbose --connect-timeout 3 2>&1" 
   if ($httpsresponse -match "Timed Out") {
     $httpsresponse = $null

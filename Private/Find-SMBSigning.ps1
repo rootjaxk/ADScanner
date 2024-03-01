@@ -186,7 +186,7 @@ function Find-SMBSigning {
     
     #check all computers in domain for SMB signing
     foreach ($computer in $ADComputers) {
-        Write-Host "Checking $computer..." -ForegroundColor Yellow
+        Write-Host "Checking $computer for SMB signing..." -ForegroundColor Yellow
         $Signingresult = Get-SMBSigning -ComputerName $computer -Timeout 2     
         if ($Signingresult -eq "not required") {      
             $Issue = [pscustomobject]@{

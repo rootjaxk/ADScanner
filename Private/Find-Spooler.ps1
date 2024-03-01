@@ -19,14 +19,15 @@ function Find-Spooler {
     $Domain
   )
 
-  Write-Host '[*] Finding spooler..' -ForegroundColor Yellow
+  Write-Host '[*] Finding Spooler...' -ForegroundColor Yellow
   
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
   $searchBase = $SearchBaseComponents -join ','
 
-  #Get computers that have dns record - active
+  #Get computers that have dns record (active), removing nulls
   $Computers = (Get-ADComputer -SearchBase $searchBase -filter *).dnshostname
+  $Computers = $Computers | ? { $_ }
 
   #Array to store multiple server having spooler enabled
   $results = @()
@@ -34,6 +35,7 @@ function Find-Spooler {
   #Check each for presence of the spooler named pipe
   foreach ($computer in $Computers) {
     try {
+      Write-Host "Checking \\$computer\pipe\spoolss" -ForegroundColor Yellow
       $spooler = Get-ChildItem "\\$computer\pipe\spoolss" -ErrorAction Ignore
 
       # If the spooler exists, add a custom object with hostname and spooler status to results

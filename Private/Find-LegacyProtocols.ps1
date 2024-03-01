@@ -278,7 +278,7 @@ function Find-LegacyProtocols {
 
     #check all computers in domain for SMB signing
     foreach ($computer in $ADComputers) {
-        Write-Host "Checking $computer..." -ForegroundColor Yellow
+        Write-Host "Checking $computer for SMBv1... " -ForegroundColor Yellow
         Get-SMBv1 -ComputerName $computer -Timeout 2     
     }
 }

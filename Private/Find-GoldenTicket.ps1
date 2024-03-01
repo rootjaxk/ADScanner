@@ -1,7 +1,3 @@
-function to_red ($msg) {
-  "$([char]0x1b)[91m$msg$([char]0x1b)[0m"
-}
-
 function Find-GoldenTicket {
   <#
   .SYNOPSIS
@@ -23,7 +19,7 @@ function Find-GoldenTicket {
     $Domain
   )
 
-  Write-Host '[*] Finding potential golden tickets...' -ForegroundColor Yellow
+  Write-Host '[*] Finding Potential Golden Tickets...' -ForegroundColor Yellow
   
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
