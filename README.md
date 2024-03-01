@@ -12,5 +12,5 @@ Import-Module .\ADScanner.psd1
 
 Run
 ```
-Invoke-ADScanner
+Invoke-ADScanner -domain test.local
 ```
