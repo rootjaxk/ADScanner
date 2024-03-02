@@ -136,7 +136,7 @@ function Find-LAPS {
           IdentityReference = $user
           LAPScomputer      = $domainComputers
           Issue             = "$user has read LAPS password rights on $domainComputers"
-          Technique         = (to_red "[CRITICAL]") + " Low privileged principal can read LAPS password on $domainComputers"
+          Technique         = (to_red "[HIGH]") + " Low privileged principal can read LAPS password on $domainComputers"
         }
         $Issue
       }

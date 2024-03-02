@@ -53,7 +53,7 @@ function Find-WebDAV {
                   Hostname = $computer
                   WebDAVEnabled = $true
                   Issue     = "WebDAV is enabled and LDAP signing is not required. $computer can be remotely be fully compromised via WebDAV to LDAP to RBCD authentication relay"
-                  Technique = (to_red "[CRITICAL]") + " Admin compromise of $computer via WebDAV to LDAP to RBCD authentication relay"
+                  Technique = (to_red "[HIGH]") + " Admin compromise of $computer via WebDAV to LDAP to RBCD authentication relay"
               }
             } else{
               $Issue = [pscustomobject]@{

@@ -82,7 +82,7 @@ function Find-ASREProast {
             Enabled          = $ASREPuser.Enabled
             Privilegedgroups = $ASREPuser.memberof
             Issue            = "$($ASREPuser.SamAccountName) does not require Kerberos pre-authentication, and is a member of a privileged group but has a strong password set. A threat actor with unlimited computation power can compromise this account"
-            Technique        = (to_red "[CRITICAL]") + " Highly privileged ASREP-roastable user with a strong password"
+            Technique        = (to_red "[HIGH]") + " Highly privileged ASREP-roastable user with a strong password"
           }
           $Issue
         }

@@ -9,6 +9,14 @@ function Find-UserDescription {
   .EXAMPLE 
   Find-UserDescription -Domain test.local
 
+  PS C:\Users\jack> Connect-ChatGPT -APIkey $apikey -Prompt $prompt
+  Password i=s 72783*&
+  m&skd03(*#o
+  Just so I dont forget my password is 9q!3xTeHkgETd&xMm9np8F6mu
+  Just so I dont forget my password is z&M!Z6Pf7L!YQRva8GyLHmiXM
+  Just so I dont forget my password is 7KEqG4N9GyuNHENyH&b&8f5C2
+  Just so I dont forget my password is JmrYyu9K#iB%WeNZ%PwykH
+
   #>
  
   #Add mandatory domain parameter & APIkey
@@ -31,27 +39,54 @@ function Find-UserDescription {
 
   #Search searchbase for descriptions from user / computer accounts 
   $userswithdescription = Get-ADObject -SearchBase $searchBase -LDAPFilter '(&(|(objectClass=user)(objectClass=computer))(description=*))' -properties *
-
   $descriptions = $userswithdescription.description
 
   #Send to generative AI for analysis
-  $prompt = "which of these descriptions contain password information which should not be readable by all users? `r`n$descriptions If no passwords are found return only 'No passwords found'" #chatgpt stuff
+  $prompt = "which of these descriptions contain password information which should not be readable by all users? I want all information that looks like it would contain a password `r`n" + ($descriptions -join "`r`n") + " If no passwords are found return only 'No passwords found'" #chatgpt stuff
 
-  #send to API
+  #Send all descriptions to API
   $userdescriptionresponse = Connect-ChatGPT -APIkey $APIkey -Prompt $prompt
 
-  if ($userdescriptionresponse -notmatch "No passwords found") {
-    #match description back to user
-    foreach($pwd in $userdesscriptionresponse){
-      $user = $userswithdescription | Where-Object { $_.description -match $pwd }
-      $Issue = [pscustomobject]@{
-        Domain    = $Domain
-        User      = $user.SamAccountName
-        Description = $user.description
-        Issue     = "$($user.SamAccountName) has the description $($user.description) which contains a password"
-        Technique = (to_red "[CRITICAL]") + " plaintext credentials found in Active Directory description field"
+  #define privileged groups
+  $privilegedgroups = @("Administrators", "Enterprise Admins", "Domain Admins", "DnsAdmins", "Backup Operators",
+    "Server Operators", "Account Operators", "Print Operators", "Remote Desktop Users", "Schema Admins", "Cert Publishers")
+
+  #see if GPT found passwords
+  if ($userdescriptionresponse -notmatch 'No passwords found') {
+    #split all possible passwords and match description back to user
+    foreach ($pwd in $userdescriptionresponse.split("`n")) {
+      $user = Get-ADUser -Filter { description -eq $pwd } -properties *
+      
+      #if password in privileged user description - critical
+      $IsPrivileged = $false
+      foreach ($group in $privilegedgroups) {
+        if ($user.MemberOf -match $group) {
+          $IsPrivileged = $true
+          break
+        }
       }
-      $Issue
+      if ($IsPrivileged) {
+        $Issue = [pscustomobject]@{
+          Domain      = $Domain
+          User        = $user.SamAccountName
+          MemberOf    = $user.memberof
+          Description = $user.description
+          Issue       = "$($user.SamAccountName) is a privileged user and has the description ""$($user.description)"""
+          Technique   = (to_red "[CRITICAL]") + " plaintext credentials found in privileged user Active Directory description field"
+        }
+        $Issue
+      }
+      #else high
+      else {
+        $Issue = [pscustomobject]@{
+          Domain      = $Domain
+          User        = $user.SamAccountName
+          Description = $user.description
+          Issue       = "$($user.SamAccountName) has the description ""$($user.description)"""
+          Technique   = (to_red "[HIGH]") + " plaintext credentials found in standard user Active Directory description field"
+        }
+        $Issue
+      }
     }
   }
 }

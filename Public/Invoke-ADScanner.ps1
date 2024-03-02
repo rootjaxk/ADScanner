@@ -138,7 +138,7 @@ function Invoke-ADScanner {
 
         #TO-DO - add functionality to do individual scans (for prioritised remediation)
 
-
+        #TD-DO - add functionality to exclude GPT (if executing in environment where outbound access is not permitted)
 
     
         # Create variables to store the findings

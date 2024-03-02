@@ -61,7 +61,7 @@ function Find-PwdNotRequired {
           Enabled          = $user.Enabled
           Privilegedgroups = $user.memberof
           Issue            = "$($user.SamAccountName) does not require a password and is a member of a privileged group"
-          Technique        = (to_red "[CRITICAL]") + " Highly privileged user not requiring a password"
+          Technique        = (to_red "[HIGH]") + " Highly privileged user not requiring a password"
         }
         $Issue
       }

@@ -43,6 +43,7 @@ function Find-PasswordPolicy {
   if (($PwdPolicy.MaxPasswordAge.Days -lt 365) -or ($PwdPolicy.MaxPasswordAge.Days -ne 0)){
     $MaxPwdAgeIssue = $true
   }
+  #guidance is 24
   if ($PwdPolicy.PasswordHistoryCount -lt 24){
     $PasswordHistoryIssue = $true
   }

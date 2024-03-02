@@ -54,6 +54,7 @@ function Find-Delegations {
         $Issue
       }
     }
+    #add check for unconstrained & spooler coercion - CRITICAL
 
     #Resource-based constrained delegation - 'msDS-AllowedToActOnBehalfOfOtherIdentity'  
     $resourcebased = Get-ADObject -SearchBase $searchBase -LDAPFilter '(&(objectCategory=*)(msDS-AllowedToActOnBehalfOfOtherIdentity=*))' -properties *

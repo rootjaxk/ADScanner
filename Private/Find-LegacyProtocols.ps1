@@ -106,7 +106,7 @@ function Find-LegacyProtocols {
             LMCompatibilityLevel = "Default"
             DomainControllerOS   = $dcOS
             Issue                = "NTLMv1 is permitted by default for authentication negotiation with domain controllers. The LM Compatibility level is not set to 5 via the Default Domain Controllers GPO, taking the insecure default to accept NTLMv1 negotiations"
-            Technique            = (to_red "[HIGH]") + " NTLMv1 is not disabled on domain controllers"
+            Technique            = (to_red "[CRITICAL]") + " NTLMv1 is not disabled on domain controllers"
         }
         $Issue
     }
@@ -116,7 +116,7 @@ function Find-LegacyProtocols {
             Domain               = $Domain
             LMCompatibilityLevel = $LMcompatibilitylevel
             Issue                = "NTLMv1 is permitted for authentication negotiation with domain controllers. The LM Compatibility level is not set to 'Send NTLMv2 response only. Refuse LM & NTLM' in the Default Domain Controllers GPO"
-            Technique            = (to_red "[HIGH]") + " NTLMv1 is not disabled on domain controllers"
+            Technique            = (to_red "[CRITICAL]") + " NTLMv1 is not disabled on domain controllers"
         }
         $Issue
     }
