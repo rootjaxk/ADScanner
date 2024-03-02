@@ -3,6 +3,8 @@ function Find-UserDescription {
   .SYNOPSIS
   Searches LDAP returning accounts containing user / computer descriptions. Generative AI will then determine if descriptions may contain sensitive information 
 
+  This requires the temperature of GPT to be 0.1 to avoid returnign any excess information 
+
   .PARAMETER Domain
   The domain to run against, in case of a multi-domain environment
 
@@ -45,7 +47,7 @@ function Find-UserDescription {
   $prompt = "which of these descriptions contain password information which should not be readable by all users? I want all information that looks like it would contain a password `r`n" + ($descriptions -join "`r`n") + " If no passwords are found return only 'No passwords found'" #chatgpt stuff
 
   #Send all descriptions to API
-  $userdescriptionresponse = Connect-ChatGPT -APIkey $APIkey -Prompt $prompt
+  $userdescriptionresponse = Connect-ChatGPT -APIkey $APIkey -Prompt $prompt -Temperature 0.1
 
   #define privileged groups
   $privilegedgroups = @("Administrators", "Enterprise Admins", "Domain Admins", "DnsAdmins", "Backup Operators",
@@ -55,7 +57,7 @@ function Find-UserDescription {
   if ($userdescriptionresponse -notmatch 'No passwords found') {
     #split all possible passwords and match description back to user
     foreach ($pwd in $userdescriptionresponse.split("`n")) {
-      $user = Get-ADUser -Filter { description -eq $pwd } -properties *
+      $user = Get-ADObject -Filter { description -eq $pwd } -properties *
       
       #if password in privileged user description - critical
       $IsPrivileged = $false

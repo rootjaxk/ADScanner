@@ -31,11 +31,10 @@ function Find-Delegations {
   if ($constrained) {
     foreach ($delegation in $constrained) {
       $Issue = [pscustomobject]@{
-        Domain              = $Domain
+        Technique           = (to_red "[HIGH]") + " Constrained delegation"
         Object              = $delegation.SamAccountName
         AllowedToDelegateTo = $delegation.'msDS-AllowedToDelegateTo'
         Issue               = "$($delegation.samaccountname) has constrained delegation to $($delegation.'msDS-AllowedToDelegateTo')"
-        Technique           = (to_red "[HIGH]") + " Constrained delegation"
       }
       $Issue
     }
@@ -46,10 +45,9 @@ function Find-Delegations {
     if ($unconstrained) {
       foreach ($delegation in $unconstrained) {
         $Issue = [pscustomobject]@{
-          Domain    = $Domain
+          Technique = (to_red "[HIGH]") + " Unconstrained delegation"
           Object    = $delegation.SamAccountName
           Issue     = "$($delegation.samaccountname) has unconstrained delegation set"
-          Technique = (to_red "[HIGH]") + " Unconstrained delegation"
         }
         $Issue
       }
@@ -63,11 +61,10 @@ function Find-Delegations {
     if ($resourcebased) {
       foreach ($delegation in $resourcebased) {
         $Issue = [pscustomobject]@{
-          Domain                                     = $Domain
+          Technique                                  = (to_red "[HIGH]") + " Resource-based constrained delegation"
           Object                                     = $delegation.SamAccountName
           'msDS-AllowedToActOnBehalfOfOtherIdentity' = $delegation.'msDS-AllowedToActOnBehalfOfOtherIdentity'.access.identityreference.value
           Issue                                      = "$($delegation.SamAccountName) has the msDS-AllowedToActOnBehalfOfOtherIdentity property set to $($delegation.'msDS-AllowedToActOnBehalfOfOtherIdentity'.access.identityreference.value). `n$($delegation.'msDS-AllowedToActOnBehalfOfOtherIdentity'.access.identityreference.value) can delegate to any resource on $($delegation.SamAccountName) (can fully compromise it)"
-          Technique                                  = (to_red "[HIGH]") + " Resource-based constrained delegation"
         }
         $Issue
       }
