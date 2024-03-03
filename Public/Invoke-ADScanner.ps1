@@ -42,15 +42,19 @@ function Invoke-ADScanner {
     Param(
         [Parameter()]
         [String]
-        $Domain
-    )
+        $Domain,
+    
+        [Parameter()]
+        [String]
+        $Scans = "All"
+    )    
 
 
     # Display help menu if ran incorrectly
     if (-not $Domain) {
         Write-Host "Example Usage:  Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\temp\
             -Domain     The domain to scan. If don't know scanner will automatically use the current domain the system is joined to (Get-ADDomain)
-            -Scans      The scan type to choose
+            -Scans      The scan type to choose (Info, Kerberos, PKI, RBAC, ACLs, MISC, Legacy (Default: All))
             -Format     The report format (console/html)
             -OutputPath The location to save the report
     " 
@@ -157,56 +161,67 @@ function Invoke-ADScanner {
     Write-Host '[*] Scanning AD...' -ForegroundColor Yellow 
 
     # Domain info
-    $DomainInfo = Find-DomainInfo -Domain $Domain
+    if ($Scans -eq "Info" -or $Scans -eq "All"){
+        $DomainInfo = Find-DomainInfo -Domain $Domain
+    }
 
     # Kerberos
-    $Kerberos += Find-Kerberoast -Domain $Domain
-    $Kerberos += Find-ASREProast -Domain $Domain
-    $Kerberos += Find-Delegations -Domain $Domain
-    $Kerberos += Find-GoldenTicket -Domain $Domain
+    if ($Scans -eq "Kerberos" -or $Scans -eq "All") {
+        $Kerberos += Find-Kerberoast -Domain $Domain
+        $Kerberos += Find-ASREProast -Domain $Domain
+        $Kerberos += Find-Delegations -Domain $Domain
+        $Kerberos += Find-GoldenTicket -Domain $Domain
+    }
 
     # PKI - ADCS
-    $PKI += Find-ESC1 -Domain $Domain
-    $PKI += Find-ESC2 -Domain $Domain
-    $PKI += Find-ESC3 -Domain $Domain
-    $PKI += Find-ESC4 -Domain $Domain
-    $PKI += Find-ESC5 -Domain $Domain
-    $PKI += Find-ESC6 -Domain $Domain
-    $PKI += Find-ESC7 -Domain $Domain
-    $PKI += Find-ESC8 -Domain $Domain
-
+    if ($Scans -eq "ADCS" -or $Scans -eq "All"){
+        $PKI += Find-ESC1 -Domain $Domain
+        $PKI += Find-ESC2 -Domain $Domain
+        $PKI += Find-ESC3 -Domain $Domain
+        $PKI += Find-ESC4 -Domain $Domain
+        $PKI += Find-ESC5 -Domain $Domain
+        $PKI += Find-ESC6 -Domain $Domain
+        $PKI += Find-ESC7 -Domain $Domain
+        $PKI += Find-ESC8 -Domain $Domain
+    }
+  
     # RBAC
-    $RBAC += Find-PrivilegedGroups -Domain $Domain
-    $RBAC += Find-AdminSDHolder -Domain $Domain | fl
-    $RBAC += Find-InactiveAccounts -Domain $Domain | fl
-    $RBAC += Find-AnonymousAccess -Domain $Domain
+    if ($Scans -eq "RBAC" -or $Scans -eq "All"){
+        $RBAC += Find-PrivilegedGroups -Domain $Domain
+        $RBAC += Find-AdminSDHolder -Domain $Domain | fl
+        $RBAC += Find-InactiveAccounts -Domain $Domain | fl
+        $RBAC += Find-AnonymousAccess -Domain $Domain
+    }
 
     # ACLs
-    $ACLs += Find-ACLs -Domain $Domain
+    if ($Scans -eq "ACLs" -or $Scans -eq "All"){
+        $ACLs += Find-ACLs -Domain $Domain
+    }
 
     # MISC
-    $MISC += Find-MAQ -Domain $Domain
-    $MISC += Find-OutboundAccess -Domain $Domain
-    $MISC += Find-PasswordPolicy -Domain $Domain
-    $MISC += Find-PwdNotRequired -Domain $Domain
-    $MISC += Find-LAPS -Domain $Domain
-    $MISC += Find-SMBSigning -Domain $Domain
-    $MISC += Find-LDAPSigning -Domain $Domain
-    $MISC += Find-Spooler -Domain $Domain
-    $MISC += Find-WebDAV -Domain $Domain
-    $MISC += Find-SensitiveInfo -Domain $Domain
-    #Find-UserDescriptions -Domain $Domain -APIKey $APIkey
-    $MISC += Find-EfficiencyImprovements -Domain $Domain | fl
+    if ($Scans -eq "MISC" -or $Scans -eq "All"){
+        $MISC += Find-MAQ -Domain $Domain
+        $MISC += Find-OutboundAccess -Domain $Domain
+        $MISC += Find-PasswordPolicy -Domain $Domain
+        $MISC += Find-PwdNotRequired -Domain $Domain
+        $MISC += Find-LAPS -Domain $Domain
+        $MISC += Find-SMBSigning -Domain $Domain
+        $MISC += Find-LDAPSigning -Domain $Domain
+        $MISC += Find-Spooler -Domain $Domain
+        $MISC += Find-WebDAV -Domain $Domain
+        $MISC += Find-SensitiveInfo -Domain $Domain
+        #Find-UserDescriptions -Domain $Domain -APIKey $APIkey
+        $MISC += Find-EfficiencyImprovements -Domain $Domain | fl
+    }
 
     # Legacy
-    $Legacy += Find-LegacyProtocols -Domain $Domain
-    $Legacy += Find-UnsupportedOS -Domain $Domain | fl
+    if ($Scans -eq "Legacy" -or $Scans -eq "All"){
+        $Legacy += Find-LegacyProtocols -Domain $Domain
+        $Legacy += Find-UnsupportedOS -Domain $Domain | fl
+    }
 
 
-
-
-
-
+    if ($Scans -eq "Info" -or $Scans -eq "All"){
     # Output all findings in separate sections
     Write-Host @"
 #####################################################################################
@@ -214,21 +229,27 @@ function Invoke-ADScanner {
 #####################################################################################
 "@
     $DomainInfo | Out-String
+    }
 
+    if ($Scans -eq "All"){  #give risk for each category - need to change to if scan type any 
     Write-Host @"
 #####################################################################################
 #                          Risk Prioritiasation Summary                             #
 #####################################################################################
 "@
+    }
 
 
-
+    if ($Scans -eq "Kerberos" -or $Scans -eq "All"){
     Write-Host @"
 #####################################################################################
 #                                    Kerberos                                       #
 #####################################################################################
 "@
     $Kerberos | Out-String
+    }
+
+    if ($Scans -eq "ADCS" -or $Scans -eq "All"){
 
     Write-Host @"
 #####################################################################################
@@ -236,41 +257,47 @@ function Invoke-ADScanner {
 #####################################################################################
 "@
     $PKI | Out-String
+    }
 
+    if ($Scans -eq "RBAC" -or $Scans -eq "All"){
     Write-Host @"
 #####################################################################################
 #                                       RBAC                                        #
 #####################################################################################
 "@
     $RBAC | Out-String
+    }
 
+    if($Scans -eq "ACLs" -or $Scans -eq "All"){
     Write-Host @"
 #####################################################################################
 #                                       ACLs                                        #
 #####################################################################################
 "@
     $ACLs | Out-String
+    }
 
+    if ($Scans -eq "MISC" -or $Scans -eq "All"){
     Write-Host @"
 #####################################################################################
 #                                       MISC                                        #
 #####################################################################################
 "@
     $MISC | Out-String
+    }
 
+    if($Scans -eq "Legacy" -or $Scans -eq "All"){
     Write-Host @"
 #####################################################################################
 #                                       LEGACY                                      #
 #####################################################################################
 "@
     $Legacy | Out-String
-
+    }
 
 
         
 
-
- 
     #wont output to screen in order as different ones take different amount of time, but when testing this is ok. real will save to variable for use in report
 
     #Attribute risk score - maybe have own file - attribute it here or elsewhere?
