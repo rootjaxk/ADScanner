@@ -35,11 +35,10 @@ function Find-ESC6 {
 
   if ($match -eq $pattern) {
     $Issue = [pscustomobject]@{
-      Forest     = $Domain
+      Technique  = (to_red "[CRITICAL]") + " ESC6"
       CAName     = $ADCSinfo.displayname
       CAhostname = $ADCSinfo.dnshostname
       Issue      = "$(($ADCSinfo).DisplayName) has the 'EDITF_ATTRIBUTESUBJECTALTNAME2' flag set"
-      Technique  = (to_red "[CRITICAL]") + " ESC6"
     }
     $Issue
   } 

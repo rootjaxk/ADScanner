@@ -69,23 +69,21 @@ function Find-UserDescription {
       }
       if ($IsPrivileged) {
         $Issue = [pscustomobject]@{
-          Domain      = $Domain
+          Technique   = (to_red "[CRITICAL]") + " plaintext credentials found in privileged user Active Directory description field"
           User        = $user.SamAccountName
           MemberOf    = $user.memberof
           Description = $user.description
           Issue       = "$($user.SamAccountName) is a privileged user and has the description ""$($user.description)"""
-          Technique   = (to_red "[CRITICAL]") + " plaintext credentials found in privileged user Active Directory description field"
         }
         $Issue
       }
       #else high
       else {
         $Issue = [pscustomobject]@{
-          Domain      = $Domain
+          Technique   = (to_red "[HIGH]") + " plaintext credentials found in standard user Active Directory description field"
           User        = $user.SamAccountName
           Description = $user.description
           Issue       = "$($user.SamAccountName) has the description ""$($user.description)"""
-          Technique   = (to_red "[HIGH]") + " plaintext credentials found in standard user Active Directory description field"
         }
         $Issue
       }

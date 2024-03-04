@@ -29,9 +29,14 @@ function Find-Spooler {
   $Computers = (Get-ADComputer -SearchBase $searchBase -filter *).dnshostname
   $Computers = $Computers | ? { $_ }
 
-  #Array to store multiple server having spooler enabled
-  $results = @()
-
+  #Initliase object
+  $SpoolerIssue = [pscustomobject]@{
+    Technique      = (to_red "[HIGH]") + " Spooler service is enabled (authentication coercion) "
+    Computers       = ""
+    SpoolerEnabled = "$true"
+    Issue          = "Spooler service is enabled which is vulnerable to printerbug (authentication coercion)"
+  }
+  
   #Check each for presence of the spooler named pipe
   foreach ($computer in $Computers) {
     try {
@@ -40,12 +45,11 @@ function Find-Spooler {
 
       # If the spooler exists, add a custom object with hostname and spooler status to results
       if ($spooler) {
-        $results += [pscustomobject]@{
-          Domain         = $Domain
-          Computer       = $computer
-          SpoolerEnabled = $true
-          Issue          = "Spooler service is enabled. If on server this is high risk"
-          Technique      = (to_red "[HIGH]") + " Spooler service is vulnerale to printerbug (authentication coercion)"
+        if ($SpoolerIssue.Computers -eq '') {
+          $SpoolerIssue.Computers += $computer
+        }
+        else {
+          $SpoolerIssue.Computers += "`r`n$computer"
         }
       }
     }
@@ -53,5 +57,7 @@ function Find-Spooler {
       Write-Error $_
     }
   }
-  $results
+  if ($SpoolerIssue.Computers -ne '') {
+    $SpoolerIssue
+  }
 }

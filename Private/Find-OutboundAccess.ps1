@@ -1,9 +1,9 @@
 function Find-OutboundAccess {
-    <#
+  <#
   .SYNOPSIS
   Searches Active Directory to see if a proxy web filterting solution is in effect to disallow users from accessing malicious / uneeded websites as a DLP control.
 
-  Uses proxyaware method to test outbound access & checks if the user is an administrative user.
+  Uses proxyaware method to test outbound access & checks if the user is an administrative user. If server has outbound access this is a high risk.
 
   .PARAMETER Domain
   The domain to run against, in case of a multi-domain environment
@@ -16,9 +16,9 @@ function Find-OutboundAccess {
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   Write-Host '[*] Finding Outbound Access...' -ForegroundColor Yellow
@@ -26,6 +26,9 @@ function Find-OutboundAccess {
   #Dynamically extract hostname that script is run on
   $hostname = (Get-ADComputer -Identity $env:COMPUTERNAME).dnshostname
   $userrun = whoami
+
+  #see if host is a server
+  $Isserver = (Get-WmiObject Win32_OperatingSystem -Property caption).caption
 
   #malicious sites like exploitDB should always be blocked
   $exploitDB = "https://www.exploit-db.com"
@@ -44,42 +47,40 @@ function Find-OutboundAccess {
   #administrator check
   $admincheck = whoami /groups | findstr /i 'BUILTIN\Administrators'
 
-  if ($admincheck -match 'Administrators'){
+  if ($admincheck -match 'Administrators') {
     $admin = $true
-  } else {
+  }
+  else {
     $admin = $false
   }
 
   #check if user is administrative user - outbound access is higher risk 
-  if ($admin -eq $true -and ($exploitresponse -match "200 OK" -or $socialURLresponse -match "200 OK" -or $nonessentialbuisnessURLresponse -match "200 OK")){
+  if ($admin -eq $true -and ($exploitresponse -match "200 OK" -or $socialURLresponse -match "200 OK" -or $nonessentialbuisnessURLresponse -match "200 OK")) {
     $Issue = [pscustomobject]@{
-        Forest                = $Domain
-        Name                  = $hostname
-        User                  = $userrun
-        Issue                 = "Administrator account $userrun has internet access on $hostname. Block internet access for all administrative users"
-        Technique             = (to_red "[CRITICAL]") + " Unrestricted outbound access"
-      }
-      $Issue
+      Technique = (to_red "[CRITICAL]") + " Unrestricted outbound access"
+      Name      = $hostname
+      User      = $userrun
+      Issue     = "Administrator account $userrun has internet access on $hostname. Block internet access for all administrative users"
     }
-  elseif ($exploitresponse -match "200 OK"){
-    $Issue = [pscustomobject]@{
-        Forest                = $Domain
-        Name                  = $hostname
-        User                  = $userrun
-        Issue                 = "$userrun has unrestricted outbound internet access on $hostname"
-        Technique             = (to_red "[HIGH]") + " Unrestricted outbound access"
-      }
-      $Issue
-    } 
-  #if run on server this will be high
-  elseif ($socialURLresponse -match "200 OK" -or $nonessentialbuisnessURLresponse -match "200 OK"){
-    $Issue = [pscustomobject]@{
-        Forest                = $Domain
-        Name                  = $hostname
-        User                  = $userrun
-        Issue                 = "$userrun can access non-essential business sites on $hostname. If this is a server, block internet access for all users"
-        Technique             = (to_red "[HIGH]") + " Unrestricted outbound access"
-      }
-      $Issue
-    }
+    $Issue
   }
+  elseif ($exploitresponse -match "200 OK") {
+    $Issue = [pscustomobject]@{
+      Technique = (to_red "[HIGH]") + " Unrestricted outbound access"
+      Name      = $hostname
+      User      = $userrun
+      Issue     = "$userrun has unrestricted outbound internet access on $hostname"
+    }
+    $Issue
+  } 
+  #if run on server this will be high
+  elseif ($Isserver -match "server" -and ($socialURLresponse -match "200 OK" -or $nonessentialbuisnessURLresponse -match "200 OK")) {
+    $Issue = [pscustomobject]@{
+      Technique = (to_red "[HIGH]") + " Unrestricted outbound access"
+      Name      = $hostname
+      User      = $userrun
+      Issue     = "$userrun can access non-essential business sites on $hostname. If this is a server, block internet access for all users"
+    }
+    $Issue
+  }
+}

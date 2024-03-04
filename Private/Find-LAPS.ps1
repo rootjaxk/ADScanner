@@ -70,10 +70,9 @@ function Find-LAPS {
   #check if LAPS is installed on device
   if ($LAPS -notmatch 'AdmPwd.dll') {
     $Issue = [pscustomobject]@{
-      Domain    = $Domain
+      Technique = (to_red "[HIGH]") + " LAPS is not utilized on all computers."
       Computer  = $hostname
       Issue     = "LAPS is not installed on $hostname. Lateral movement opportunities may exist through reuse of the local administrator password"
-      Technique = (to_red "[HIGH]") + " LAPS is not utilized on all computers."
     }
     $Issue
   }
@@ -104,11 +103,10 @@ function Find-LAPS {
       #check for LAPS read
       if ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch) {
         $Issue = [pscustomobject]@{
-          Forest            = $Domain
+          Technique         = (to_red "[CRITICAL]") + " Low privileged principal can read LAPS password on domain controllers"
           IdentityReference = $user
           LAPScomputer      = $domainControllers
-          Issue             = "$user has read LAPS password rights on $domainControllers"
-          Technique         = (to_red "[CRITICAL]") + " Low privileged principal can read LAPS password on $domainControllers"
+          Issue             = "$user has read LAPS password rights on $domainControllers meaning low privileged users are domain admins"
         }
         $Issue
       }
@@ -132,11 +130,10 @@ function Find-LAPS {
       #check for LAPS read
       if ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch) {
         $Issue = [pscustomobject]@{
-          Forest            = $Domain
+          Technique         = (to_red "[HIGH]") + " Low privileged principal can read LAPS password on domain computers"
           IdentityReference = $user
           LAPScomputer      = $domainComputers
-          Issue             = "$user has read LAPS password rights on $domainComputers"
-          Technique         = (to_red "[HIGH]") + " Low privileged principal can read LAPS password on $domainComputers"
+          Issue             = "$user has read LAPS password rights on $domainComputers, meaning low privileged users are local admins"
         }
         $Issue
       }

@@ -41,11 +41,10 @@ function Find-InactiveAccounts {
     # Get number of stale users (not in privileged groups - just number)
     if ($stale_not_disabled) {
       $Issue = [pscustomobject]@{
-        Domain        = $Domain
+        Technique     = (to_yellow "[MEDIUM]") + " Inactive/stale accounts are not disabled"
         Totalinactive = $totalstale
         StaleUsers    = $stale_not_disabled.samaccountname
-        Issue         = "The are $totalstale inactive accounts found in $domain. A JML process should be enforced that disables accounts not used after a period of inactivity to prevent unauthorised use and conform to principle of least privilege "
-        Technique     = (to_yellow "[MEDIUM]") + " Inactive/stale accounts are not disabled"
+        Issue         = "The are $totalstale inactive accounts found in $domain. A JML process should be enforced that disables accounts not used after a period of inactivity to prevent unauthorised use and conform to principle of least privilege"
       }
       $Issue
     }
@@ -72,13 +71,12 @@ function Find-InactiveAccounts {
       }
       if ($IsPrivileged) {
         $Issue = [pscustomobject]@{
-          Domain           = $Domain
+          Technique        = (to_red "[HIGH]") + " Inactive/stale accounts are not disabled in privileged groups"
           User             = $stale.SamAccountName
           Enabled          = $stale.Enabled
           MemberOf         = $stale.memberof
           Inactivityperiod = "90 days"
-          Issue            = "$($stale.samaccountname) has not logged in 90 days and is a member of privileged groups.  A JML process should be enforced that disables accounts not used after a period of inactivity to prevent unauthorised use and conform to principle of least privilege"
-          Technique        = (to_red "[HIGH]") + " Inactive/stale accounts are not disabled in privileged groups"
+          Issue            = "$($stale.samaccountname) has not logged in 90 days and is a member of privileged groups.  A JML process should be enforced that disables accounts not used after a period of inactivity to prevent unauthorised use and conform to principle of least privilege" 
         }
         $Issue
       }

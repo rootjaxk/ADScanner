@@ -70,13 +70,12 @@ function Find-ESC3 {
       # Parse to find SID if any low-privileged users can enroll in the template (ExtendedRight = Enroll and/or Autoenroll for a certificate)
       if ( ($SID -notmatch $PrivilegedUsers) -and ($entry.ActiveDirectoryRights -match 'ExtendedRight') ) {
         $adcsIssue = [pscustomobject]@{
-          Domain                = $Domain
+          Technique             = (to_red "[CRITICAL]") + " ESC3"
           Name                  = $_.Name
           DistinguishedName     = $_.DistinguishedName
           IdentityReference     = $entry.IdentityReference
           ActiveDirectoryRights = $entry.ActiveDirectoryRights
           Issue                 = "$($entry.IdentityReference) can enroll in this template on behalf of another user"
-          Technique             = (to_red "[CRITICAL]") + " ESC3"
         }
         $adcsIssue
       }

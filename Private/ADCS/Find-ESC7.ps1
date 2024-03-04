@@ -46,12 +46,11 @@ function Find-ESC7 {
     }
     if (($ace.Rights -match 'ManageCA' -OR $ace.Rights -match 'ManageCertificates') -and ($SID -notmatch $PrivilegedUsers)) {
       $Issue = [pscustomobject]@{
-        Forest                = $Domain
+        Technique             = (to_red "[CRITICAL]") + " ESC7"
         Name                  = $CAname
         IdentityReference     = $ace.IdentityReference
         ActiveDirectoryRights = $ace.Rights
         Issue                 = "$($ace.IdentityReference) has $($ace.Rights) rights over this CA object"
-        Technique             = (to_red "[CRITICAL]") + " ESC7"
       }
       $Issue
     }

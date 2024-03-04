@@ -71,16 +71,15 @@ function Find-ESC1 {
 
       # Parse to find SID if any low-privileged users can enroll in the template (ExtendedRight = Enroll and/or Autoenroll for a certificate)
       if ( ($SID -notmatch $PrivilegedUsers) -and ($entry.ActiveDirectoryRights -match 'ExtendedRight') ) {
-        $adcsIssue = [pscustomobject]@{
-          Domain                = $Domain
+        $Issue = [pscustomobject]@{
+          Technique             = (to_red "[CRITICAL]") + " ESC1"
           Name                  = $_.Name
           DistinguishedName     = $_.DistinguishedName
           IdentityReference     = $entry.IdentityReference
           ActiveDirectoryRights = $entry.ActiveDirectoryRights
           Issue                 = "$($entry.IdentityReference) can enroll in this Client Authentication template using a SAN without Manager Approval"
-          Technique             = (to_red "[CRITICAL]") + " ESC1"
         }
-        $adcsIssue
+        $Issue
       }
     } 
   }

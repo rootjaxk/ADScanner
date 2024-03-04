@@ -37,9 +37,9 @@ function Find-LegacyProtocols {
         $llmnr = Get-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows NT\DNSClient" -name EnableMulticast -ErrorAction Ignore
         if ($llmnr.EnableMulticast -ne 0) {
             $Issue = [pscustomobject]@{
-                Domain    = $Domain
-                Issue     = "LLMNR is a legacy name resolution protocol not disabled in $domain via GPO"
                 Technique = (to_red "[HIGH]") + " LLMNR is vulnerable to layer 2 poisoning attacks"
+                RegistryKey = "HKLM:\Software\Policies\Microsoft\Windows NT\DNSClient\EnableMultiCast is not set to 0"
+                Issue     = "LLMNR is a legacy name resolution protocol not disabled in $domain via GPO"
             }
             $Issue
         }
@@ -54,9 +54,9 @@ function Find-LegacyProtocols {
     $nbtns = Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\netbt\Parameters\interfaces\tcpip_*' -name NetBiosOptions -ErrorAction Ignore
     if ($nbtns.NetBiosOptions -ne 2) {
         $Issue = [pscustomobject]@{
-            Domain    = $Domain
-            Issue     = "NBT-NS is a legacy name resolution protocol not disabled in $domain via GPO"
             Technique = (to_red "[HIGH]") + " NBT-NS is vulnerable to layer 2 poisoning attacks"
+            RegistryKey = "HKLM:\SYSTEM\CurrentControlSet\Services\netbt\Parameters\interfaces\tcpip_*\NetBiosOptions is not set to 2"
+            Issue     = "NBT-NS is a legacy name resolution protocol not disabled in $domain via GPO"
         }
         $Issue
     }
@@ -71,9 +71,9 @@ function Find-LegacyProtocols {
         $mdns = Get-ItemProperty -path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\' -name EnableMDNS -ErrorAction Ignore
         if ($mdns.EnableMulticast -ne 0) {
             $Issue = [pscustomobject]@{
-                Domain    = $Domain
-                Issue     = "mDNS is a legacy name resolution protocol not disabled in $domain via GPO"
                 Technique = (to_red "[HIGH]") + " mDNS is vulnerable to layer 2 poisoning attacks"
+                RegistryKey = "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\EnableMDNS is not set to 0"
+                Issue     = "mDNS is a legacy name resolution protocol not disabled in $domain via GPO"
             }
             $Issue
         } 
@@ -102,21 +102,19 @@ function Find-LegacyProtocols {
     #if not explitly configured, NTLMv1 can be permitted depending on the OS version
     if ($null -eq $LMcompatibilitylevel -and ($dcOS -notmatch "2016" -and $dcOS -notmatch "2019" -and $dcOS -notmatch "2022" )) {
         $Issue = [pscustomobject]@{
-            Domain               = $Domain
-            LMCompatibilityLevel = "Default"
+            Technique            = (to_red "[CRITICAL]") + " NTLMv1 is not disabled on domain controllers"
+            LMCompatibilityLevel = "Default 1/2"
             DomainControllerOS   = $dcOS
             Issue                = "NTLMv1 is permitted by default for authentication negotiation with domain controllers. The LM Compatibility level is not set to 5 via the Default Domain Controllers GPO, taking the insecure default to accept NTLMv1 negotiations"
-            Technique            = (to_red "[CRITICAL]") + " NTLMv1 is not disabled on domain controllers"
         }
         $Issue
     }
     #check if NTLMv1 is refused
     elseif ($null -ne $LMcompatibilitylevel -and $LMcompatibilitylevel -ne "Send NTLMv2 response only. Refuse LM &amp; NTLM" ) {
         $Issue = [pscustomobject]@{
-            Domain               = $Domain
+            Technique            = (to_red "[CRITICAL]") + " NTLMv1 is not disabled on domain controllers"
             LMCompatibilityLevel = $LMcompatibilitylevel
             Issue                = "NTLMv1 is permitted for authentication negotiation with domain controllers. The LM Compatibility level is not set to 'Send NTLMv2 response only. Refuse LM & NTLM' in the Default Domain Controllers GPO"
-            Technique            = (to_red "[CRITICAL]") + " NTLMv1 is not disabled on domain controllers"
         }
         $Issue
     }
@@ -132,10 +130,9 @@ function Find-LegacyProtocols {
         $SMBv1 = Get-SmbVersionStatus -ComputerName $ComputerName -SmbVersion 'SMB1' -Timeout $Timeout
         if ($SMBv1 -eq $true) {
             $Issue = [pscustomobject]@{
-                Domain    = $Domain
+                Technique = (to_red "[HIGH]") + " SMBv1 is vulnerable to EternalBlue and other exploits"
                 Computer  = $ComputerName
                 Issue     = "SMBv1 is enabled on $ComputerName"
-                Technique = (to_red "[HIGH]") + " SMBv1 is vulnerable to EternalBlue and other exploits"
             }
             $Issue
         }

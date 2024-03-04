@@ -36,10 +36,9 @@ function Find-AnonymousAccess {
 
     if ($domainGuest.enabled -eq $true) {
         $Issue = [pscustomobject]@{
-            Domain    = $Domain
+            Technique = (to_red "[HIGH]") + " Domain anonymous access is permitted allowing anonymous access to the domain"
             Account   = $domainguest.distinguishedname
             Issue     = "Domain Guest account is enabled"
-            Technique = (to_red "[HIGH]") + " Domain anonymous access is permitted allowing anonymous access to the domain"
         }
         $Issue
     }
@@ -52,10 +51,9 @@ function Find-AnonymousAccess {
     
     if ($localguest.enabled -eq $true) {
         $Issue = [pscustomobject]@{
-            Domain    = "BUILTIN"
-            Account   = "$Hostname\$($localguest.name)"
-            Issue     = "Local Guest account is enabled"
             Technique = (to_red "[HIGH]") + " Local anonymous access is permitted allowing anonymous access to the system"
+            Account   = "$Hostname\$($localguest.name)"
+            Issue     = "BUILTIN Guest account is enabled"
         }
         $Issue
     }

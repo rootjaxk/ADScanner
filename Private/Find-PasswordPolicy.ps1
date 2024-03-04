@@ -58,6 +58,7 @@ function Find-PasswordPolicy {
 
   # Initialize the Issue PSCustomObject
   $Issue = [pscustomobject]@{
+    Technique = ""
     Name = "$Domain Password Policy"
     ComplexityEnabled = $Complexity
     MinPasswordLength = $PwdPolicy.MinPasswordLength
@@ -68,14 +69,12 @@ function Find-PasswordPolicy {
     LockoutDuration = $PwdPolicy.LockoutDuration
     ReverseEncryption = $PwdPolicy.ReversibleEncryptionEnabled
     Issues = ""
-    Technique = ""
   }
  
   # Update PSCustomObject with any issues
   if ($Complexity -eq "False" -or $LengthIssue -eq $true -or $LockoutIssue -eq $true -or $MinPwdAgeIssue -eq $true -or $MaxPwdAgeIssue -eq $true -or $PasswordHistoryIssue -eq $true -or $LockoutDurationIssue -eq $true -or $ReverseEncryption -eq "True"){
     $Issue.Issues = "The following issues were found with the password policy:"
-    $Issue.Technique = (to_red "[HIGH]") + " Weak Password Policy"
-
+    
     if ($Complexity -eq "False"){
         $Issue.Issues += "`r`n" + (to_red "[HIGH]") + " The password complexity requirement is not enabled."
     }
@@ -100,6 +99,10 @@ function Find-PasswordPolicy {
     if ($ReverseEncryption -eq "True"){
         $Issue.Issues += "`r`n" + (to_red "[HIGH]") + " Reversible encryption is enabled." # encrypted passwords stored can be decrypted
     }
+    if ($Issue.Issues -match "[HIGH]"){
+      $Issue.Technique = (to_red "[HIGH]") + " Weak Password Policy"
+    } else {
+      $Issue.Technique = (to_yellow "[MEDIUM]") + " Weak Password Policy"}
   }
   $Issue
 }

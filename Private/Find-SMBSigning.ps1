@@ -190,10 +190,9 @@ function Find-SMBSigning {
         $Signingresult = Get-SMBSigning -ComputerName $computer -Timeout 2     
         if ($Signingresult -eq "not required") {      
             $Issue = [pscustomobject]@{
-                Forest    = $Domain
-                Computer  = $computer
-                Issue     = "SMB signing not enforced on $computer"
                 Technique = (to_yellow "[MEDIUM]") + " SMB signing is not enforced"
+                Computer  = $computer
+                Issue     = "SMB signing not enforced on $computer" 
             }
             $Issue
         }

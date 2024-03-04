@@ -33,17 +33,38 @@ function Find-PwdNotRequired {
   $privilegedgroups = @("Administrators", "Enterprise Admins", "Domain Admins", "DnsAdmins", "Backup Operators",
     "Server Operators", "Account Operators", "Print Operators", "Remote Desktop Users", "Schema Admins", "Cert Publishers")
   
+  #Initialise issues
+  $PWDdisabled = [pscustomobject]@{
+    Technique = (to_green "[LOW]") + " Disabled account not requiring a password"
+    Users     = ""
+    Enabled   = "$False"
+    Issue     = "Users do not require a password but are disabled"
+  }
+
+  $PWDprivileged = [pscustomobject]@{
+    Technique = (to_red "[HIGH]") + " Highly privileged user not requiring a password"
+    Users     = ""
+    MemberOf  = ""
+    Enabled   = "$True"
+    Issue     = "Users do not require a password and are a member of a privileged group"
+  }
+
+  $PWDstandard = [pscustomobject]@{
+    Technique = (to_yellow "[MEDIUM]") + " Standard user not requiring a password"
+    Users     = ""
+    Enabled   = "$True"
+    Issue     = "Users do not require a password but are not a member of a privileged group"
+  }
+
   foreach ($user in $PASSWDnotREQD) {
     # Check if user is disabled first
     if ($user.Enabled -eq $false) {
-      $Issue = [pscustomobject]@{
-        Domain    = $Domain
-        User      = $user.SamAccountName
-        Enabled   = $user.Enabled
-        Issue     = "$($user.SamAccountName) does not require a password but is disabled"
-        Technique = (to_green "[LOW]") + " Disabled account not requiring a password"
+      if ($PWDdisabled.Users -eq '') {
+        $PWDdisabled.Users += $user.SamAccountName
       }
-      $Issue
+      else {
+        $PWDdisabled.Users += "`r`n$($user.SamAccountName)"
+      }
     }
     # Then check if user is a member of a default privileged group
     else {
@@ -55,27 +76,34 @@ function Find-PwdNotRequired {
         }
       }
       if ($IsPrivileged) {
-        $Issue = [pscustomobject]@{
-          Domain           = $Domain
-          User             = $user.SamAccountName
-          Enabled          = $user.Enabled
-          Privilegedgroups = $user.memberof
-          Issue            = "$($user.SamAccountName) does not require a password and is a member of a privileged group"
-          Technique        = (to_red "[HIGH]") + " Highly privileged user not requiring a password"
+        if ($PWDprivileged.Users -eq '') {
+          $PWDprivileged.Users += $user.SamAccountName
+          $PWDprivileged.Memberof += $user.memberof
         }
-        $Issue
+        else {
+          $PWDprivileged.Users += "`r`n$($user.SamAccountName)"
+          $PWDprivileged.Memberof += "`r`n$($user.memberof)"
+        }
       }
-      #else standard kerberoastable user
+      #else standard user
       else {
-        $Issue = [pscustomobject]@{
-          Domain    = $Domain
-          User      = $user.SamAccountName
-          Enabled   = $user.Enabled
-          Issue     = "$($user.SamAccountName) does not require a password but is not a member of a privileged group"
-          Technique = (to_red "[HIGH]") + " Standard user not requiring a password"
+        if ($PWDstandard.Users -eq '') {
+          $PWDstandard.Users += $user.SamAccountName
         }
-        $Issue
+        else {
+          $PWDstandard.Users += "`r`n$($user.SamAccountName)"
+        }
       }
     }
+  }
+  #If issues, in order of severity
+  if ($PWDprivileged.Users -ne "") {
+    $PWDprivileged
+  }
+  if ($PWDstandard.Users -ne "") {
+    $PWDstandard
+  }
+  if ($PWDdisabled.Users -ne "") {
+    $PWDdisabled
   }
 }

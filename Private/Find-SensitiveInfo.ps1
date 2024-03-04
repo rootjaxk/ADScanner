@@ -22,10 +22,6 @@ function Find-SensitiveInfo {
     )
   
     Write-Host '[*] Finding sensitive info...' -ForegroundColor Yellow
-    
-    #Dynamically produce searchbase from domain parameter
-    $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
-    $searchBase = $SearchBaseComponents -join ','
 
     #define SYSVOL and NETLOGON scripts
     $SysvolScripts = "\\$Domain\sysvol\$Domain\scripts"
@@ -44,10 +40,11 @@ function Find-SensitiveInfo {
         if ($Credentials) {
             $Credentials | ForEach-Object {
                 $Issue = [pscustomobject]@{
-                    Domain     = $Domain
+                    Technique  = (to_red "[HIGH]") + " plaintext credentials found readable by low privileged user"
                     File       = $script.FullName
                     Credential = $_
-                    Technique  = (to_red "[HIGH]") + " plaintext credentials found readable by low privileged user"
+                    Issue      = "Plaintext credentials found in $($script.FullName)"
+                    
                 }
                 $Issue
             }
@@ -64,12 +61,11 @@ function Find-SensitiveInfo {
         foreach ($entry in $ACL) {
             if ($entry.FileSystemRights -match $UnsafeRights -and $entry.AccessControlType -eq "Allow" -and $entry.IdentityReference -notmatch $SafeUsers) {
                 $Issue = [pscustomobject] @{
-                    Domain    = $Domain
+                    Technique = (to_red "[HIGH]") + " modifiable logon script - see baby2 for example exploitation"
                     File      = $script.FullName
                     User      = $entry.IdentityReference.Value
                     Rights    = $entry.FileSystemRights
                     Issue     = "$($entry.IdentityReference.Value) has $($entry.FileSystemRights) over $($script.FullName)"
-                    Technique = (to_red "[HIGH]") + " modifiable logon script - see baby2 for example exploitation"
                 }
                 $Issue
             }

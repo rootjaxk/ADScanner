@@ -85,10 +85,9 @@ function Find-AdminSDHolder {
       #filter admincount removing default protected groups and members of them
       if (($SID -notmatch $adminCountGroupSIDs) -and (!$privilegedGroupMatch)) {
         $Issue = [pscustomobject]@{
-          Domain    = $domain
+          Technique = (to_red "[HIGH]") + " Suspicious / legacy admin account"
           Name      = $_.Name
           Issue     = "$($_.DistinguishedName) has admincount set to 1 and is not a member of default privileged groups"
-          Technique = (to_red "[HIGH]") + " Suspicious / legacy admin account"
         }
         $Issue
       }

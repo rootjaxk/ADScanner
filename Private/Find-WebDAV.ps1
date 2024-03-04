@@ -1,5 +1,5 @@
 function Find-WebDAV {
-    <#
+  <#
   .SYNOPSIS
   Searches for machines where the WebClient service (WebDAV) is enabled. The WebClient service on exposes the named pipe - \\<netbiosname>\pipe\DAV RPC SERVICE for WebDAV-based 
   programs and features to work. The WebClient service can be indirectly abused by attackers to coerce authentications.
@@ -17,9 +17,9 @@ function Find-WebDAV {
   #Add mandatory domain parameter
   [CmdletBinding()]
   Param(
-      [Parameter(Mandatory=$true)]
-      [String]
-      $Domain
+    [Parameter(Mandatory = $true)]
+    [String]
+    $Domain
   )
 
   Write-Host '[*] Finding WebDAV...' -ForegroundColor Yellow
@@ -32,42 +32,49 @@ function Find-WebDAV {
   $Computers = (Get-ADComputer -SearchBase $searchBase -filter *).dnshostname
   $Computers = $Computers | ? { $_ }
 
-  #Array to store multiple machine having WebDAV enabled
-  $results = @()
-
   #check if ldap signing not required & webdav enabled (to accurately assess risk) - HIGH high risk, else low risk - might move to invoke-adscanner.ps1
   $checkldapsigning = Find-LDAPSigning -Domain $Domain
+
+  #Initliase object
+  $WebDAVIssue = [pscustomobject]@{
+    Technique     = ""
+    Computers     = ""
+    WebDAVEnabled = "$true"
+    Issue         = ""
+  }
 
   #Check each for presence of the WebDAV named pipe
   foreach ($computer in $Computers) {
     try {
-        Write-Host "Checking \\$computer\pipe\DAV RPC SERVICE" -ForegroundColor Yellow
-        $webdav = Get-ChildItem "\\$computer\pipe\DAV RPC SERVICE" -ErrorAction Ignore
+      Write-Host "Checking \\$computer\pipe\DAV RPC SERVICE" -ForegroundColor Yellow
+      $webdav = Get-ChildItem "\\$computer\pipe\DAV RPC SERVICE" -ErrorAction Ignore
 
-         # If the webdav exists check for severity of issue
-         if ($webdav) {
-            #check if ldap signing returns true
-            if($checkldapsigning){
-              $Issue = [pscustomobject]@{
-                  Domain    = $domain
-                  Hostname = $computer
-                  WebDAVEnabled = $true
-                  Issue     = "WebDAV is enabled and LDAP signing is not required. $computer can be remotely be fully compromised via WebDAV to LDAP to RBCD authentication relay"
-                  Technique = (to_red "[HIGH]") + " Admin compromise of $computer via WebDAV to LDAP to RBCD authentication relay"
-              }
-            } else{
-              $Issue = [pscustomobject]@{
-                  Domain    = $domain
-                  Hostname = $computer
-                  WebDAVEnabled = $true
-                  Issue     = "$computer has WebDAV is enabled but LDAP signing is required mitigating relaying attacks. Check if the WebClient service is required as unnecessary services should be disabled"
-                  Technique = (to_green "[LOW]") + " WebDAV service is running - this is the default on workstations"
-              }
-            }
-            $Issue
+      # If the webdav exists check for severity of issue
+      if ($webdav) {
+        if ($WebDAVIssue.Computers -eq '') {
+          $WebDAVIssue.Computers += $computer
         }
-    } catch{
-       Write-Error $_
+        else {
+          $WebDAVIssue.Computers += "`r`n$computer"
+        }
+        #check if ldap signing returns true
+        if ($checkldapsigning) {
+          $WebDAVIssue.Technique = (to_red "[HIGH]") + " Admin compromise of computer via WebDAV to LDAP to RBCD authentication relay"
+          $WebDAVIssue.Issue = "WebDAV is enabled on computers and LDAP signing is not required. Each computer actively running the WebClient service can be remotely be fully compromised via WebDAV to LDAP to RBCD authentication relay"
+        }
+        else {
+          $WebDAVIssue.Technique = (to_green "[LOW]") + " WebDAV service is running - this is the default on workstations"
+          $WebDAVIssue.Issue = "WebDAV is enabled on computers but LDAP signing is required mitigating relaying attacks. Check if the WebClient service is required as unnecessary services should be disabled"
+        
+        }
+      }
     }
+    catch {
+      Write-Error $_
+    }
+  }
+  #if issue is present, return the object
+  if ($WebDAVIssue.Computers -ne '') {
+    $WebDAVIssue
   }
 }
