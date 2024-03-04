@@ -84,6 +84,7 @@ function Find-ESC8 {
     if ($httpwwwAuthenticate -match 'NTLM') {
       $Issue = [pscustomobject]@{
         Technique = (to_red "[CRITICAL]") + " ESC8"
+        Score     = 50
         Name      = $CAname
         Issue     = "$httpurl is vulnerable to NTLM relay attacks"
       }
@@ -103,6 +104,7 @@ function Find-ESC8 {
     if ($httpswwwAuthenticate -match 'NTLM') {
       $Issue = [pscustomobject]@{
         Technique = (to_red "[CRITICAL]") + " ESC8"
+        Score     = 50
         Name      = $CAname
         Issue     = "$httpsurl is possibly vulnerable to NTLM relay attacks if Extended Protection for Authentication (EPA) is not enforced"
       }

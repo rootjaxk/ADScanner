@@ -91,6 +91,7 @@ specifies which AD principals have specific permissions over the template.
     if ( ($_.objectClass -eq 'pKICertificateTemplate') -and ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch)) {
       $Issue = [pscustomobject]@{
         Technique         = (to_red "[CRITICAL]") + " ESC4"
+        Score             = 50
         Name              = $_.Name
         DistinguishedName = $_.DistinguishedName
         Issue             = "$($_.nTSecurityDescriptor.Owner) has Owner rights on this template"
@@ -131,6 +132,7 @@ specifies which AD principals have specific permissions over the template.
       ) {
         $Issue = [pscustomobject]@{
           Technique             = (to_red "[CRITICAL]") + " ESC4"
+          Score                 = 50
           Name                  = $_.Name
           DistinguishedName     = $_.DistinguishedName
           IdentityReference     = $entry.IdentityReference

@@ -32,7 +32,8 @@ function Find-Spooler {
   #Initliase object
   $SpoolerIssue = [pscustomobject]@{
     Technique      = (to_red "[HIGH]") + " Spooler service is enabled (authentication coercion) "
-    Computers       = ""
+    Score          = 30 
+    Computers      = ""
     SpoolerEnabled = "$true"
     Issue          = ""
   }

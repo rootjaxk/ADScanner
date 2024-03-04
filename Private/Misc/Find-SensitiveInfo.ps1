@@ -37,12 +37,14 @@ function Find-SensitiveInfo {
     #Initialise issues
     $PlaintextCredIssue = [pscustomobject]@{
         Technique  = (to_red "[HIGH]") + " plaintext credentials found readable by low privileged user"
-        File      = ""
+        Score      = 30
+        File       = ""
         Credential = ""
         Issue      = "Hardcoded plaintext credentials found in SYSVOL. These can be used by any authenticated user and any account utilising them should be considered compromised."
     }
     $ModifiablelogonIssue = [pscustomobject]@{
         Technique = (to_red "[HIGH]") + " modifiable logon script - see baby2 for example exploitation"
+        Score     = 30
         File      = ""
         User      = ""
         Rights    = ""

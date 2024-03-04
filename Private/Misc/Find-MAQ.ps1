@@ -43,6 +43,7 @@ function Find-MAQ {
   if ($MAQ -ne 0 -and $additionprivileges -eq "NT AUTHORITY\Authenticated Users") {
     $Issue = [pscustomobject]@{
       Technique                   = (to_red "[HIGH]") + " Non-admin users can add computers to the domain"
+      Score                       = 25
       MachineAccountQuota         = $MAQ
       PermissiontoAddWorkstations = $additionprivileges
       Issue                       = "$additionprivileges can add $MAQ machines to $domain"
@@ -53,6 +54,7 @@ function Find-MAQ {
   elseif ($MAQ -ne 0 -and $additionprivileges -ne "NT AUTHORITY\Authenticated Users" -and $additionprivileges -notmatch  $privilegedgroups) {
     $Issue = [pscustomobject]@{
       Technique                   = (to_green "[LOW]") + " Potential for non-admin users can add computers to the domain"
+      Score                       = 5
       MachineAccountQuota         = $MAQ
       PermissiontoAddWorkstations = $additionprivileges
       Issue                       = "$additionprivileges can add $MAQ machines to $domain - check this group is restricted to tier 0 only" #[TODO] - check this group is restricted to tier 0 only

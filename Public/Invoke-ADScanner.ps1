@@ -140,8 +140,6 @@ function Invoke-ADScanner {
     }   
     
 
-        
-
     #TO-DO - add functionality to do individual scans (for prioritised remediation)
 
     #TD-DO - add functionality to exclude GPT (if executing in environment where outbound access is not permitted)
@@ -167,10 +165,10 @@ function Invoke-ADScanner {
 
     # PKI - ADCS
     if ($Scans -eq "ADCS" -or $Scans -eq "All") {
-        $PKI += Find-ESC1 -Domain $Domain | ft  #see if seperate table for each works
-        $PKI += Find-ESC2 -Domain $Domain | ft
-        $PKI += Find-ESC3 -Domain $Domain | ft
-        $PKI += Find-ESC4 -Domain $Domain | ft
+        $PKI += Find-ESC1 -Domain $Domain
+        $PKI += Find-ESC2 -Domain $Domain 
+        $PKI += Find-ESC3 -Domain $Domain
+        $PKI += Find-ESC4 -Domain $Domain 
         $PKI += Find-ESC5 -Domain $Domain
         $PKI += Find-ESC6 -Domain $Domain
         $PKI += Find-ESC7 -Domain $Domain
@@ -187,10 +185,10 @@ function Invoke-ADScanner {
   
     # RBAC
     if ($Scans -eq "RBAC" -or $Scans -eq "All") {
-        $RBAC += Find-PrivilegedGroups -Domain $Domain
+        $RBAC += Find-PrivilegedGroups -Domain $Domain | ft
         $RBAC += Find-AdminSDHolder -Domain $Domain | fl
         $RBAC += Find-InactiveAccounts -Domain $Domain | fl
-        $RBAC += Find-AnonymousAccess -Domain $Domain
+        $RBAC += Find-AnonymousAccess -Domain $Domain | fl
     }
 
     # ACLs
@@ -217,7 +215,7 @@ function Invoke-ADScanner {
     # Legacy
     if ($Scans -eq "Legacy" -or $Scans -eq "All") {
         $Legacy += Find-LegacyProtocols -Domain $Domain
-        $Legacy += Find-UnsupportedOS -Domain $Domain | fl
+        $Legacy += Find-UnsupportedOS -Domain $Domain
     }
 
 
@@ -228,7 +226,7 @@ function Invoke-ADScanner {
 #                                    Domain Info                                    #
 #####################################################################################
 "@
-        $DomainInfo | Out-String
+        $DomainInfo | Format-List
     }
 
     if ($Scans -eq "All") {
@@ -240,7 +238,6 @@ function Invoke-ADScanner {
 "@
     }
 
-
     if ($Scans -eq "ADCS" -or $Scans -eq "All") {
 
         Write-Host @"
@@ -248,7 +245,7 @@ function Invoke-ADScanner {
 #                                       PKI                                         #
 #####################################################################################
 "@
-        $PKI | Out-String
+        $PKI| Sort-Object -Property Score -Descending | Format-List
     }
 
     if ($Scans -eq "Kerberos" -or $Scans -eq "All") {
@@ -257,7 +254,7 @@ function Invoke-ADScanner {
 #                                    Kerberos                                       #
 #####################################################################################
 "@
-        $Kerberos | Out-String
+        $Kerberos | Sort-Object -Property Score -Descending | Format-List
     }    
 
     if ($Scans -eq "RBAC" -or $Scans -eq "All") {
@@ -266,7 +263,7 @@ function Invoke-ADScanner {
 #                                       RBAC                                        #
 #####################################################################################
 "@
-        $RBAC | Out-String
+        $RBAC | Sort-Object -Property Score
     }
 
     if ($Scans -eq "ACLs" -or $Scans -eq "All") {
@@ -275,7 +272,7 @@ function Invoke-ADScanner {
 #                                       ACLs                                        #
 #####################################################################################
 "@
-        $ACLs | Out-String
+        $ACLs | Sort-Object -Property Score -Descending | Format-List
     }
 
     if ($Scans -eq "MISC" -or $Scans -eq "All") {
@@ -284,7 +281,7 @@ function Invoke-ADScanner {
 #                                       MISC                                        #
 #####################################################################################
 "@
-        $MISC | Format-List
+        $MISC | Sort-Object -Property Score -Descending | Format-List
     }
 
     if ($Scans -eq "Legacy" -or $Scans -eq "All") {
@@ -293,7 +290,7 @@ function Invoke-ADScanner {
 #                                       LEGACY                                      #
 #####################################################################################
 "@
-        $Legacy | Out-String
+        $Legacy | Sort-Object -Property Score -Descending | Format-List
     }
 
 

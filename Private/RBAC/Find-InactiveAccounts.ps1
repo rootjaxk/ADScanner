@@ -41,7 +41,8 @@ function Find-InactiveAccounts {
   # Get number of stale users (not in privileged groups - just number).
   if ($stale_not_disabled) {
     $Issue = [pscustomobject]@{
-      Technique     = (to_yellow "[MEDIUM]") + " Inactive/stale accounts are not disabled"
+      Technique     = (to_green "[LOW]") + " Inactive/stale accounts are not disabled"
+      Score         = 10
       Totalinactive = $totalstale
       StaleUsers    = $stale_not_disabled.samaccountname
       Issue         = "The are $totalstale inactive accounts found in $domain. A JML process should be enforced that disables accounts not used after a period of inactivity to prevent unauthorised use and conform to principle of least privilege"
@@ -64,6 +65,7 @@ function Find-InactiveAccounts {
   #Initialise issues
   $stalePrivileged = [pscustomobject]@{
     Technique        = (to_red "[HIGH]") + " Inactive/stale accounts are not disabled in privileged groups"
+    Score            = 20
     Users            = ""
     Memberof         = ""
     Enabled          = "True"

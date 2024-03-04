@@ -28,6 +28,7 @@ function Find-Delegations {
   #Initialise objects
   $ConstrainedIssue = [pscustomobject]@{
     Technique           = (to_red "[HIGH]") + " Constrained delegation"
+    Score               = 30
     Object              = ""
     AllowedToDelegateTo = ""
     Issue               = ""
@@ -35,6 +36,7 @@ function Find-Delegations {
 
   $UnconstrainedIssue = [pscustomobject]@{
     Technique            = (to_red "[HIGH]") + " Unconstrained delegation"
+    Score                = 30
     Object               = ""
     TrustedForDelegation = "$True"
     Issue                = "If computers with unconstrained delegation are compromised, full domain compromise is achievable by coercing auth from the DC which will be then be cached and extractable on the computer"
@@ -42,6 +44,7 @@ function Find-Delegations {
 
   $ResourcebasedIssue = [pscustomobject]@{
     Technique                                  = (to_red "[HIGH]") + " Resource-based constrained delegation"
+    Score                                      = 30
     Object                                     = ""
     'msDS-AllowedToActOnBehalfOfOtherIdentity' = ""
     Issue                                      = ""

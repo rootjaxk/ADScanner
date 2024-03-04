@@ -71,6 +71,7 @@ function Find-ESC3 {
       if ( ($SID -notmatch $PrivilegedUsers) -and ($entry.ActiveDirectoryRights -match 'ExtendedRight') ) {
         $adcsIssue = [pscustomobject]@{
           Technique             = (to_red "[CRITICAL]") + " ESC3"
+          Score                 = 50
           Name                  = $_.Name
           DistinguishedName     = $_.DistinguishedName
           IdentityReference     = $entry.IdentityReference

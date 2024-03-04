@@ -97,6 +97,7 @@ function Find-ESC5 {
       if (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch)) {
         $Issue = [pscustomobject]@{
           Technique             = (to_red "[CRITICAL]") + " ESC5"
+          Score                 = 50
           Name                  = $CAComputername
           DistinguishedName     = $CAdistinguishedname
           IdentityReference     = $ace.IdentityReference

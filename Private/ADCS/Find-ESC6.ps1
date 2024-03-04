@@ -36,6 +36,7 @@ function Find-ESC6 {
   if ($match -eq $pattern) {
     $Issue = [pscustomobject]@{
       Technique  = (to_red "[CRITICAL]") + " ESC6"
+      Score      = 50
       CAName     = $ADCSinfo.displayname
       CAhostname = $ADCSinfo.dnshostname
       Issue      = "$(($ADCSinfo).DisplayName) has the 'EDITF_ATTRIBUTESUBJECTALTNAME2' flag set"

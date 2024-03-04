@@ -71,6 +71,7 @@ function Find-LAPS {
   if ($LAPS -notmatch 'AdmPwd.dll') {
     $Issue = [pscustomobject]@{
       Technique = (to_red "[HIGH]") + " LAPS is not utilized on all computers."
+      Score     = 20
       Computer  = $hostname
       Issue     = "LAPS is not installed on $hostname. Lateral movement opportunities may exist through reuse of the local administrator password"
     }
@@ -104,6 +105,7 @@ function Find-LAPS {
       if ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch) {
         $Issue = [pscustomobject]@{
           Technique         = (to_red "[CRITICAL]") + " Low privileged principal can read LAPS password on domain controllers"
+          Score             = 35
           IdentityReference = $user
           LAPScomputer      = $domainControllers
           Issue             = "$user has read LAPS password rights on $domainControllers meaning low privileged users are domain admins"
@@ -131,6 +133,7 @@ function Find-LAPS {
       if ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch) {
         $Issue = [pscustomobject]@{
           Technique         = (to_red "[HIGH]") + " Low privileged principal can read LAPS password on domain computers"
+          Score             = 35
           IdentityReference = $user
           LAPScomputer      = $domainComputers
           Issue             = "$user has read LAPS password rights on $domainComputers, meaning low privileged users are local admins"

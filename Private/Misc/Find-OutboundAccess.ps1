@@ -58,15 +58,17 @@ function Find-OutboundAccess {
   if ($admin -eq $true -and ($exploitresponse -match "200 OK" -or $socialURLresponse -match "200 OK" -or $nonessentialbuisnessURLresponse -match "200 OK")) {
     $Issue = [pscustomobject]@{
       Technique = (to_red "[CRITICAL]") + " Unrestricted outbound access"
+      Score     = 35
       Name      = $hostname
       User      = $userrun
-      Issue     = "Administrator account $userrun has internet access on $hostname. Block internet access for all administrative users"
+      Issue     = "Administrator account $userrun has internet access on $hostname. Block internet access for all administrative users. A tiering model should prevent admin accounts from having internet access in favour of a lower privileged account for everyday use"
     }
     $Issue
   }
   elseif ($exploitresponse -match "200 OK") {
     $Issue = [pscustomobject]@{
       Technique = (to_red "[HIGH]") + " Unrestricted outbound access"
+      Score     = 25
       Name      = $hostname
       User      = $userrun
       Issue     = "$userrun has unrestricted outbound internet access on $hostname"
@@ -77,6 +79,7 @@ function Find-OutboundAccess {
   elseif ($Isserver -match "server" -and ($socialURLresponse -match "200 OK" -or $nonessentialbuisnessURLresponse -match "200 OK")) {
     $Issue = [pscustomobject]@{
       Technique = (to_red "[HIGH]") + " Unrestricted outbound access"
+      Score     = 20
       Name      = $hostname
       User      = $userrun
       Issue     = "$userrun can access non-essential business sites on $hostname. If this is a server, block internet access for all users"

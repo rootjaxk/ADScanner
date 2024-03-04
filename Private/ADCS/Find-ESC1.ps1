@@ -73,6 +73,7 @@ function Find-ESC1 {
       if ( ($SID -notmatch $PrivilegedUsers) -and ($entry.ActiveDirectoryRights -match 'ExtendedRight') ) {
         $Issue = [pscustomobject]@{
           Technique             = (to_red "[CRITICAL]") + " ESC1"
+          Score                 = 50
           Name                  = $_.Name
           DistinguishedName     = $_.DistinguishedName
           IdentityReference     = $entry.IdentityReference

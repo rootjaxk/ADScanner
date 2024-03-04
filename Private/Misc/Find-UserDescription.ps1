@@ -57,6 +57,7 @@ function Find-UserDescription {
   #Initialise issues
   $Highprivpassworddesc = [pscustomobject]@{
     Technique   = (to_red "[CRITICAL]") + " plaintext credentials found in privileged user Active Directory description field"
+    Score       = 50
     User        = ""
     MemberOf    = ""
     Description = ""
@@ -65,6 +66,7 @@ function Find-UserDescription {
 
   $Lowprivpassworddesc = [pscustomobject]@{
     Technique   = (to_red "[HIGH]") + " plaintext credentials found in standard user Active Directory description field"
+    Score       = 30
     User        = ""
     Description = ""
     Issue       = "Standard users have passwords in their Active Directory description field. These attributes are readable by any authenticated user so these accounts should be assumed compromised"

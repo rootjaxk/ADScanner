@@ -37,6 +37,7 @@ function Find-EfficiencyImprovements {
   if ($emptyOU) {
     $emptyOUissue = [pscustomobject]@{
       Technique   = (to_cyan "[INFORMATIONAL]") + " Domain effiency improvement - empty Organizational Units"
+      Score       = 1
       NumEmptyOUs = $emptyOU.count
       EmptyOUs    = ""
       Issue       = "There are $($emptyOU.count) empty OUs within the domain. The domain structure can be reduced by approximately $([math]::Round(($emptyOU.count / $numOU * 100), 2))%. Removing complexity eases administration and reduces risk of misconfigurations"
@@ -60,10 +61,11 @@ function Find-EfficiencyImprovements {
   #Loop through for issues
   if ($GPOs) {
     $emptyGPOissue = [pscustomobject]@{
-      Technique     = (to_cyan "[INFORMATIONAL]") + " Domain effiency improvement - unlinked GPOs"
-      NumUnlinked = $GPOs.count
-      UnlinkedGPOs  = ""
-      Issue         = "There are $($GPOs.count) GPOs not linked to any OUs within the domain. Unlinked GPOs are not used and can be removed to reduce complexity and reduce risk of misconfigurations"
+      Technique    = (to_cyan "[INFORMATIONAL]") + " Domain effiency improvement - unlinked GPOs"
+      Score        = 1
+      NumUnlinked  = $GPOs.count
+      UnlinkedGPOs = ""
+      Issue        = "There are $($GPOs.count) GPOs not linked to any OUs within the domain. Unlinked GPOs are not used and can be removed to reduce complexity and reduce risk of misconfigurations"
     }
     foreach ($GPO in $GPOs) {
       if ($emptyGPOissue.UnlinkedGPOs -eq '') {
