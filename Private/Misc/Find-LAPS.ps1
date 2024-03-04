@@ -105,7 +105,7 @@ function Find-LAPS {
       if ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch) {
         $Issue = [pscustomobject]@{
           Technique         = (to_red "[CRITICAL]") + " Low privileged principal can read LAPS password on domain controllers"
-          Score             = 35
+          Score             = 50
           IdentityReference = $user
           LAPScomputer      = $domainControllers
           Issue             = "$user has read LAPS password rights on $domainControllers meaning low privileged users are domain admins"
