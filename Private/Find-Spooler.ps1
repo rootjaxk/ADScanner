@@ -34,8 +34,9 @@ function Find-Spooler {
     Technique      = (to_red "[HIGH]") + " Spooler service is enabled (authentication coercion) "
     Computers       = ""
     SpoolerEnabled = "$true"
-    Issue          = "Spooler service is enabled which is vulnerable to printerbug (authentication coercion)"
+    Issue          = ""
   }
+  $Spoolercount = 0
   
   #Check each for presence of the spooler named pipe
   foreach ($computer in $Computers) {
@@ -51,6 +52,7 @@ function Find-Spooler {
         else {
           $SpoolerIssue.Computers += "`r`n$computer"
         }
+        $Spoolercount++
       }
     }
     catch {
@@ -58,6 +60,7 @@ function Find-Spooler {
     }
   }
   if ($SpoolerIssue.Computers -ne '') {
+    $SpoolerIssue.Issue = "Spooler service is enabled on $Spoolercount computers which are vulnerable to printerbug (authentication coercion)"
     $SpoolerIssue
   }
 }

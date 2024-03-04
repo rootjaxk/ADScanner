@@ -38,23 +38,26 @@ function Find-PwdNotRequired {
     Technique = (to_green "[LOW]") + " Disabled account not requiring a password"
     Users     = ""
     Enabled   = "$False"
-    Issue     = "Users do not require a password but are disabled"
+    Issue     = ""
   }
+  $PWDdisabledcount = 0
 
   $PWDprivileged = [pscustomobject]@{
     Technique = (to_red "[HIGH]") + " Highly privileged user not requiring a password"
     Users     = ""
     MemberOf  = ""
     Enabled   = "$True"
-    Issue     = "Users do not require a password and are a member of a privileged group"
+    Issue     = ""
   }
+  $PWDprivilegedcount = 0
 
   $PWDstandard = [pscustomobject]@{
     Technique = (to_yellow "[MEDIUM]") + " Standard user not requiring a password"
     Users     = ""
     Enabled   = "$True"
-    Issue     = "Users do not require a password but are not a member of a privileged group"
+    Issue     = ""
   }
+  $PWDstandardcount = 0
 
   foreach ($user in $PASSWDnotREQD) {
     # Check if user is disabled first
@@ -65,6 +68,7 @@ function Find-PwdNotRequired {
       else {
         $PWDdisabled.Users += "`r`n$($user.SamAccountName)"
       }
+      $PWDdisabledcount++
     }
     # Then check if user is a member of a default privileged group
     else {
@@ -84,6 +88,7 @@ function Find-PwdNotRequired {
           $PWDprivileged.Users += "`r`n$($user.SamAccountName)"
           $PWDprivileged.Memberof += "`r`n$($user.memberof)"
         }
+        $PWDprivilegedcount++
       }
       #else standard user
       else {
@@ -93,17 +98,21 @@ function Find-PwdNotRequired {
         else {
           $PWDstandard.Users += "`r`n$($user.SamAccountName)"
         }
+        $PWDstandardcount++
       }
     }
   }
   #If issues, in order of severity
   if ($PWDprivileged.Users -ne "") {
+    $PWDprivileged.Issue = "$PWDprivilegedcount users do not require a password and are a member of a privileged group"
     $PWDprivileged
   }
   if ($PWDstandard.Users -ne "") {
+    $PWDstandard.Issue = "$PWDstandardcount users do not require a password and are not a member of a privileged group"
     $PWDstandard
   }
   if ($PWDdisabled.Users -ne "") {
+    $PWDdisabled.Issue = "$PWDdisabledcount users do not require a password but are disabled"
     $PWDdisabled
   }
 }

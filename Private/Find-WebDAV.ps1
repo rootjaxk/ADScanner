@@ -42,6 +42,7 @@ function Find-WebDAV {
     WebDAVEnabled = "$true"
     Issue         = ""
   }
+  $WebDAVcount = 0
 
   #Check each for presence of the WebDAV named pipe
   foreach ($computer in $Computers) {
@@ -57,16 +58,7 @@ function Find-WebDAV {
         else {
           $WebDAVIssue.Computers += "`r`n$computer"
         }
-        #check if ldap signing returns true
-        if ($checkldapsigning) {
-          $WebDAVIssue.Technique = (to_red "[HIGH]") + " Admin compromise of computer via WebDAV to LDAP to RBCD authentication relay"
-          $WebDAVIssue.Issue = "WebDAV is enabled on computers and LDAP signing is not required. Each computer actively running the WebClient service can be remotely be fully compromised via WebDAV to LDAP to RBCD authentication relay"
-        }
-        else {
-          $WebDAVIssue.Technique = (to_green "[LOW]") + " WebDAV service is running - this is the default on workstations"
-          $WebDAVIssue.Issue = "WebDAV is enabled on computers but LDAP signing is required mitigating relaying attacks. Check if the WebClient service is required as unnecessary services should be disabled"
-        
-        }
+        $WebDAVcount++
       }
     }
     catch {
@@ -75,6 +67,15 @@ function Find-WebDAV {
   }
   #if issue is present, return the object
   if ($WebDAVIssue.Computers -ne '') {
+    #check if ldap signing returns true
+    if ($checkldapsigning) {
+      $WebDAVIssue.Technique = (to_red "[HIGH]") + " Admin compromise of computer via WebDAV to LDAP to RBCD authentication relay"
+      $WebDAVIssue.Issue = "WebDAV is enabled on $WebDAVcount computers and LDAP signing is not required. Each computer actively running the WebClient service can be remotely be fully compromised via WebDAV to LDAP to RBCD authentication relay"
+    }
+    else {
+      $WebDAVIssue.Technique = (to_green "[LOW]") + " WebDAV service is running - this is the default on workstations"
+      $WebDAVIssue.Issue = "WebDAV is enabled on $WebDAVcount computers but LDAP signing is required mitigating relaying attacks. Check if the WebClient service is required as unnecessary services should be disabled"
+    }
     $WebDAVIssue
   }
 }

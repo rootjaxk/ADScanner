@@ -84,14 +84,12 @@ function Find-InactiveAccounts {
       if ($stalePrivileged.Users -eq '') {
         $stalePrivileged.Users += $stale.SamAccountName
         $stalePrivileged.MemberOf += $stale.memberof
-        $privilegedCount++
       }
       else {
         $stalePrivileged.Users += "`r`n$($stale.SamAccountName)"
         $stalePrivileged.MemberOf += "`r`n$($stale.memberof)"
-        $privilegedCount++
-        
       }
+      $privilegedCount++
     }
   }
   if ($stalePrivileged.Users -ne '') {

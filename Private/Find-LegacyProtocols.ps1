@@ -270,8 +270,9 @@ function Find-LegacyProtocols {
     $SMBv1Issue = [pscustomobject]@{
         Technique      = (to_red "[HIGH]") + " SMBv1 is enabled on computers"
         SMBv1Computers = ""
-        Issue          = "SMBv1 is enabled on computers. SMBv1 vulnerable to EternalBlue and other exploits facilitating DoS and RCE"
+        Issue          = ""
     }
+    $SMBv1count = 0
 
     #check all computers in domain for SMB signing
     foreach ($computer in $ADComputers) {
@@ -285,9 +286,11 @@ function Find-LegacyProtocols {
             else {
                 $SMBv1Issue.SMBv1Computers += "`r`n$computer"
             }
+            $SMBv1count++
         }
     }
     if ($SMBv1Issue.SMBv1Computers -ne '') {
+        $SMBv1issue.Issue = "SMBv1 is enabled on $SMBv1count computers. All of these computers could be vulnerable to EternalBlue and other SMBv1 exploits facilitating DoS and RCE"
         $SMBv1Issue
     }
 }

@@ -47,38 +47,44 @@ function Find-ASREProast {
     Technique = (to_green "[LOW]") + " Disabled ASREP-roastable user"
     Users     = ""
     Enabled   = "False"
-    Issue     = "Users do not require Kerberos pre-authentication but are disabled"
+    Issue     = ""
   }
+  $ASREPDisabledcount = 0
 
   $ASREPprivileged_weakpwd = [pscustomobject]@{
     Technique = (to_red "[CRITICAL]") + " Highly privileged ASREP-roastable user with a weak password"
     Users     = ""
     Memberof  = ""
     Enabled   = "True"
-    Issue     = "Users do not require Kerberos pre-authentication, have a weak password, and are a member of a privileged group"
+    Issue     = ""
   }
+  $ASREPprivileged_weakpwdcount = 0
 
   $ASREPprivileged_strongpwd = [pscustomobject]@{
     Technique = (to_red "[HIGH]") + " Highly privileged ASREP-roastable user with a strong password"
     Users     = ""
     Memberof  = ""
     Enabled   = "True"
-    Issue     = "Users do not require Kerberos pre-authentication, have a strong password, and are a member of a privileged group but has a strong password set. A threat actor with unlimited computation power can compromise this account"
+    Issue     = ""
   }
+  $ASREPprivileged_strongpwdcount = 0
  
   $ASREPlowprivileged_weakpwd = [pscustomobject]@{
     Technique = (to_red "[HIGH]") + " Low privileged ASREP-roastable user with a weak password"
     Users     = ""
     Enabled   = "True"
-    Issue     = "Users do not require Kerberos pre-authentication and have a weak password. These accounts allow an attacker a foothold into the domain and should be assumed compromised"
+    Issue     = ""
   }
+  $ASREPlowprivileged_weakpwdcount = 0
 
   $ASREPlowprivileged_strongpwd = [pscustomobject]@{
     Technique = (to_red "[HIGH]") + " Low privileged ASREP-roastable user with a strong password set"
     Users     = ""
     Enabled   = "True"
-    Issue     = "Users do not require Kerberos pre-authentication, but are not a member of a privileged group and has a strong password set. However a threat actor with unlimited computation power can compromise this account"
+    Issue     = ""
   }
+  $ASREPlowprivileged_strongpwdcount = 0
+
 
   foreach ($ASREPuser in $ASREPusers) {
     # Check if user is disabled first
@@ -89,6 +95,7 @@ function Find-ASREProast {
       else {
         $ASREPDisabled.Users += "`r`n$($ASREPuser.SamAccountName)"
       }
+      $ASREPDisabledcount++
     }
     # Then check if user is a member of a privileged group
     else {
@@ -109,6 +116,7 @@ function Find-ASREProast {
           $ASREPprivileged_weakpwd.Users += "`r`n$($ASREPuser.SamAccountName)"
           $ASREPprivileged_weakpwd.MemberOf += "`r`n$($ASREPuser.memberof)"
         }
+        $ASREPprivileged_weakpwdcount++
       }
       #privileged but strong password
       elseif ($IsPrivileged -and !$WeakPwdPolicy) {
@@ -119,7 +127,8 @@ function Find-ASREProast {
         else {
           $ASREPprivileged_strongpwd.Users += "`r`n$($ASREPuser.SamAccountName)"
           $ASREPprivileged_strongpwd.MemberOf += "`r`n$($ASREPuser.memberof)"
-        } 
+        }
+        $ASREPprivileged_strongpwdcount++ 
       }
       #not privileged & weak password
       elseif ($WeakPwdPolicy) {
@@ -129,6 +138,7 @@ function Find-ASREProast {
         else {
           $ASREPlowprivileged_weakpwd.Users += "`r`n$($ASREPuser.SamAccountName)"
         }
+        $ASREPlowprivileged_weakpwdcount++
       }
       #low privileged, strong password
       else {
@@ -138,24 +148,30 @@ function Find-ASREProast {
         else {
           $ASREPlowprivileged_strongpwd.Users += "`r`n$($ASREPuser.SamAccountName)"
         }
+        $ASREPlowprivileged_strongpwdcount++
       }
     }
   }
 
   #output if users are present in any of the issues in order of severity
   if ($ASREPprivileged_weakpwd.Users) {
+    $ASREPprivileged_weakpwd.Issue = "$ASREPprivileged_weakpwdcount users do not require Kerberos pre-authentication, have a weak password, and are a member of a privileged group"
     $ASREPprivileged_weakpwd
   }
   if ($ASREPprivileged_strongpwd.Users) {
+    $ASREPprivileged_strongpwd.Issue = "$ASREPprivileged_strongpwdcount users do not require Kerberos pre-authentication, have a strong password, and are a member of a privileged group but has a strong password set. A threat actor with unlimited computation power can compromise this account"
     $ASREPprivileged_strongpwd
   }
   if ($ASREPlowprivileged_weakpwd.Users) {
+    $ASREPlowprivileged_weakpwd.Issue = "$ASREPlowprivileged_weakpwdcount users do not require Kerberos pre-authentication, are not a member of a privileged group and have a weak password. These accounts allow an attacker a foothold into the domain and should be assumed compromised"
     $ASREPlowprivileged_weakpwd
   }
   if ($ASREPlowprivileged_strongpwd.Users) {
-    $ASREPlowprivileged_strongpwd #| ft -AutoSize -Wrap
+    $ASREPlowprivileged_strongpwd.Issue = "$ASREPlowprivileged_strongpwdcount users do not require Kerberos pre-authentication, are not a member of a privileged group and has a strong password set. However a threat actor with unlimited computation power can compromise these accounts."
+    $ASREPlowprivileged_strongpwd
   }
   if ($ASREPDisabled.Users) {
+    $ASREPdisabled.Issue = "$ASREPdisabledcount users do not require Kerberos pre-authentication but are disabled"
     $ASREPDisabled
   }
   

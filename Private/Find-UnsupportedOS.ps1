@@ -68,11 +68,13 @@ function Find-UnsupportedOS {
         }
     }
 
-    #if presetn display issues
+    #if present display issues
     if ($Outdated_EnabledIssue.OperatingSystems -ne "") {
+        $Outdated_EnabledIssue.Issues += "`r`nAll of these operating systems have critical CVEs"
         $Outdated_EnabledIssue
     }
     if ($Outdated_DisabledIssue.OperatingSystems -ne "") {
+        $Outdated_DisabledIssue.Issues += "`r`nAll of these operating systems have critical CVEs, but as they are disabled, although they can be trivially compromised they cannot be used to authenticate to the domain"
         $Outdated_DisabledIssue
     }
 }

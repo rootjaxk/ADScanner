@@ -53,13 +53,30 @@ function Find-UserDescription {
   $privilegedgroups = @("Administrators", "Enterprise Admins", "Domain Admins", "DnsAdmins", "Backup Operators",
     "Server Operators", "Account Operators", "Print Operators", "Remote Desktop Users", "Schema Admins", "Cert Publishers")
 
+
+  #Initialise issues
+  $Highprivpassworddesc = [pscustomobject]@{
+    Technique   = (to_red "[CRITICAL]") + " plaintext credentials found in privileged user Active Directory description field"
+    User        = ""
+    MemberOf    = ""
+    Description = ""
+    Issue       = "Privileged users have passwords in their Active Directory description field. These attributes are readable by any authenticated user so these priviliged account should be assumed compromised"
+  }
+
+  $Lowprivpassworddesc = [pscustomobject]@{
+    Technique   = (to_red "[HIGH]") + " plaintext credentials found in standard user Active Directory description field"
+    User        = ""
+    Description = ""
+    Issue       = "Standard users have passwords in their Active Directory description field. These attributes are readable by any authenticated user so these accounts should be assumed compromised"
+  }
+
   #see if GPT found passwords
   if ($userdescriptionresponse -notmatch 'No passwords found') {
     #split all possible passwords and match description back to user
     foreach ($pwd in $userdescriptionresponse.split("`n")) {
       $user = Get-ADObject -Filter { description -eq $pwd } -properties *
       
-      #if password in privileged user description - critical
+      #if password in privileged user description
       $IsPrivileged = $false
       foreach ($group in $privilegedgroups) {
         if ($user.MemberOf -match $group) {
@@ -68,27 +85,36 @@ function Find-UserDescription {
         }
       }
       if ($IsPrivileged) {
-        $Issue = [pscustomobject]@{
-          Technique   = (to_red "[CRITICAL]") + " plaintext credentials found in privileged user Active Directory description field"
-          User        = $user.SamAccountName
-          MemberOf    = $user.memberof
-          Description = $user.description
-          Issue       = "$($user.SamAccountName) is a privileged user and has the description ""$($user.description)"""
+        if ($Highprivpassworddesc.User -eq '') {
+          $Highprivpassworddesc.User += $user.SamAccountName
+          $Highprivpassworddesc.MemberOf += $user.memberof
+          $Highprivpassworddesc.Description += $user.description
         }
-        $Issue
+        else {
+          $Highprivpassworddesc.User += "`r`n$($user.SamAccountName)"
+          $Highprivpassworddesc.MemberOf += "`r`n$($user.memberof)"
+          $Highprivpassworddesc.Description += "`r`n$($user.description)"
+        }
       }
-      #else high
+      #else standard user
       else {
-        $Issue = [pscustomobject]@{
-          Technique   = (to_red "[HIGH]") + " plaintext credentials found in standard user Active Directory description field"
-          User        = $user.SamAccountName
-          Description = $user.description
-          Issue       = "$($user.SamAccountName) has the description ""$($user.description)"""
+        if ($Lowprivpassworddesc.User -eq '') {
+          $Lowprivpassworddesc.User += $user.SamAccountName
+          $Lowprivpassworddesc.Description += $user.description
         }
-        $Issue
+        else {
+          $Lowprivpassworddesc.User += "`r`n$($user.SamAccountName)"
+          $Lowprivpassworddesc.Description += "`r`n$($user.description)"
+        }
       }
     }
   }
+  if($Highprivpassworddesc.User) {
+    $Highprivpassworddesc
+  }
+  if($Lowprivpassworddesc.User) {
+    $Lowprivpassworddesc
+  }
 }
 
-#test how accurately GPT finds sensitive information in descriptions
+  #test how accurately GPT finds sensitive information in descriptions

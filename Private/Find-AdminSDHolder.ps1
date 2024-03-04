@@ -59,10 +59,19 @@ function Find-AdminSDHolder {
   }
 
   #get users with admincount set
-  $adminCount = Get-ADObject -searchBase $searchBase -LDAPFilter "(adminCount=1)" -properties samaccountname
+  $AdminCount = Get-ADObject -searchBase $searchBase -LDAPFilter "(adminCount=1)" -properties samaccountname
+  $AdminSDcount = 0
+
+  #Initalise issue
+  $AdminSDIssue = [pscustomobject]@{
+    Technique  = (to_red "[HIGH]") + " Suspicious / legacy admin account"
+    Name       = ""
+    adminCount = "1"
+    Issue      = ""
+  }
 
   #Translate members to SIDs
-  $adminCount | ForEach-Object {
+  $AdminCount | ForEach-Object {
     try {
       foreach ($entry in $_.samaccountname) {
         $Principal = New-Object System.Security.Principal.NTAccount($entry)
@@ -81,15 +90,21 @@ function Find-AdminSDHolder {
           }
         }
       }
-    } catch {}
-      #filter admincount removing default protected groups and members of them
-      if (($SID -notmatch $adminCountGroupSIDs) -and (!$privilegedGroupMatch)) {
-        $Issue = [pscustomobject]@{
-          Technique = (to_red "[HIGH]") + " Suspicious / legacy admin account"
-          Name      = $_.Name
-          Issue     = "$($_.DistinguishedName) has admincount set to 1 and is not a member of default privileged groups"
-        }
-        $Issue
+    }
+    catch {}
+    #filter admincount removing default protected groups and members of them
+    if (($SID -notmatch $adminCountGroupSIDs) -and (!$privilegedGroupMatch)) {
+      if ($AdminSDIssue.Name -eq '') {
+        $AdminSDIssue.Name += $_.Name
       }
+      else {
+        $AdminSDIssue.Name += "`r`n$($_.Name)"
+      }
+      $AdminSDcount++
     }
   }
+  if ($AdminSDIssue.Name -ne '') {
+    $AdminSDIssue.Issue = "$AdminSDcount users have the admincount attribute set to 1 but is not a member of default privileged groups. These user may have unaudited high privileges."
+    $AdminSDIssue
+  }
+}

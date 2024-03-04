@@ -44,7 +44,8 @@ function Find-SMBSigning {
 
         if ($SMB1.SigningStatus -or $SMB2.SigningStatus) {
             $Signing = "required" 
-        } else { 
+        }
+        else { 
             $Signing = "not required"
         }
         return $Signing
@@ -183,18 +184,32 @@ function Find-SMBSigning {
         finally { $tcpClient.Close() }
         return ([PSCustomObject]@{SigningStatus = $signingStatus })
     }
-    
+
+    #Initialise issue
+    $SMBSigningIssue = [pscustomobject]@{
+        Technique  = (to_yellow "[MEDIUM]") + " SMB signing is not enforced"
+        Computers  = ""
+        SMBSigning = "$false"
+        Issue      = "" 
+    }
+    $SMBsigningcount = 0
+
     #check all computers in domain for SMB signing
     foreach ($computer in $ADComputers) {
         Write-Host "Checking $computer for SMB signing..." -ForegroundColor Yellow
         $Signingresult = Get-SMBSigning -ComputerName $computer -Timeout 2     
-        if ($Signingresult -eq "not required") {      
-            $Issue = [pscustomobject]@{
-                Technique = (to_yellow "[MEDIUM]") + " SMB signing is not enforced"
-                Computer  = $computer
-                Issue     = "SMB signing not enforced on $computer" 
+        if ($Signingresult -eq "not required") {
+            if ($SMBSigningIssue.Computers -eq '') {
+                $SMBSigningIssue.Computers = $computer
             }
-            $Issue
+            else {
+                $SMBSigningIssue.Computers += "`r`n$computer"
+            }
+            $SMBsigningcount++
         }
     }
+    if ($SMBSigningIssue.Computers -ne '') {
+        $SMBSigningIssue.Issue = "SMB signing is not enforced on $SMBsigningcount computers meaning authentication can be relayed to these computers"
+        $SMBSigningIssue
+    }          
 }

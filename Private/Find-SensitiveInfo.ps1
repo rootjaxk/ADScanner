@@ -34,19 +34,34 @@ function Find-SensitiveInfo {
     #catch errors
     catch {}
 
+    #Initialise issues
+    $PlaintextCredIssue = [pscustomobject]@{
+        Technique  = (to_red "[HIGH]") + " plaintext credentials found readable by low privileged user"
+        File      = ""
+        Credential = ""
+        Issue      = "Hardcoded plaintext credentials found in SYSVOL. These can be used by any authenticated user and any account utilising them should be considered compromised."
+    }
+    $ModifiablelogonIssue = [pscustomobject]@{
+        Technique = (to_red "[HIGH]") + " modifiable logon script - see baby2 for example exploitation"
+        File      = ""
+        User      = ""
+        Rights    = ""
+        Issue     = "Low privileged user has write privileges to a logon script. A malcious actor could replace this script with a malicious one and run it on linked workstations"
+    }
+    
     #find hardcoded creds or secrets in scripts
     foreach ($script in $LogonScripts) {
         $Credentials = Get-Content -Path $script.FullName -ErrorAction SilentlyContinue | Select-String -Pattern "/user:", "-AsPlainText", "passw", "admin", "key", "secret" -AllMatches
         if ($Credentials) {
             $Credentials | ForEach-Object {
-                $Issue = [pscustomobject]@{
-                    Technique  = (to_red "[HIGH]") + " plaintext credentials found readable by low privileged user"
-                    File       = $script.FullName
-                    Credential = $_
-                    Issue      = "Plaintext credentials found in $($script.FullName)"
-                    
+                if ($PlaintextCredIssue.File -eq '') {
+                    $PlaintextCredIssue.File += $script.FullName
+                    $PlaintextCredIssue.Credential += $_
                 }
-                $Issue
+                else {
+                    $PlaintextCredIssue.File += "`r`n$($script.FullName)"
+                    $PlaintextCredIssue.Credential += "`r`n$($_)"
+                }
             }
         }
     }
@@ -60,16 +75,26 @@ function Find-SensitiveInfo {
         $ACL = (Get-Acl $script.FullName).Access
         foreach ($entry in $ACL) {
             if ($entry.FileSystemRights -match $UnsafeRights -and $entry.AccessControlType -eq "Allow" -and $entry.IdentityReference -notmatch $SafeUsers) {
-                $Issue = [pscustomobject] @{
-                    Technique = (to_red "[HIGH]") + " modifiable logon script - see baby2 for example exploitation"
-                    File      = $script.FullName
-                    User      = $entry.IdentityReference.Value
-                    Rights    = $entry.FileSystemRights
-                    Issue     = "$($entry.IdentityReference.Value) has $($entry.FileSystemRights) over $($script.FullName)"
+                if ($ModifiablelogonIssue.File -eq '') {
+                    $ModifiablelogonIssue.File = $script.FullName
+                    $ModifiablelogonIssue.User = $entry.IdentityReference.Value
+                    $ModifiablelogonIssue.Rights = $entry.FileSystemRights
                 }
-                $Issue
+                else {
+                    $ModifiablelogonIssue.File += "`r`n$($script.FullName)"
+                    $ModifiablelogonIssue.User += "`r`n$($entry.IdentityReference.Value)"
+                    $ModifiablelogonIssue.Rights += "`r`n$($entry.FileSystemRights)"
+                }
             }
         }
     } 
+
+    #If issue output them
+    if ($PlaintextCredIssue.File) {
+        $PlaintextCredIssue
+    }
+    if ($ModifiablelogonIssue.File) {
+        $ModifiablelogonIssue
+    }
 }
 
