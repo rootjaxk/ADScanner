@@ -37,9 +37,9 @@ function Find-LegacyProtocols {
         $llmnr = Get-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows NT\DNSClient" -name EnableMulticast -ErrorAction Ignore
         if ($llmnr.EnableMulticast -ne 0) {
             $Issue = [pscustomobject]@{
-                Technique = (to_red "[HIGH]") + " LLMNR is vulnerable to layer 2 poisoning attacks"
+                Technique   = (to_red "[HIGH]") + " LLMNR is vulnerable to layer 2 poisoning attacks"
                 RegistryKey = "HKLM:\Software\Policies\Microsoft\Windows NT\DNSClient\EnableMultiCast is not set to 0"
-                Issue     = "LLMNR is a legacy name resolution protocol not disabled in $domain via GPO"
+                Issue       = "LLMNR is a legacy name resolution protocol not disabled in $domain via GPO"
             }
             $Issue
         }
@@ -54,9 +54,9 @@ function Find-LegacyProtocols {
     $nbtns = Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\netbt\Parameters\interfaces\tcpip_*' -name NetBiosOptions -ErrorAction Ignore
     if ($nbtns.NetBiosOptions -ne 2) {
         $Issue = [pscustomobject]@{
-            Technique = (to_red "[HIGH]") + " NBT-NS is vulnerable to layer 2 poisoning attacks"
+            Technique   = (to_red "[HIGH]") + " NBT-NS is vulnerable to layer 2 poisoning attacks"
             RegistryKey = "HKLM:\SYSTEM\CurrentControlSet\Services\netbt\Parameters\interfaces\tcpip_*\NetBiosOptions is not set to 2"
-            Issue     = "NBT-NS is a legacy name resolution protocol not disabled in $domain via GPO"
+            Issue       = "NBT-NS is a legacy name resolution protocol not disabled in $domain via GPO"
         }
         $Issue
     }
@@ -71,9 +71,9 @@ function Find-LegacyProtocols {
         $mdns = Get-ItemProperty -path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\' -name EnableMDNS -ErrorAction Ignore
         if ($mdns.EnableMulticast -ne 0) {
             $Issue = [pscustomobject]@{
-                Technique = (to_red "[HIGH]") + " mDNS is vulnerable to layer 2 poisoning attacks"
+                Technique   = (to_red "[HIGH]") + " mDNS is vulnerable to layer 2 poisoning attacks"
                 RegistryKey = "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\EnableMDNS is not set to 0"
-                Issue     = "mDNS is a legacy name resolution protocol not disabled in $domain via GPO"
+                Issue       = "mDNS is a legacy name resolution protocol not disabled in $domain via GPO"
             }
             $Issue
         } 
@@ -128,14 +128,7 @@ function Find-LegacyProtocols {
             $Timeout
         )
         $SMBv1 = Get-SmbVersionStatus -ComputerName $ComputerName -SmbVersion 'SMB1' -Timeout $Timeout
-        if ($SMBv1 -eq $true) {
-            $Issue = [pscustomobject]@{
-                Technique = (to_red "[HIGH]") + " SMBv1 is vulnerable to EternalBlue and other exploits"
-                Computer  = $ComputerName
-                Issue     = "SMBv1 is enabled on $ComputerName"
-            }
-            $Issue
-        }
+        return $SMBv1
     }
 
     #convert raw SMB packet to byte array
@@ -273,9 +266,28 @@ function Find-LegacyProtocols {
     #Remove any null values (as will make SMB checks run for a long time)
     $ADComputers = $ADComputers | ? { $_ }
 
+    #Intialise issue
+    $SMBv1Issue = [pscustomobject]@{
+        Technique      = (to_red "[HIGH]") + " SMBv1 is enabled on computers"
+        SMBv1Computers = ""
+        Issue          = "SMBv1 is enabled on computers. SMBv1 vulnerable to EternalBlue and other exploits facilitating DoS and RCE"
+    }
+
     #check all computers in domain for SMB signing
     foreach ($computer in $ADComputers) {
         Write-Host "Checking $computer for SMBv1... " -ForegroundColor Yellow
-        Get-SMBv1 -ComputerName $computer -Timeout 2     
+        $GetSMBv1 = Get-SMBv1 -ComputerName $computer -Timeout 2 
+        
+        if ($GetSMBv1 -eq $true) {
+            if($SMBv1Issue.SMBv1Computers -eq '') {
+                $SMBv1Issue.SMBv1Computers += $computer
+            }
+            else {
+                $SMBv1Issue.SMBv1Computers += "`r`n$computer"
+            }
+        }
+    }
+    if ($SMBv1Issue.SMBv1Computers -ne '') {
+        $SMBv1Issue
     }
 }
