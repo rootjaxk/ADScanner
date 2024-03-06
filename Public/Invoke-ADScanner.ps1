@@ -46,12 +46,16 @@ function Invoke-ADScanner {
     
         [Parameter()]
         [String]
-        $Scans = "All"
+        $Scans = "All",
+
+        [Parameter()]
+        [Switch]
+        $Help
     )    
 
 
     # Display help menu if ran incorrectly
-    if (-not $Domain) {
+    if (-not $Domain -or $Help) {
         Write-Host "Example Usage:  Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\temp\
             -Domain     The domain to scan. If don't know scanner will automatically use the current domain the system is joined to (Get-ADDomain)
             -Scans      The scan type to choose (Info, Kerberos, PKI, RBAC, ACLs, Passwords, MISC, Legacy (Default: All))
@@ -60,6 +64,22 @@ function Invoke-ADScanner {
     " 
         return
     }
+
+    #Logo made with https://patorjk.com/software/taag/#p=display&f=Big&t=ADScanner
+    $Logo = @"
+
+    /\   |  __ \ / ____|                                
+    /  \  | |  | | (___   ___ __ _ _ __  _ __   ___ _ __ 
+   / /\ \ | |  | |\___ \ / __/ _` | '_ \| '_ \ / _ \ '__|
+  / ____ \| |__| |____) | (_| (_| | | | | | | |  __/ |   
+ /_/    \_\_____/|_____/ \___\__,_|_| |_|_| |_|\___|_|   
+
+ [+] Jack G (@rootjack) https://github.com/rootjaxk/ADScanner
+                                                   
+"@
+
+    Write-Host $Logo -ForegroundColor Yellow
+
     #Colours for console output
     function to_red ($msg) {
         "$([char]0x1b)[91m$msg$([char]0x1b)[0m"
@@ -108,34 +128,30 @@ function Invoke-ADScanner {
         }
     }
 
+    Write-Host "[*] Checking pre-requisites..." -ForegroundColor Yellow
+
     if (Test-RSAT-Installed) {
-        Write-Host "RSAT is installed. Importing ActiveDirectory module..."
         Import-Module ActiveDirectory
     }
     else {
-        Write-Host "RSAT is not installed. Please install RSAT as an elevated user before running this script."
-        Write-Host "Command: Install-WindowsFeature -Name RSAT-AD-PowerShell" #- only works on servers, on workstaions need to do Add-WindowsCapability -Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0 -Online (see locksmith) - https://github.com/TrimarcJake/Locksmith/blob/main/Private/Install-RSATADPowerShell.ps1
-        Write-Host "Command: Install-WindowsFeature -Name GPMC"         #For GPOs
+        Write-Host "RSAT is not installed. Please install RSAT as an elevated user before running this script." -ForegroundColor Yellow
+        Write-Host "Command: Install-WindowsFeature -Name RSAT-AD-PowerShell" -ForegroundColor Yellow #- only works on servers, on workstaions need to do Add-WindowsCapability -Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0 -Online (see locksmith) - https://github.com/TrimarcJake/Locksmith/blob/main/Private/Install-RSATADPowerShell.ps1
+        Write-Host "Command: Install-WindowsFeature -Name GPMC" -ForegroundColor Yellow         #For GPOs
         return
     }   
     
-    if (Test-RSATADCS-Installed) {
-        Write-Host "RSAT ADCS is installed."
-        
-    }
-    else {
-        Write-Host "RSAT is not installed. Please install RSAT as an elevated user before running this script."
-        Write-Host "Command: Install-WindowsFeature -Name RSAT-ADCS"
+    if (-not (Test-RSATADCS-Installed)) {
+        Write-Host "RSAT is not installed. Please install RSAT as an elevated user before running this script." -ForegroundColor Yellow
+        Write-Host "Command: Install-WindowsFeature -Name RSAT-ADCS" -ForegroundColor Yellow
         return
     }
 
     if (Test-PSPKI-Installed) {
-        Write-Host "PSPKI is installed. Importing PSPKI module..."
         Import-Module PSPKI
     }
     else {
-        Write-Host "PSPKI is not installed. Please install PSPKI as an elevated user before running this script."
-        Write-Host "Command: Install-Module -Name PSPKI -Force"
+        Write-Host "PSPKI is not installed. Please install PSPKI as an elevated user before running this script." -ForegroundColor Yellow
+        Write-Host "Command: Install-Module -Name PSPKI -Force" -ForegroundColor Yellow
         return
     }   
     
@@ -199,7 +215,7 @@ function Invoke-ADScanner {
     }
 
     # Passwords
-    if ($Scans -eq "PwdPolicy" -or $Scans -eq "All" ){
+    if ($Scans -eq "PwdPolicy" -or $Scans -eq "All" ) {
         $Pwd += Find-PasswordPolicy -Domain $Domain
         $Pwd += Find-PwdNotRequired -Domain $Domain
         $Pwd += Find-LAPS -Domain $Domain
@@ -225,37 +241,46 @@ function Invoke-ADScanner {
 
 
     if ($Scans -eq "All") {
-        Clear-Host
         #Write-Host "ASCII ARTT" -ForegroundColor Cyan
-        #domain scanned
-        #whoran by
-        #host run on
-        #date
-        #time took to run
+        Write-Host @"
+#####################################################################################
+#                                   Run Info                                        #
+##################################################################################### 
+"@
+        $endTime = Get-Date
+        $elapsedTime = $endTime - $startTime
+        $Runinfo = [PSCustomObject]@{
+            "Domain Checked" = $Domain
+            "Ran as User"    = "$env:USERDOMAIN\$env:USERNAME"
+            "Ran on Host"    = (Get-ADComputer -Identity $env:COMPUTERNAME).dnshostname
+            "Date and Time"  = $startTime
+            "Time to Run"    = $($elapsedTime.TotalSeconds)
+        }
+        $Runinfo | Format-List
 
         Write-Host @"
 #####################################################################################
-#                          Risk Prioritisation Summary                             #
+#                          Risk Prioritisation Summary                              #
 #####################################################################################
 "@
         #Category of risks - array of hashtables
         $categoryVariables = @(
-            @{Name="DomainInfo"; Variable=$DomainInfo},
-            @{Name="Kerberos"; Variable=$Kerberos},
-            @{Name="PKI"; Variable=$PKI},
-            @{Name="RBAC"; Variable=$RBAC},
-            @{Name="ACLs"; Variable=$ACLs},
-            @{Name="Pwd"; Variable=$Pwd},
-            @{Name="MISC"; Variable=$MISC},
-            @{Name="Legacy"; Variable=$Legacy}
+            @{Name = "DomainInfo"; Variable = $DomainInfo },
+            @{Name = "Kerberos"; Variable = $Kerberos },
+            @{Name = "PKI"; Variable = $PKI },
+            @{Name = "RBAC"; Variable = $RBAC },
+            @{Name = "ACLs"; Variable = $ACLs },
+            @{Name = "Pwd"; Variable = $Pwd },
+            @{Name = "MISC"; Variable = $MISC },
+            @{Name = "Legacy"; Variable = $Legacy }
         )
 
         #Total risk score
-        foreach ($item in $categoryVariables){
+        foreach ($item in $categoryVariables) {
             $totaldomainriskscore += ($item.Variable | Measure-Object -Property Score -Sum).Sum
         } 
         $Domainrisk = [PSCustomObject]@{
-            Category = "$Domain"
+            Category   = $Domain
             TotalScore = "$TotalDomainRiskScore / 100"
         }
         Write-Host "[*] Domain risk score:"
@@ -265,7 +290,7 @@ function Invoke-ADScanner {
         #categoryrisks
         $categoryRisks += foreach ($item in $categoryVariables) {
             [PSCustomObject]@{
-                Category = $item.Name
+                Category   = $item.Name
                 TotalScore = ($item.Variable | Measure-Object -Property Score -Sum).Sum
             }
         }
@@ -276,7 +301,7 @@ function Invoke-ADScanner {
         $Risksummaries = "`r`n[*] Risk summaries:"
         $Allissues += $DomainInfo + $PKI + $Kerberos + $RBAC + $ACLs + $Pwd + $MISC + $Legacy
         $Risksummaries
-        $Allissues | Select-Object Technique,Score | Sort-Object -Property Score -Descending | Format-Table
+        $Allissues | Select-Object Technique, Score | Sort-Object -Property Score -Descending | Format-Table
 
     }
 
@@ -366,9 +391,4 @@ function Invoke-ADScanner {
 
     #Produce report
     #Generate-Report
-
-    #Calculate time to run
-    $endTime = Get-Date
-    $elapsedTime = $endTime - $startTime
-    Write-Host "ADScanner took $($elapsedTime.TotalSeconds) seconds to run."
 }

@@ -2,6 +2,7 @@ function Find-SensitiveInfo {
     <#
     .SYNOPSIS
     Searches for sensitive information in sysvol and netlogon folders. This includes credentials and misconfigured logon script permissions.
+    Also finds insecure ACLs on scripts in sysvol and netlogon folders.
 
     Inspired by https://github.com/techspence/ScriptSentry 
   
@@ -42,14 +43,6 @@ function Find-SensitiveInfo {
         Credential = ""
         Issue      = "Hardcoded plaintext credentials found in SYSVOL. These can be used by any authenticated user and any account utilising them should be considered compromised."
     }
-    $ModifiablelogonIssue = [pscustomobject]@{
-        Technique = (to_red "[HIGH]") + " modifiable logon script - see baby2 for example exploitation"
-        Score     = 30
-        File      = ""
-        User      = ""
-        Rights    = ""
-        Issue     = "Low privileged user has write privileges to a logon script. A malcious actor could replace this script with a malicious one and run it on linked workstations"
-    }
     
     #find hardcoded creds or secrets in scripts
     foreach ($script in $LogonScripts) {
@@ -67,36 +60,10 @@ function Find-SensitiveInfo {
             }
         }
     }
-    
-    #finds insecure ACLs on scripts
-    $SafeUsers = "NT AUTHORITY\\SYSTEM|Administrator|NT SERVICE\\TrustedInstaller|Domain Admins|Server Operators|Enterprise Admins|Administrators|CREATOR OWNER"
-    $UnsafeRights = "FullControl|Modify|Write"
-    foreach ($script in $LogonScripts) {
-        Write-Host "Checking $($script.FullName) for unsafe permissions..." -ForegroundColor Yellow
-        #Get ACL for each script
-        $ACL = (Get-Acl $script.FullName).Access
-        foreach ($entry in $ACL) {
-            if ($entry.FileSystemRights -match $UnsafeRights -and $entry.AccessControlType -eq "Allow" -and $entry.IdentityReference -notmatch $SafeUsers) {
-                if ($ModifiablelogonIssue.File -eq '') {
-                    $ModifiablelogonIssue.File = $script.FullName
-                    $ModifiablelogonIssue.User = $entry.IdentityReference.Value
-                    $ModifiablelogonIssue.Rights = $entry.FileSystemRights
-                }
-                else {
-                    $ModifiablelogonIssue.File += "`r`n$($script.FullName)"
-                    $ModifiablelogonIssue.User += "`r`n$($entry.IdentityReference.Value)"
-                    $ModifiablelogonIssue.Rights += "`r`n$($entry.FileSystemRights)"
-                }
-            }
-        }
-    } 
 
     #If issue output them
     if ($PlaintextCredIssue.File) {
         $PlaintextCredIssue
-    }
-    if ($ModifiablelogonIssue.File) {
-        $ModifiablelogonIssue
     }
 }
 

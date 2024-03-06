@@ -42,8 +42,8 @@ function Find-MAQ {
   #Check if the MAQ is default
   if ($MAQ -ne 0 -and $additionprivileges -eq "NT AUTHORITY\Authenticated Users") {
     $Issue = [pscustomobject]@{
-      Technique                   = (to_red "[HIGH]") + " Non-admin users can add computers to the domain"
-      Score                       = 25
+      Technique                   = (to_yellow "[MEDIUM]") + " Non-admin users can add computers to the domain"
+      Score                       = 19
       MachineAccountQuota         = $MAQ
       PermissiontoAddWorkstations = $additionprivileges
       Issue                       = "$additionprivileges can add $MAQ machines to $domain"

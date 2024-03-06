@@ -99,11 +99,24 @@ function Find-ACLs {
             break
           }
         }
-        #check for RBCD (write over computer object) - if computer object then RBCD
-        if (($object -match "CN=Computers" -or $object -match "OU=Domain Controllers") -and ($ace.AccessControlType -eq "Allow") -and ($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
+        #if any low-privileged users have dangerous rights over the domain itself (tier 0)
+        if ((($DomainACLs.path -split '/')[-1] -eq $searchBase) -and ($ace.ActiveDirectoryRights -match $DangerousRights) -and ($ace.AccessControlType -eq "Allow") -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch)) {
+          $Issue = [pscustomobject]@{
+            Technique             = (to_red "[CRITICAL]") + " [RIGHTS] - Low privileged principal with dangerous rights"
+            Score                 = 50
+            ObjectName            = ($DomainACLs.path -split '/')[-1]
+            IdentityReference     = $ace.IdentityReference
+            AccessControlType     = $ace.AccessControlType
+            ActiveDirectoryRights = $ace.ActiveDirectoryRights
+            Issue                 = "$($ace.IdentityReference) has dangerous ($($ace.ActiveDirectoryRights)) rights over $object"
+          }
+          $Issue
+        }
+        #check for RBCD (write over computer object) - if computer object then RBCD. DC will have higher risk
+        elseif (($object -match "CN=Computers" -or $object -match "OU=Domain Controllers") -and ($ace.AccessControlType -eq "Allow") -and ($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
           $Issue = [pscustomobject]@{
             Technique             = (to_red "[CRITICAL]") + " [RBCD] Low privileged principal with dangerous RBCD rights"
-            Score                 = 35
+            Score                 = if ($object -match "OU=Domain Controllers") { 50 } else { 35 }
             ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference
             AccessControlType     = $ace.AccessControlType
@@ -112,10 +125,10 @@ function Find-ACLs {
           }
           $Issue
         }
-        # if any low-privileged users have dangerous rights over object
+        # else if any low-privileged users have dangerous rights over object
         elseif (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($ace.AccessControlType -eq "Allow") -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
           $Issue = [pscustomobject]@{
-            Technique             = (to_red "[CRITICAL]") + " [RIGHTS] - Low privileged principal with dangerous rights"
+            Technique             = (to_red "[HIGH]") + " [RIGHTS] - Low privileged principal with dangerous rights"
             Score                 = 35
             ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference
@@ -142,7 +155,7 @@ function Find-ACLs {
         elseif (($object -match "CN=Computers" -or ($object -match "OU=Domain Controllers" -and $object -notmatch "CN=.*,OU=Domain Controllers")) -and ($ace.ObjectType -eq "00000000-0000-0000-0000-000000000000") -and ($ace.ActiveDirectoryRights -match "ExtendedRights") -and ($SID -notmatch $PrivilegedACLUsers -and $SID -notmatch $privilegedGroupMatch)) {
           $Issue = [pscustomobject]@{
             Technique             = (to_red "[CRITICAL]") + " [LAPS] - low privileged principal can LAPS password"
-            Score                 = 35
+            Score                 = if ($object -match "OU=Domain Controllers") { 50 } else { 35 }
             ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference
             AccessControlType     = $ace.AccessControlType
@@ -154,14 +167,58 @@ function Find-ACLs {
       }
     }
   }
+
+  #####################
+  #    SYSVOL ACLs    #
+  #####################
+
+  #define SYSVOL and NETLOGON scripts
+  $SysvolScripts = "\\$Domain\sysvol\$Domain\scripts"
+
+  #find scripts
+  $ExtensionList = '.bat|.vbs|.ps1|.cmd|.txt|.ps1|.psm1|.psd1|.conf|.config|.cfg|.xml'
+  $LogonScripts = try { 
+    Get-ChildItem -Path $SysvolScripts -Recurse | Where-Object { $_.Extension -match $ExtensionList } 
+  } 
+  #catch errors
+  catch {}
+
+  #Initialise issue
+  $ModifiablelogonIssue = [pscustomobject]@{
+    Technique             = (to_red "[HIGH]") + " modifiable logon script - see baby2 for example exploitation"
+    Score                 = 30
+    File                  = ""
+    IdentityReference     = ""
+    ActiveDirectoryRights = ""
+    Issue                 = "Low privileged user has write privileges to a logon script. A malcious actor could replace this script with a malicious one and run it on linked workstations"
+  }
+
+  #finds insecure ACLs on scripts
+  $SafeUsers = "NT AUTHORITY\\SYSTEM|Administrator|NT SERVICE\\TrustedInstaller|Domain Admins|Server Operators|Enterprise Admins|Administrators|CREATOR OWNER"
+  $UnsafeRights = "FullControl|Modify|Write"
+  foreach ($script in $LogonScripts) {
+    Write-Host "Checking $($script.FullName) for unsafe permissions..." -ForegroundColor Yellow
+    #Get ACL for each script
+    $ACL = (Get-Acl $script.FullName).Access
+    foreach ($entry in $ACL) {
+      if ($entry.FileSystemRights -match $UnsafeRights -and $entry.AccessControlType -eq "Allow" -and $entry.IdentityReference -notmatch $SafeUsers) {
+        if ($ModifiablelogonIssue.File -eq '') {
+          $ModifiablelogonIssue.File = $script.FullName
+          $ModifiablelogonIssue.IdentityReference = $entry.IdentityReference.Value
+          $ModifiablelogonIssue.ActiveDirectoryRights = $entry.FileSystemRights
+        }
+        else {
+          $ModifiablelogonIssue.File += "`r`n$($script.FullName)"
+          $ModifiablelogonIssue.IdentityReference += "`r`n$($entry.IdentityReference.Value)"
+          $ModifiablelogonIssue.ActiveDirectoryRights += "`r`n$($entry.FileSystemRights)"
+        }
+      }
+    }
+  } 
+
+  #If issue output them
+  if ($ModifiablelogonIssue.File) {
+    $ModifiablelogonIssue
+  }
+
 }
-
-#potential - todo
-
-#Design tiering system first
-  
-#Check for tiering violations (with ACLs over all user/group/OU objects)
-
-#Tier 1/2 over tier 0
-
-#Tier 2 over tier 1

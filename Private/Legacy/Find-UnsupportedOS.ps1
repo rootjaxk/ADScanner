@@ -27,7 +27,7 @@ function Find-UnsupportedOS {
     $searchBase = $SearchBaseComponents -join ','
 
     #legacy OS as of 2024:
-    $unsupportedOS = @("Windows NT*", "Windows ME*", "Windows 95*", "Windows 98*", "Windows 2000", "Windows Vista*", "Windows 7*", "Windows 8*", "Windows Server 2003*", "Windows Server 2008*", "Windows Server 2012*")
+    $unsupportedOS = @("Windows NT*", "Windows ME*", "Windows 95*", "Windows 98*", "Windows XP*", "Windows 2000*", "Windows Vista*", "Windows 7*", "Windows 8*", "Windows Server 2003*", "Windows Server 2008*", "Windows Server 2012*")
 
     $Outdated_EnabledIssue = [pscustomobject]@{
         Technique        = (to_red "[HIGH]") + " Outdated Operating Systems found"
