@@ -30,7 +30,7 @@ function Find-UnsupportedOS {
     $unsupportedOS = @("Windows NT*", "Windows ME*", "Windows 95*", "Windows 98*", "Windows 2000", "Windows Vista*", "Windows 7*", "Windows 8*", "Windows Server 2003*", "Windows Server 2008*", "Windows Server 2012*")
 
     $Outdated_EnabledIssue = [pscustomobject]@{
-        Technique        = (to_red "[CRITICAL]") + " Outdated Operating Systems found"
+        Technique        = (to_red "[HIGH]") + " Outdated Operating Systems found"
         Score            = 30
         OperatingSystems = ""
         Issues           = ""

@@ -42,7 +42,7 @@ function Find-InactiveAccounts {
   if ($stale_not_disabled) {
     $Issue = [pscustomobject]@{
       Technique     = (to_green "[LOW]") + " Inactive/stale accounts are not disabled"
-      Score         = 10
+      Score         = 5
       Totalinactive = $totalstale
       StaleUsers    = $stale_not_disabled.samaccountname
       Issue         = "The are $totalstale inactive accounts found in $domain. A JML process should be enforced that disables accounts not used after a period of inactivity to prevent unauthorised use and conform to principle of least privilege"

@@ -43,8 +43,8 @@ function Find-Kerberoast {
 
   #Initalise issues
   $KerberoastDisabled = [pscustomobject]@{
-    Technique = (to_green "[LOW]") + " Disabled kerberoastable account"
-    Score     = 10
+    Technique = (to_green "[LOW]") + " Disabled Kerberoastable account"
+    Score     = 9
     Users     = ""
     SPN       = ""
     Enabled   = "False"
@@ -53,7 +53,7 @@ function Find-Kerberoast {
   $KerberoastDisabledcount = 0
 
   $Kerberoastprivileged_weakpwd = [pscustomobject]@{
-    Technique = (to_red "[CRITICAL]") + " Highly privileged kerberoastable user with a weak password"
+    Technique = (to_red "[CRITICAL]") + " Highly privileged Kerberoastable user with a weak password"
     Score     = 50
     Users     = ""
     SPN       = ""
@@ -64,7 +64,7 @@ function Find-Kerberoast {
   $Kerberoastprivileged_weakpwdcount = 0
 
   $Kerberoastprivileged_strongpwd = [pscustomobject]@{
-    Technique = (to_red "[HIGH]") + " Highly privileged kerberoastable user with strong password"
+    Technique = (to_red "[HIGH]") + " Highly privileged Kerberoastable user with strong password"
     Score     = 40
     Users     = ""
     SPN       = ""
@@ -75,7 +75,7 @@ function Find-Kerberoast {
   $Kerberoastprivileged_strongpwdcount = 0
 
   $Kerberoastlowprivileged_weakpwd = [pscustomobject]@{
-    Technique = (to_red "[HIGH]") + " Low privileged kerberoastable user with a weak password"
+    Technique = (to_red "[HIGH]") + " Low privileged Kerberoastable user with a weak password"
     Score     = 25
     Users     = ""
     SPN       = ""
@@ -85,7 +85,7 @@ function Find-Kerberoast {
   $Kerberoastlowprivileged_weakpwdcount = 0
 
   $Kerberoastlowprivileged_strongpwd = [pscustomobject]@{
-    Technique = (to_green "[LOW]") + " Low privileged kerberoasable user, but strong password set"
+    Technique = (to_yellow "[MEDIUM]") + " Low privileged Kerberoasable user, but strong password set"
     Score     = 12
     Users     = ""
     SPN       = ""

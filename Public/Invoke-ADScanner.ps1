@@ -54,7 +54,7 @@ function Invoke-ADScanner {
     if (-not $Domain) {
         Write-Host "Example Usage:  Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\temp\
             -Domain     The domain to scan. If don't know scanner will automatically use the current domain the system is joined to (Get-ADDomain)
-            -Scans      The scan type to choose (Info, Kerberos, PKI, RBAC, ACLs, PwdPolicy, MISC, Legacy (Default: All))
+            -Scans      The scan type to choose (Info, Kerberos, PKI, RBAC, ACLs, Passwords, MISC, Legacy (Default: All))
             -Format     The report format (console/html)
             -OutputPath The location to save the report
     " 
@@ -151,7 +151,7 @@ function Invoke-ADScanner {
     $PKI = @()
     $RBAC = @()
     $ACLs = @()
-    $PwdPolicy = @()
+    $Pwd = @()
     $MISC = @()
     $Legacy = @()
 
@@ -187,10 +187,10 @@ function Invoke-ADScanner {
   
     # RBAC
     if ($Scans -eq "RBAC" -or $Scans -eq "All") {
-        $RBAC += Find-PrivilegedGroups -Domain $Domain | ft
-        $RBAC += Find-AdminSDHolder -Domain $Domain | fl
-        $RBAC += Find-InactiveAccounts -Domain $Domain | fl
-        $RBAC += Find-AnonymousAccess -Domain $Domain | fl
+        $RBAC += Find-PrivilegedGroups -Domain $Domain
+        $RBAC += Find-AdminSDHolder -Domain $Domain
+        $RBAC += Find-InactiveAccounts -Domain $Domain
+        $RBAC += Find-AnonymousAccess -Domain $Domain
     }
 
     # ACLs
@@ -198,13 +198,13 @@ function Invoke-ADScanner {
         $ACLs += Find-ACLs -Domain $Domain
     }
 
-    #PwdPolicy
+    # Passwords
     if ($Scans -eq "PwdPolicy" -or $Scans -eq "All" ){
-        $PwdPolicy += Find-PasswordPolicy -Domain $Domain
-        $PwdPolicy += Find-PwdNotRequired -Domain $Domain
-        $PwdPolicy += Find-LAPS -Domain $Domain
-        $PwdPolicy += Find-SensitiveInfo -Domain $Domain
-        #$PwdPolicy +=Find-UserDescriptions -Domain $Domain -APIKey $APIkey
+        $Pwd += Find-PasswordPolicy -Domain $Domain
+        $Pwd += Find-PwdNotRequired -Domain $Domain
+        $Pwd += Find-LAPS -Domain $Domain
+        $Pwd += Find-SensitiveInfo -Domain $Domain
+        #$Pwd +=Find-UserDescriptions -Domain $Domain -APIKey $APIkey
     }
 
     # MISC
@@ -231,6 +231,10 @@ function Invoke-ADScanner {
 #                          Risk Prioritisation Summary                             #
 #####################################################################################
 "@
+
+        $Allissues = $DomainInfo + $PKI + $Kerberos + $RBAC + $ACLs + $Pwd + $MISC + $Legacy
+        $Allissues | Sort-Object -Property Score -Descending | Select-Object Technique,Score | Format-Table
+        
     }
 
     if ($Scans -eq "Info" -or $Scans -eq "All") {
@@ -268,7 +272,7 @@ function Invoke-ADScanner {
 #                                       RBAC                                        #
 #####################################################################################
 "@
-        $RBAC #| Sort-Object -Property Score -Descending
+        $RBAC | Sort-Object -Property Score -Descending | Format-List
     }
 
     if ($Scans -eq "ACLs" -or $Scans -eq "All") {
@@ -280,13 +284,13 @@ function Invoke-ADScanner {
         $ACLs | Sort-Object -Property Score -Descending | Format-List
     }
 
-    if ($Scans -eq "PwdPolicy" -or $Scans -eq "All") {
+    if ($Scans -eq "Passwords" -or $Scans -eq "All") {
         Write-Host @"
 #####################################################################################
 #                                     Passwords                                     #
 #####################################################################################
 "@
-        $PwdPolicy | Sort-Object -Property Score -Descending | Format-List
+        $Pwd | Sort-Object -Property Score -Descending | Format-List
     }
 
     if ($Scans -eq "MISC" -or $Scans -eq "All") {

@@ -72,7 +72,7 @@ function Find-LDAPSigning {
         if ($globalcatalogLDAP -eq $true -or $connectionLDAP -eq $true) {
             $Issue = [pscustomobject]@{
                 Technique        = (to_yellow "[MEDIUM]") + " LDAP signing or channel binding is not enforced"
-                Score            = 25
+                Score            = 19
                 DomainController = $dc
                 Issue            = "LDAP bind without SSL was not rejected by $dc"
             }

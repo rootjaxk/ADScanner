@@ -54,7 +54,7 @@ Find-PrivilegedGroups -Domain test.local
   }
 
   $PrivilegedIssues = @()
-  $PrivilegedMembers = @()
+  $PrivilegedMembers = @("[*] Privileged Group info:")
 
   # Count number of users in each group
   foreach ($group in $groupMembers.GetEnumerator()) {
@@ -87,7 +87,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Enterprise Admins" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Technique = (to_red "[HIGH]") + " Enterprise Admins group does not meet the benchmark (maximum 10 users required)."
+        Technique = (to_red "[HIGH]") + " Enterprise Admins group does not meet the benchmark (maximum 0 users required)."
         Score = "20"
         Members = $group.Value
         MemberCount   = $group.Value.Count
@@ -96,7 +96,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "DnsAdmins" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Technique = (to_red "[HIGH]") + " DnsAdmins group does not meet the benchmark (maximum 10 users required)."
+        Technique = (to_red "[HIGH]") + " DnsAdmins group does not meet the benchmark (maximum 0 users required)."
         Score = "20"
         Members = $group.Value
         MemberCount   = $group.Value.Count
@@ -105,7 +105,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Backup Operators" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Technique = (to_red "[HIGH]") + " BackupOperators group does not meet the benchmark (maximum 10 users required)."
+        Technique = (to_red "[HIGH]") + " BackupOperators group does not meet the benchmark (maximum 0 users required)."
         Score = "20"
         Members = $group.Value
         MemberCount   = $group.Value.Count
@@ -114,7 +114,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Server Operators" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Technique = (to_red "[HIGH]") + " Server Operators group does not meet the benchmark (maximum 10 users required)."
+        Technique = (to_red "[HIGH]") + " Server Operators group does not meet the benchmark (maximum 0 users required)."
         Score = "20"
         Members = $group.Value
         MemberCount   = $group.Value.Count
@@ -123,7 +123,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Account Operators" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Technique = (to_red "[HIGH]") + " Account Operators group does not meet the benchmark (maximum 10 users required)."
+        Technique = (to_red "[HIGH]") + " Account Operators group does not meet the benchmark (maximum 0 users required)."
         Score = "20"
         Members = $group.Value
         MemberCount   = $group.Value.Count
@@ -132,7 +132,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Print Operators" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Technique = (to_red "[HIGH]") + " Print Operators group does not meet the benchmark (maximum 10 users required)."
+        Technique = (to_red "[HIGH]") + " Print Operators group does not meet the benchmark (maximum 0 users required)."
         Score = "20"
         Members = $group.Value
         MemberCount   = $group.Value.Count
@@ -141,7 +141,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Remote Desktop Users" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Technique = (to_red "[HIGH]") + " Remote Desktop Users group does not meet the benchmark (maximum 10 users required)."
+        Technique = (to_red "[HIGH]") + " Remote Desktop Users group does not meet the benchmark (maximum 0 users required)."
         Score = "20"
         Members = $group.Value
         MemberCount   = $group.Value.Count
@@ -150,7 +150,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Schema Admins" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Technique = (to_red "[HIGH]") + " Schema Admins group does not meet the benchmark (maximum 10 users required)."
+        Technique = (to_red "[HIGH]") + " Schema Admins group does not meet the benchmark (maximum 0 users required)."
         Score = "20"
         Members = $group.Value
         MemberCount   = $group.Value.Count
@@ -158,8 +158,6 @@ Find-PrivilegedGroups -Domain test.local
       $PrivilegedIssues += $Issue
     }
   } 
-  Write-Host "[*] Privileged Groups:"
-  $PrivilegedMembers | ft
-  Write-Host "[*] Findings:" 
+  #$PrivilegedMembers - info could be used later in web report
   $PrivilegedIssues
 }

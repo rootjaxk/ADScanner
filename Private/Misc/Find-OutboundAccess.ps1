@@ -57,7 +57,7 @@ function Find-OutboundAccess {
   #check if user is administrative user - outbound access is higher risk 
   if ($admin -eq $true -and ($exploitresponse -match "200 OK" -or $socialURLresponse -match "200 OK" -or $nonessentialbuisnessURLresponse -match "200 OK")) {
     $Issue = [pscustomobject]@{
-      Technique = (to_red "[CRITICAL]") + " Unrestricted outbound access"
+      Technique = (to_red "[HIGH]") + " Unrestricted outbound access"
       Score     = 35
       Name      = $hostname
       User      = $userrun
