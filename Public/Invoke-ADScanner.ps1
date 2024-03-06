@@ -225,16 +225,59 @@ function Invoke-ADScanner {
 
 
     if ($Scans -eq "All") {
-        #give risk for each category - need to change to if scan type any 
+        Clear-Host
+        #Write-Host "ASCII ARTT" -ForegroundColor Cyan
+        #domain scanned
+        #whoran by
+        #host run on
+        #date
+        #time took to run
+
         Write-Host @"
 #####################################################################################
 #                          Risk Prioritisation Summary                             #
 #####################################################################################
 "@
+        #Category of risks - array of hashtables
+        $categoryVariables = @(
+            @{Name="DomainInfo"; Variable=$DomainInfo},
+            @{Name="Kerberos"; Variable=$Kerberos},
+            @{Name="PKI"; Variable=$PKI},
+            @{Name="RBAC"; Variable=$RBAC},
+            @{Name="ACLs"; Variable=$ACLs},
+            @{Name="Pwd"; Variable=$Pwd},
+            @{Name="MISC"; Variable=$MISC},
+            @{Name="Legacy"; Variable=$Legacy}
+        )
 
-        $Allissues = $DomainInfo + $PKI + $Kerberos + $RBAC + $ACLs + $Pwd + $MISC + $Legacy
-        $Allissues | Sort-Object -Property Score -Descending | Select-Object Technique,Score | Format-Table
-        
+        #Total risk score
+        foreach ($item in $categoryVariables){
+            $totaldomainriskscore += ($item.Variable | Measure-Object -Property Score -Sum).Sum
+        } 
+        $Domainrisk = [PSCustomObject]@{
+            Category = "$Domain"
+            TotalScore = "$TotalDomainRiskScore / 100"
+        }
+        Write-Host "[*] Domain risk score:"
+        $Domainrisk | Format-Table
+
+        Write-Host "`r`n[*] Category Risk scores:"
+        #categoryrisks
+        $categoryRisks += foreach ($item in $categoryVariables) {
+            [PSCustomObject]@{
+                Category = $item.Name
+                TotalScore = ($item.Variable | Measure-Object -Property Score -Sum).Sum
+            }
+        }
+        $categoryRisks | Sort-Object -Property TotalScore -Descending
+
+        #Ordered risks
+        #summary of findings
+        $Risksummaries = "`r`n[*] Risk summaries:"
+        $Allissues += $DomainInfo + $PKI + $Kerberos + $RBAC + $ACLs + $Pwd + $MISC + $Legacy
+        $Risksummaries
+        $Allissues | Select-Object Technique,Score | Sort-Object -Property Score -Descending | Format-Table
+
     }
 
     if ($Scans -eq "Info" -or $Scans -eq "All") {
@@ -311,8 +354,6 @@ function Invoke-ADScanner {
         $Legacy | Sort-Object -Property Score -Descending | Format-List
     }
 
-
-        
 
     #wont output to screen in order as different ones take different amount of time, but when testing this is ok. real will save to variable for use in report
 
