@@ -292,18 +292,46 @@ function Invoke-ADScanner {
         $categoryRisks += foreach ($item in $categoryVariables) {
             [PSCustomObject]@{
                 Category   = $item.Name
-                TotalScore = ($item.Variable | Measure-Object -Property Score -Sum).Sum
+                Score = ($item.Variable | Measure-Object -Property Score -Sum).Sum
             }
         }
         $categoryRisks | Sort-Object -Property TotalScore -Descending
 
-        #Ordered risks
-        #summary of findings
+        #Ordered summary of risks
         $Risksummaries = "`r`n[*] Risk summaries:"
         $Allissues += $DomainInfo + $PKI + $Kerberos + $RBAC + $ACLs + $Pwd + $MISC + $Legacy
-        $Risksummaries
-        $Allissues | Select-Object Technique, Score | Sort-Object -Property Score -Descending | Format-Table
 
+        #Add category to each issue
+        $Allissues | ForEach-Object {
+            try{
+            if ($_ -in $DomainInfo){
+                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "DomainInfo"
+            }
+            elseif ($_ -in $PKI) {
+                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "PKI"
+            }
+            elseif ($_ -in $Kerberos) {
+                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "Kerberos"
+            }
+            elseif ($_ -in $RBAC) {
+                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "RBAC"
+            }
+            elseif ($_ -in $ACLs) {
+                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "ACLs"
+            }
+            elseif ($_ -in $Pwd) {
+                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "Passwords"
+            }
+            elseif ($_ -in $MISC) {
+                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "MISC"
+            }
+            elseif ($_ -in $Legacy) {
+                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "Legacy"
+            }
+        }catch{}
+        }
+        $Risksummaries
+        $Allissues | Where-Object { $null -ne $_.Score } | Select-Object Technique, Category, Score | Sort-Object -Property Score -Descending | Format-Table
     }
 
     if ($Scans -eq "Info" -or $Scans -eq "All") {

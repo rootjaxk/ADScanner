@@ -64,7 +64,7 @@ function Find-ASREProast {
 
   $ASREPprivileged_strongpwd = [pscustomobject]@{
     Technique = (to_red "[HIGH]") + " Highly privileged ASREP-roastable user with a strong password"
-    Score     = 40
+    Score     = 39
     Users     = ""
     Memberof  = ""
     Enabled   = "True"

@@ -1,0 +1,345 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Report</title>
+    <style>
+        /* Style for the banner */
+        .banner {
+            background-color: #f2f2f2;
+            padding: 10px;
+            text-align: center;
+        }
+
+        /* Style for the logo */
+        .logo {
+            font-family: monospace;
+            white-space: pre;
+            font-weight: bold;
+        }
+
+        .summary {
+            max-width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+        }
+
+        .main-header {
+            background-color: #333;
+            /* Darker background color */
+            color: #fff;
+            /* White text color */
+            padding: 10px;
+            /* Add padding */
+            margin: 0;
+            text-align: center;
+        }
+
+        .finding-header {
+            background-color: #515151;
+            text-align: center;
+            color: #fff;
+            padding: 10px;
+        }
+
+        h2 {
+            text-decoration: underline;
+        }
+
+        h3 {
+            text-decoration: underline;
+        }
+
+        /* Style for the container */
+        .finding-container {
+            max-width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Style for the table */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .toggle:hover,
+        .link:hover {
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
+
+        .left-section {
+            flex: 1;
+            /* Grow and shrink equally */
+            margin-right: 20px;
+        }
+
+        /* Style for the tables */
+        .table-container {
+            margin-bottom: 20px;
+        }
+
+        .executive-summary {
+            flex: 2;
+        }
+
+        .risk {
+            width: 15%;
+            color: red;
+            font-weight: bold;
+        }
+
+        .risk-summary {
+            max-width: 82.5%;
+            margin: 0 auto;
+            padding: 0px;
+            margin-bottom: 50px;
+        }
+
+        .risk-summary-heading {
+            max-width: 80%;
+            text-align: center;
+            margin: 0 auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="banner">
+        <pre class="logo">
+    /\   |  __ \ / ____|                                
+   /  \  | |  | | (___   ___ __ _ _ __  _ __   ___ _ __ 
+  / /\ \ | |  | |\___ \ / __/ _` | '_ \| '_ \ / _ \ '__|
+ / ____ \| |__| |____) | (_| (_| | | | | | | |  __/ |   
+/_/    \_\_____/|_____/ \___\__,_|_| |_|_| |_|\___|_|   
+
+[+] Jack G (@rootjack) https://github.com/rootjaxk/ADScanner
+  </pre>
+    </div>
+    <div class="main-header">Domain vulnerability report for test.local</div>
+
+    <!-- Executive summary section -->
+    <div class="summary">
+        <!-- Left section for the tables -->
+        <div class="left-section">
+            <div class="table-container">
+                <h3>Total risk score</h3>
+                <p>test.local = 250/100</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>PKI</td>
+                            <td>150</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-container">
+                <h3>Details when ran</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Host</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>test\jack</td>
+                            <td>DC.test.local</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Right section for the executive summary -->
+        <div class="executive-summary">
+            <h2>Executive Summary (GPT to contextualize)</h2>
+            <p>ADscanner was commissioned to perform a vulnerability assessment against the test.local Active Directory
+                domain to ensure correct security configuration and operation of the Directory.
+                The audit indicates that the security of the Active Directory is reduced by the X, Y & Z. a number of
+                misconfigurations significantly increases the attack surface of Active Directory, and therefore the
+                network could be exploited by a determined attacker deploying ransomware and malware.</p>
+            <p>The below table summarises the number and criticality of the issues found during the audit:</p>
+        </div>
+    </div>
+
+    <!-- Executive prioritisation section -->
+    <div class="risk-summary">
+        <div class="risk-summary-heading">
+            <h2>Risk Prioritisation Summary</h2>
+            <p>The table below summarizes the number and criticality of findings in order of decreasing risk. Full
+                details can be found by clicking on each vulnerability which will take you to the relevant technical
+                section.</p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Technique</th>
+                    <th>Category</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="link"><u>[CRITICAL] ESC1</u></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>
+                <tr>
+                    <td class="link"><u>[CRITICAL] ESC7</u></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>
+                <tr>
+                    <td class="link"><u>[CRITICAL] ESC8</u></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="main-header">Technical section</div>
+    <div class="finding-header">Domain info</div>
+    <p></p>
+    <div class="finding-header">PKI</div>
+
+    <!-- Technical section -->
+    <div class="finding-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Technique</th>
+                    <th>Risk</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="toggle"><u>ESC1</u></td>
+                    <td class="risk">CRITICAL</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>User can enroll in certificate template for authentication and supply an
+                                            arbitrary SAN</td>
+                                        <td>MITRE ATT&CK ref</td>
+                                        <td>50</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td>PScustomobject</td>
+                                        <td><p>Issue explanation</p></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td><p>Attack explanation</p></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <td><p>Contextualized remediation (GPT)</p></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="toggle"><u>ESC7</u></td>
+                    <td class="risk">CRITICAL</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <p>Full finding info here...</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="toggle"><u>ESC8</u></td>
+                    <td class="risk">CRITICAL</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <p>Full finding info here...</p>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="finding-header">Kerberos</div>
+    <p></p>
+
+    <div class="finding-header">ACLs</div>
+    <p></p>
+
+    <div class="finding-header">RBAC</div>
+    <p></p>
+
+    <div class="finding-header">Passwords</div>
+    <p></p>
+
+    <div class="finding-header">MISC</div>
+    <p></p>
+
+    <div class="finding-header">Legacy</div>
+    <p></p>
+
+    <div class="main-header">Disclosure and next steps</div>
+    <p></p>
+
+
+    <!-- js to drop down each finding-->
+    <script>
+        // Get all the rows with class "toggle"
+        var toggles = document.querySelectorAll('.toggle');
+
+        // Add event listener to each toggle row
+        toggles.forEach(function (toggle) {
+            toggle.addEventListener('click', function () {
+                // Toggle the visibility of the next sibling element with class "finding"
+                var finding = this.parentNode.nextElementSibling;
+                finding.style.display = (finding.style.display === 'table-row') ? 'none' : 'table-row';
+            });
+        });
+    </script>
+</body>
+
+</html>

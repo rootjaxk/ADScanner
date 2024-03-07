@@ -65,7 +65,7 @@ function Find-Kerberoast {
 
   $Kerberoastprivileged_strongpwd = [pscustomobject]@{
     Technique = (to_red "[HIGH]") + " Highly privileged Kerberoastable user with strong password"
-    Score     = 40
+    Score     = 39
     Users     = ""
     SPN       = ""
     Memberof  = ""
