@@ -24,7 +24,7 @@ function Find-ESC7 {
     $Domain
   )
 
-  Write-Host '[*] Finding ESC7...' -ForegroundColor Yellow
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding ESC7..." -ForegroundColor Yellow
 
   #Safe user rights over CA
   $PrivilegedUsers = '-500$|-512$|-519$|-544$|-18$|-517$|-516$|-9$|-526$|-527$|S-1-5-10'

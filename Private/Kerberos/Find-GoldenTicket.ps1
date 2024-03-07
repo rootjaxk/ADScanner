@@ -18,8 +18,7 @@ function Find-GoldenTicket {
     [String]
     $Domain
   )
-
-  Write-Host '[*] Finding Potential Golden Tickets...' -ForegroundColor Yellow
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding Potential Golden Tickets..." -ForegroundColor Yellow
   
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }

@@ -28,8 +28,8 @@ function Find-ESC8 {
     $Domain
   )
 
-  Write-Host '[*] Finding ESC8...' -ForegroundColor Yellow
-  
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding ESC8..." -ForegroundColor Yellow
+
   ##################
   # Find endpoints #
   ##################
@@ -45,7 +45,7 @@ function Find-ESC8 {
   $httpsurl = "https://$CAendpoint"
 
   #test repsonse of http cert endpoint  useing curl (not alias of iwr) to retrieve raw HTTP headers (www-authenticate) as invoke-webrequest doesnt support response of all headers
-  Write-Host "Testing $httpurl" -ForegroundColor Yellow
+  Write-Host "Checking $httpurl" -ForegroundColor Yellow
   $httpresponse = cmd /c "curl $httpurl -verbose --connect-timeout 3 2>&1" 
 
   if ($httpresponse -match "Timed Out") {
@@ -57,7 +57,7 @@ function Find-ESC8 {
   }
 
   #test response of https cert endpoint
-  Write-Host "Testing $httpsurl" -ForegroundColor Yellow
+  Write-Host "Checking $httpsurl" -ForegroundColor Yellow
   $httpsresponse = cmd /c "curl $httpsurl -k -verbose --connect-timeout 3 2>&1" 
   if ($httpsresponse -match "Timed Out") {
     $httpsresponse = $null

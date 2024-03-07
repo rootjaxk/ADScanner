@@ -21,8 +21,8 @@ function Find-SensitiveInfo {
         [String]
         $Domain
     )
-  
-    Write-Host '[*] Finding sensitive info...' -ForegroundColor Yellow
+    
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding sensitive info..." -ForegroundColor Yellow
 
     #define SYSVOL and NETLOGON scripts
     $SysvolScripts = "\\$Domain\sysvol\$Domain\scripts"

@@ -19,7 +19,7 @@ function Find-PasswordPolicy {
     $Domain
   )
 
-  Write-Host '[*] Finding Password Policy...' -ForegroundColor Yellow
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding Password Policy..." -ForegroundColor Yellow
 
   $PwdPolicy = Get-ADDefaultDomainPasswordPolicy -Identity $Domain
 

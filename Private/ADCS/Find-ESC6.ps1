@@ -24,7 +24,7 @@ function Find-ESC6 {
   #Retrieve CA info
   $ADCSinfo = Find-ADCS -Domain $Domain
   
-  Write-Host '[*] Finding ESC6...' -ForegroundColor Yellow
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding ESC6..." -ForegroundColor Yellow
 
   #Check if CA is vulnerable to ESC6
   $ESC6 = certutil -config "$($ADCSinfo.dnshostname)\$($ADCSinfo.DisplayName)" -getreg "policy\EditFlags"

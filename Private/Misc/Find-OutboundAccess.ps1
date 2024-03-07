@@ -21,7 +21,7 @@ function Find-OutboundAccess {
     $Domain
   )
 
-  Write-Host '[*] Finding Outbound Access...' -ForegroundColor Yellow
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding Outbound Access..." -ForegroundColor Yellow
   
   #Dynamically extract hostname that script is run on
   $hostname = (Get-ADComputer -Identity $env:COMPUTERNAME).dnshostname

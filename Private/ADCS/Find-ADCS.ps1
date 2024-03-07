@@ -19,7 +19,7 @@ function Find-ADCS {
     $Domain
   )
 
-  Write-Host '[*] Finding CA info...' -ForegroundColor Yellow
+  Write-Host "Finding CA info..." -ForegroundColor Yellow
 
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
@@ -54,7 +54,7 @@ function Find-ADCSobjects {
     $Domain
   )
 
-  Write-Host '[*] Finding ADCS objects ...' -ForegroundColor Yellow
+  Write-Host "Finding ADCS objects ..." -ForegroundColor Yellow
 
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }

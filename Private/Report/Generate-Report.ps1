@@ -1,5 +1,5 @@
-function Generate-Report {
-    Write-Host '[*] Generating report...' -ForegroundColor Yellow
+function Generate-Report {   
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Generating report..." -ForegroundColor Yellow
 }
 
 # Generic report info

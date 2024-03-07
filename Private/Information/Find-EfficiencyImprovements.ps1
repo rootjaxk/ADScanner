@@ -19,7 +19,7 @@ function Find-EfficiencyImprovements {
     $Domain
   )
   
-  Write-Host '[*] Finding Efficiency Improvements...' -ForegroundColor Yellow
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding Efficiency Improvements..." -ForegroundColor Yellow
   
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
@@ -28,7 +28,7 @@ function Find-EfficiencyImprovements {
   #Empty OU issue
   $numOU = (Get-ADOrganizationalUnit -SearchBase $searchBase -filter *).Count
   
-  Write-Host '[*] Finding empty OUs...' -ForegroundColor Yellow
+  Write-Host "Finding empty OUs..." -ForegroundColor Yellow
   $emptyOU = Get-ADOrganizationalUnit -filter * -Properties * | Select-Object DistinguishedName, @{Name = "Length"; e = { $_.DistinguishedName.length } }, Name, @{Name = "numObject"; 
     Expression                                                                                                                                                          = { Get-ADObject -filter * -SearchBase $_.DistinguishedName | Where-Object { $_.objectclass -ne "organizationalunit" } | Measure-Object | Select-Object -ExpandProperty Count }
   } | Where-Object { $_.numObject -eq 0 } | Sort-Object -Property Length -Descending 
@@ -55,7 +55,7 @@ function Find-EfficiencyImprovements {
   }
   
   #Unlinked GPO issue
-  Write-Host '[*] Finding unlinked GPOs...' -ForegroundColor Yellow
+  Write-Host "Finding unlinked GPOs..." -ForegroundColor Yellow
   $GPOs = Get-GPO -All | Where-Object { $_ | Get-GPOReport -ReportType XML | Select-String -NotMatch "<LinksTo>" }
   
   #Loop through for issues

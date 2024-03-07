@@ -25,7 +25,7 @@ specifies which AD principals have specific permissions over the template.
     $Domain
   )
 
-  Write-Host '[*] Finding ESC4...' -ForegroundColor Yellow
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding ESC4..." -ForegroundColor Yellow
   
   #Get all ADCS objects
   $ADCSobjects = Find-ADCSobjects -Domain $Domain

@@ -32,7 +32,7 @@ function Find-ESC1 {
     $Domain
   )
 
-  Write-Host '[*] Finding ESC1...' -ForegroundColor Yellow
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding ESC1..." -ForegroundColor Yellow
   
   #Get all ADCS objects
   $ADCSobjects = Find-ADCSobjects -Domain $Domain

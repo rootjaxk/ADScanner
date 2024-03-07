@@ -20,7 +20,7 @@ function Find-LDAPSigning {
         $Domain
     )
 
-    Write-Host '[*] Finding LDAP signing & channel binding...' -ForegroundColor Yellow
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding LDAP signing & channel bindings..." -ForegroundColor Yellow
 
     $GCPortLDAP = '3268'
     $GCPortLDAPSSL = '3269'

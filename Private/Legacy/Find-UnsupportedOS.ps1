@@ -20,7 +20,7 @@ function Find-UnsupportedOS {
         $Domain
     )
 
-    Write-Host '[*] Finding unsupported operating systems...' -ForegroundColor Yellow
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding unsupported operating systems..." -ForegroundColor Yellow
   
     #Dynamically produce searchbase from domain parameter
     $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }

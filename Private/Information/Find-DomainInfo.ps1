@@ -19,7 +19,7 @@ function Find-DomainInfo {
     $Domain
   )
 
-  Write-Host '[*] Extracting Domain information...' -ForegroundColor Yellow
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Extracting Domain information..." -ForegroundColor Yellow
   
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }

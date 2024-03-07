@@ -23,7 +23,7 @@ function Find-LegacyProtocols {
         $Domain
     )
 
-    Write-Host '[*] Finding legacy protocols...' -ForegroundColor Yellow
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding legacy protocols..." -ForegroundColor Yellow
   
     #Dynamically produce searchbase from domain parameter
     $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
@@ -32,6 +32,7 @@ function Find-LegacyProtocols {
     #########
     # LLMNR #
     #########
+    Write-Host "Checking LLMNR..." -ForegroundColor Yellow
     try {
         $llmnr = Get-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows NT\DNSClient" -name EnableMulticast -ErrorAction Ignore
         if ($llmnr.EnableMulticast -ne 0) {
@@ -51,6 +52,7 @@ function Find-LegacyProtocols {
     ##########
     # NBT-NS #
     ##########
+    Write-Host "Checking NBT-NS..." -ForegroundColor Yellow
     $nbtns = Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\netbt\Parameters\interfaces\tcpip_*' -name NetBiosOptions -ErrorAction Ignore
     if ($nbtns.NetBiosOptions -ne 2) {
         $Issue = [pscustomobject]@{
@@ -68,6 +70,7 @@ function Find-LegacyProtocols {
     ########
     # mDNS #
     ########
+    Write-Host "Checking mDNS..." -ForegroundColor Yellow
     try {
         $mdns = Get-ItemProperty -path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\' -name EnableMDNS -ErrorAction Ignore
         if ($mdns.EnableMulticast -ne 0) {
@@ -87,6 +90,7 @@ function Find-LegacyProtocols {
     ##########
     # NTLMv1 #   
     ##########
+    Write-Host "Checking NTLMv1..." -ForegroundColor Yellow
     #LMCompatibilityLevel likely to be set in these GPOs, if configured
     $report = Get-GPOReport -Name 'Default Domain Controllers Policy' -ReportType html
     $report += Get-GPOReport -Name 'Default Domain Policy' -ReportType html

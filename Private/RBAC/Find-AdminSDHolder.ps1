@@ -22,7 +22,7 @@ function Find-AdminSDHolder {
     $Domain
   )
 
-  Write-Host '[*] Finding AdminSDHolder...' -ForegroundColor Yellow
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding AdminSDHolder..." -ForegroundColor Yellow
   
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }

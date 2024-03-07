@@ -21,7 +21,7 @@ function Find-ASREProast {
     $Domain
   )
 
-  Write-Host '[*] Finding ASREProastable Accounts...' -ForegroundColor Yellow
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding ASREProastable Accounts..." -ForegroundColor Yellow
   
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }

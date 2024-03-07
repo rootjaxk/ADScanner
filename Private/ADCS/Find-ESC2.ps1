@@ -27,7 +27,7 @@ function Find-ESC2 {
     $Domain
   )
 
-  Write-Host '[*] Finding ESC2...' -ForegroundColor Yellow
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding ESC2..." -ForegroundColor Yellow
   
   #Get all ADCS objects
   $ADCSobjects = Find-ADCSobjects -Domain $Domain

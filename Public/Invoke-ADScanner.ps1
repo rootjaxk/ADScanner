@@ -128,7 +128,7 @@ function Invoke-ADScanner {
         }
     }
 
-    Write-Host "[*] Checking pre-requisites..." -ForegroundColor Yellow
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Checking pre-requisites..." -ForegroundColor Yellow
 
     if (Test-RSAT-Installed) {
         Import-Module ActiveDirectory
@@ -173,7 +173,7 @@ function Invoke-ADScanner {
 
     #Perform vulnerability checks
     $startTime = Get-Date
-    Write-Host '[*] Scanning AD...' -ForegroundColor Yellow 
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Starting scan of $domain..." -ForegroundColor Yellow
 
     # Domain info
     if ($Scans -eq "Info" -or $Scans -eq "All") {
@@ -207,6 +207,7 @@ function Invoke-ADScanner {
         $RBAC += Find-AdminSDHolder -Domain $Domain
         $RBAC += Find-InactiveAccounts -Domain $Domain
         $RBAC += Find-AnonymousAccess -Domain $Domain
+        $RBAC += Find-SensitiveAccounts -Domain $Domain
     }
 
     # ACLs
@@ -239,9 +240,9 @@ function Invoke-ADScanner {
         $Legacy += Find-UnsupportedOS -Domain $Domain
     }
 
-
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Generating report..." -ForegroundColor Yellow
     if ($Scans -eq "All") {
-        #Write-Host "ASCII ARTT" -ForegroundColor Cyan
+        
         Write-Host @"
 #####################################################################################
 #                                   Run Info                                        #

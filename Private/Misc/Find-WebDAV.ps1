@@ -21,8 +21,8 @@ function Find-WebDAV {
     [String]
     $Domain
   )
-
-  Write-Host '[*] Finding WebDAV...' -ForegroundColor Yellow
+  
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding WebDAV..." -ForegroundColor Yellow
   
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }

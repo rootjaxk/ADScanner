@@ -22,7 +22,7 @@ function Find-ESC5 {
     $Domain
   )
 
-  Write-Host '[*] Finding ESC5...' -ForegroundColor Yellow
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding ESC5..." -ForegroundColor Yellow
 
   #####################################
   # Dynamically find privileged users #

@@ -24,7 +24,8 @@ function Find-AnonymousAccess {
         $Domain
     )
   
-    Write-Host '[*] Finding Anonymous Access...' -ForegroundColor Yellow
+    
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding Anonymous Access..." -ForegroundColor Yellow
     
     #Dynamically produce searchbase from domain parameter
     $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }

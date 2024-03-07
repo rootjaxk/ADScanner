@@ -20,7 +20,8 @@ function Find-PwdNotRequired {
     $Domain
   )
 
-  Write-Host '[*] Finding accounts not requiring a password...' -ForegroundColor Yellow
+  
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding accounts not requiring a password..." -ForegroundColor Yellow
   
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }

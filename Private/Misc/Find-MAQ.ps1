@@ -20,7 +20,7 @@ function Find-MAQ {
     $Domain
   )
 
-  Write-Host '[*] Finding MachineAccountQuota...' -ForegroundColor Yellow
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding MachineAccountQuota..." -ForegroundColor Yellow
   
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }

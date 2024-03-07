@@ -21,7 +21,8 @@ function Find-LAPS {
     $Domain
   )
 
-  Write-Host '[*] Finding LAPS...' -ForegroundColor Yellow
+  
+  Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Finding LAPS..." -ForegroundColor Yellow
 
   #Dynamically produce searchbase from domain parameter
   $SearchBaseComponents = $Domain.Split('.') | ForEach-Object { "DC=$_" }
