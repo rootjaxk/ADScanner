@@ -1,4 +1,4 @@
-function Find-UserDescription {
+function Find-UserDescriptions {
   <#
   .SYNOPSIS
   Searches LDAP returning accounts containing user / computer descriptions. Generative AI will then determine if descriptions may contain sensitive information 

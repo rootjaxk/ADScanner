@@ -50,7 +50,11 @@ function Invoke-ADScanner {
 
         [Parameter()]
         [Switch]
-        $Help
+        $Help,
+
+        [Parameter()]
+        [String]
+        $APIkey
     )    
 
 
@@ -61,6 +65,7 @@ function Invoke-ADScanner {
             -Scans      The scan type to choose (Info, Kerberos, PKI, RBAC, ACLs, Passwords, MISC, Legacy (Default: All))
             -Format     The report format (console/html)
             -OutputPath The location to save the report
+            -APIkey     The API key for ChatGPT to generate a summary of the report
     " 
         return
     }
@@ -93,10 +98,6 @@ function Invoke-ADScanner {
     function to_green ($msg) {
         "$([char]0x1b)[92m$msg$([char]0x1b)[0m"
     }
-
-    #First enter chatGPT API key (dynamically build from command to avoid hardcoding in script)
-    #$APIkey = Read-Host "Enter your ChatGPT API key"
-
 
     #Add a check to see if RSAT is installed, if not, say to install it before importing AD module
     function Test-RSAT-Installed {
@@ -154,7 +155,6 @@ function Invoke-ADScanner {
         Write-Host "Command: Install-Module -Name PSPKI -Force" -ForegroundColor Yellow
         return
     }   
-    
 
     #TO-DO - add functionality to do individual scans (for prioritised remediation)
 
@@ -221,7 +221,7 @@ function Invoke-ADScanner {
         $Pwd += Find-PwdNotRequired -Domain $Domain
         $Pwd += Find-LAPS -Domain $Domain
         $Pwd += Find-SensitiveInfo -Domain $Domain
-        #$Pwd +=Find-UserDescriptions -Domain $Domain -APIKey $APIkey
+        $Pwd += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
     }
 
     # MISC
@@ -288,7 +288,6 @@ function Invoke-ADScanner {
         $Domainrisk | Format-Table
 
         Write-Host "`r`n[*] Category Risk scores:"
-        #categoryrisks
         $categoryRisks += foreach ($item in $categoryVariables) {
             [PSCustomObject]@{
                 Category   = $item.Name

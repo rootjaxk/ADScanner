@@ -1,0 +1,236 @@
+/* Style for the banner */
+.banner {
+    background-color: #f2f2f2;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Style for the logo */
+.logo {
+    font-family: monospace;
+    white-space: pre;
+    font-weight: bold;
+}
+
+.main-header {
+    background-color: #333;
+    /* Darker background color */
+    color: #fff;
+    /* White text color */
+    padding: 10px;
+    /* Add padding */
+    margin: 0;
+    text-align: center;
+}
+
+.summary {
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    border-bottom: 1px solid #333;
+}
+
+/* Style for the tables */
+.table-container {
+    margin-bottom: 20px;
+}
+
+/*left tables*/
+.summary-table {
+    width: 80%;
+    border-collapse: collapse;
+}
+
+/*right table*/
+.executive-summary {
+    flex: 2;
+}
+.custom-hr{
+    width: 50%;
+}
+
+
+
+/* Risk prioritisaion summary*/
+.risk-summary-container {
+    margin: 0 auto;
+    padding: 0px;
+    margin-bottom: 50px;
+}
+
+.risk-summary-heading {
+    max-width: 60%;
+    text-align: center;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.risk-prioritisation-summary {
+    width: 60%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.risk-column{
+    width:10%;
+    background-color: #263143;
+    color: #fff;
+    font-weight: lighter;
+}
+
+.technique-column {
+    width: 40%; /* Adjust the width as needed */
+    background-color: #263143;
+    color: #fff;
+    font-weight: lighter;
+}
+
+.category-column,
+.score-column {
+    width: 10%; /* Adjust the width as needed */
+    background-color: #263143;
+    color: #fff;
+}
+
+
+h2 {
+    text-decoration: underline;
+}
+
+h3 {
+    text-decoration: underline;
+}
+a{
+    color:black;
+}
+
+.critical{
+    background-color: rgb(180, 23, 23);
+}
+.high{
+    background-color: rgb(228, 45, 45);
+}
+.medium{
+    background-color: rgb(245, 167, 23);
+}
+.low{
+    background-color: rgb(246, 246, 27)
+}
+.information{
+    background-color: rgb(149, 200, 232);
+}
+
+
+
+
+
+
+
+
+
+/* Technical section */
+
+table{
+    width:100%;
+}
+
+.finding-header {
+    background-color: #263143;
+    text-align: center;
+    color: #fff;
+    padding: 10px;
+}
+
+.finding-container {
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.table-header {
+    background-color: #263143;
+    color: #fff;
+    font-weight: lighter;
+}
+
+th,td {
+    border: 1px solid #6c6a6a;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #d6d5d5;
+}
+
+.toggle {
+    background-color: #d6d5d5;
+}
+
+.finding-riskcritical {
+    background-color: #d6d5d5;
+    width: 15%;
+    background-color: rgb(180, 23, 23);
+    font-weight: bold;
+}
+.finding-riskhigh {
+    background-color: #d6d5d5;
+    width: 15%;
+    background-color: rgb(228, 45, 45);
+    font-weight: bold;
+}
+.finding-riskmedium {
+    background-color: #d6d5d5;
+    width: 15%;
+    background-color: rgb(245, 167, 23);
+    font-weight: bold;
+}
+.finding-risklow {
+    background-color: #d6d5d5;
+    width: 15%;
+    background-color: rgb(246, 246, 27);
+    font-weight: bold;
+}
+.finding-riskinformational {
+    background-color: #d6d5d5;
+    width: 15%;
+    background-color: rgb(149, 200, 232);
+    font-weight: bold;
+}
+
+
+
+
+.toggle:hover{
+    background-color: #d9d9d9;
+    cursor: pointer;
+}
+
+.left-section {
+    flex: 1;
+    /* Grow and shrink equally */
+    margin-right: 20px;
+}
+
+.attack-container{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+.attack-text{
+    flex: 1;
+    margin-right: 20px; /* Adjust spacing between text and image */
+  }
+  
+.image-cell{
+    flex: 1;
+    max-width: 40%; 
+}
+.image-cell img{
+    width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 10px;
+}
