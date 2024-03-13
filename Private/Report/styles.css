@@ -1,34 +1,59 @@
+body{
+    font-family: 'Segoe UI', sans-serif;
+}
 /* Style for the banner */
 .banner {
     background-color: #f2f2f2;
-    padding: 10px;
     text-align: center;
+    display:flex;
+    align-items: center;
 }
-
-/* Style for the logo */
-.logo {
-    font-family: monospace;
-    white-space: pre;
-    font-weight: bold;
+.banner-img{
+    height: 100%;
+    max-width: 100%;
 }
 
 .main-header {
-    background-color: #333;
-    /* Darker background color */
+    background-color: #333333;
     color: #fff;
-    /* White text color */
     padding: 10px;
-    /* Add padding */
     margin: 0;
     text-align: center;
+    font-weight:500;
 }
 
+
+/*risk overall bit*/
+.risk-overall{
+    display:flex;
+    border: 1px solid #333333;
+    margin-top: 10px;
+    max-width: 80%;
+    margin: auto;
+    margin-top: 10px;
+   
+}
+.left-image{
+    max-width:33%;
+}
+.left-image img{
+    max-width: 100%;
+    padding-left: 5%;
+    align-items: center;
+}
+.risk-overall-text{
+    margin-left: 3%;
+}
+
+
+
+/*executive summary bit*/
 .summary {
     max-width: 80%;
     margin: 0 auto;
     padding: 20px;
     display: flex;
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid #333333;
 }
 
 /* Style for the tables */
@@ -36,11 +61,41 @@
     margin-bottom: 20px;
 }
 
-/*left tables*/
+/*left table*/
 .summary-table {
     width: 80%;
     border-collapse: collapse;
+    font-weight:500;
+    font-size: 14px;
 }
+.summary-table th {
+    background-color: #263143;
+    color: #fff;
+    width:50%;
+}
+.summary-table td {
+    width: 50%;
+}
+
+
+.category-riskcritical {
+    background-color: rgb(194, 36, 36);
+}
+.category-riskhigh {
+    background-color: rgb(228, 45, 45);
+}
+.category-riskmedium {
+    background-color: rgb(245, 167, 23);
+}
+.category-risklow {
+    background-color: rgb(246, 246, 27);
+}
+/*if category score is 0*/
+.category-riskinformational {
+    background-color: rgb(98, 214, 117);
+}
+
+
 
 /*right table*/
 .executive-summary {
@@ -49,6 +104,9 @@
 .custom-hr{
     width: 50%;
 }
+
+
+
 
 
 
@@ -71,20 +129,19 @@
     margin: 0 auto;
     border-collapse: collapse;
     margin-bottom: 20px;
+    font-weight:500;
 }
 
 .risk-column{
     width:10%;
     background-color: #263143;
     color: #fff;
-    font-weight: lighter;
 }
 
 .technique-column {
     width: 40%; /* Adjust the width as needed */
     background-color: #263143;
     color: #fff;
-    font-weight: lighter;
 }
 
 .category-column,
@@ -99,15 +156,12 @@ h2 {
     text-decoration: underline;
 }
 
-h3 {
-    text-decoration: underline;
-}
 a{
     color:black;
 }
 
 .critical{
-    background-color: rgb(180, 23, 23);
+    background-color: rgb(194, 36, 36);
 }
 .high{
     background-color: rgb(228, 45, 45);
@@ -127,13 +181,10 @@ a{
 
 
 
-
-
-
 /* Technical section */
-
 table{
     width:100%;
+    border-collapse: collapse;
 }
 
 .finding-header {
@@ -141,6 +192,7 @@ table{
     text-align: center;
     color: #fff;
     padding: 10px;
+    font-weight:500;
 }
 
 .finding-container {
@@ -152,59 +204,47 @@ table{
 .table-header {
     background-color: #263143;
     color: #fff;
-    font-weight: lighter;
 }
 
 th,td {
-    border: 1px solid #6c6a6a;
+    border: 1px solid #263143;
     padding: 8px;
     text-align: left;
 }
 
+.toggle {
+    background-color: #abb9c0;
+    font-weight:500;
+}
 th {
-    background-color: #d6d5d5;
+    background-color: #6bb3cb;
 }
 
-.toggle {
-    background-color: #d6d5d5;
+
+.finding-riskcritical, .finding-riskhigh, .finding-riskmedium, .finding-risklow, .finding-riskinformational {
+    width: 15%;
+    font-weight:500;
 }
 
 .finding-riskcritical {
-    background-color: #d6d5d5;
-    width: 15%;
-    background-color: rgb(180, 23, 23);
-    font-weight: bold;
+    background-color: rgb(194, 36, 36);
 }
 .finding-riskhigh {
-    background-color: #d6d5d5;
-    width: 15%;
     background-color: rgb(228, 45, 45);
-    font-weight: bold;
 }
 .finding-riskmedium {
-    background-color: #d6d5d5;
-    width: 15%;
     background-color: rgb(245, 167, 23);
-    font-weight: bold;
 }
 .finding-risklow {
-    background-color: #d6d5d5;
-    width: 15%;
     background-color: rgb(246, 246, 27);
-    font-weight: bold;
 }
 .finding-riskinformational {
-    background-color: #d6d5d5;
-    width: 15%;
     background-color: rgb(149, 200, 232);
-    font-weight: bold;
 }
-
-
 
 
 .toggle:hover{
-    background-color: #d9d9d9;
+    background-color: #c4c4c4e0;
     cursor: pointer;
 }
 
@@ -234,3 +274,5 @@ th {
     display: block;
     margin-bottom: 10px;
 }
+
+.lin

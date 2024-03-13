@@ -79,6 +79,7 @@ function Invoke-ADScanner {
   / ____ \| |__| |____) | (_| (_| | | | | | | |  __/ |   
  /_/    \_\_____/|_____/ \___\__,_|_| |_|_| |_|\___|_|   
 
+ [+] Version: 1.0.0 - 13/03/2024
  [+] Jack G (@rootjack) https://github.com/rootjaxk/ADScanner
                                                    
 "@
@@ -221,7 +222,7 @@ function Invoke-ADScanner {
         $Pwd += Find-PwdNotRequired -Domain $Domain
         $Pwd += Find-LAPS -Domain $Domain
         $Pwd += Find-SensitiveInfo -Domain $Domain
-        $Pwd += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
+        #$Pwd += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
     }
 
     # MISC
