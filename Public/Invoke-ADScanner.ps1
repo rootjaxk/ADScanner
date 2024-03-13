@@ -179,8 +179,30 @@ function Invoke-ADScanner {
     # Domain info
     if ($Scans -eq "Info" -or $Scans -eq "All") {
         $DomainInfo += Find-DomainInfo -Domain $Domain
-        $DomainInfo += Find-EfficiencyImprovements -Domain $Domain
     }
+    #Generate report
+    $CertificateTemplates = $domaininfo.CertificateTemplates -join ', '
+    $CertificateAuthority = $domaininfo.CertificateAuthority -join ', '
+
+    $DomainInfohtml = @"
+<table>
+<tr><td>Domain:</td><td>$($domaininfo.Domain)</td></tr>
+<tr><td>FunctionalLevel:</td><td>$($domaininfo.FunctionalLevel)</td></tr>
+<tr><td>DomainControllers:</td><td>$($domaininfo.DomainControllers)</td></tr>
+<tr><td>Users:</td><td>$($domaininfo.Users)</td></tr>
+<tr><td>Groups:</td><td>$($domaininfo.Groups)</td></tr>
+<tr><td>Computers:</td><td>$($domaininfo.Computers)</td></tr>
+<tr><td>Trusts:</td><td>$($domaininfo.Trusts)</td></tr>
+<tr><td>OUs:</td><td>$($domaininfo.OUs)</td></tr>
+<tr><td>GPOs:</td><td>$($domaininfo.GPOs)</td></tr>
+<tr><td>CertificateAuthority:</td><td>$CertificateAuthority</td></tr>
+<tr><td>CAtemplates:</td><td>$($domaininfo.CAtemplates)</td></tr>
+<tr><td>CertificateTemplates:</td><td>$CertificateTemplates</td></tr>
+</table>
+"@
+
+    #output to a file
+    #$DomainInfohtml | Out-File -FilePath "report.html"
 
     # PKI - ADCS
     if ($Scans -eq "ADCS" -or $Scans -eq "All") {
@@ -233,6 +255,7 @@ function Invoke-ADScanner {
         $MISC += Find-LDAPSigning -Domain $Domain
         $MISC += Find-Spooler -Domain $Domain
         $MISC += Find-WebDAV -Domain $Domain
+        $MISC += Find-EfficiencyImprovements -Domain $Domain
     }
 
     # Legacy
@@ -267,7 +290,6 @@ function Invoke-ADScanner {
 "@
         #Category of risks - array of hashtables
         $categoryVariables = @(
-            @{Name = "DomainInfo"; Variable = $DomainInfo },
             @{Name = "Kerberos"; Variable = $Kerberos },
             @{Name = "PKI"; Variable = $PKI },
             @{Name = "RBAC"; Variable = $RBAC },
@@ -299,15 +321,12 @@ function Invoke-ADScanner {
 
         #Ordered summary of risks
         $Risksummaries = "`r`n[*] Risk summaries:"
-        $Allissues += $DomainInfo + $PKI + $Kerberos + $RBAC + $ACLs + $Pwd + $MISC + $Legacy
+        $Allissues += $PKI + $Kerberos + $RBAC + $ACLs + $Pwd + $MISC + $Legacy
 
         #Add category to each issue
         $Allissues | ForEach-Object {
             try{
-            if ($_ -in $DomainInfo){
-                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "DomainInfo"
-            }
-            elseif ($_ -in $PKI) {
+            if ($_ -in $PKI) {
                 $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "PKI"
             }
             elseif ($_ -in $Kerberos) {
@@ -322,12 +341,13 @@ function Invoke-ADScanner {
             elseif ($_ -in $Pwd) {
                 $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "Passwords"
             }
-            elseif ($_ -in $MISC) {
-                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "MISC"
-            }
             elseif ($_ -in $Legacy) {
                 $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "Legacy"
             }
+            elseif ($_ -in $MISC) {
+                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "MISC"
+            }
+            
         }catch{}
         }
         $Risksummaries

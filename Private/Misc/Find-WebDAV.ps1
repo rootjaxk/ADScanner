@@ -45,25 +45,33 @@ function Find-WebDAV {
   }
   $WebDAVcount = 0
 
-  #Check each for presence of the WebDAV named pipe
+  $timeout = 1
+  
+  #Get active computers
   foreach ($computer in $Computers) {
-    try {
-      Write-Host "Checking \\$computer\pipe\DAV RPC SERVICE" -ForegroundColor Yellow
-      $webdav = Get-ChildItem "\\$computer\pipe\DAV RPC SERVICE" -ErrorAction Ignore
+    $ping = New-Object System.Net.NetworkInformation.Ping
+    $reply = $ping.Send($computer, $Timeout * 1000)
+  
+    #If host is active, search for named pipes
+    if ($reply.Status -eq 'Success') {
+      try {
+        Write-Host "Checking \\$computer\pipe\DAV RPC SERVICE" -ForegroundColor Yellow
+        $webdav = Get-ChildItem "\\$computer\pipe\DAV RPC SERVICE" -ErrorAction Ignore
 
-      # If the webdav exists check for severity of issue
-      if ($webdav) {
-        if ($WebDAVIssue.Computers -eq '') {
-          $WebDAVIssue.Computers += $computer
+        # If the webdav exists check for severity of issue
+        if ($webdav) {
+          if ($WebDAVIssue.Computers -eq '') {
+            $WebDAVIssue.Computers += $computer
+          }
+          else {
+            $WebDAVIssue.Computers += "`r`n$computer"
+          }
+          $WebDAVcount++
         }
-        else {
-          $WebDAVIssue.Computers += "`r`n$computer"
-        }
-        $WebDAVcount++
       }
-    }
-    catch {
-      Write-Error $_
+      catch {
+        Write-Error $_
+      }
     }
   }
   #if issue is present, return the object

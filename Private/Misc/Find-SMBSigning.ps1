@@ -194,19 +194,26 @@ function Find-SMBSigning {
         Issue      = "" 
     }
     $SMBsigningcount = 0
-
-    #check all computers in domain for SMB signing
+    $timeout = 1
+    #check all active computers in domain for SMB signing
     foreach ($computer in $ADComputers) {
-        Write-Host "Checking $computer for SMB signing..." -ForegroundColor Yellow
-        $Signingresult = Get-SMBSigning -ComputerName $computer -Timeout 2     
-        if ($Signingresult -eq "not required") {
-            if ($SMBSigningIssue.Computers -eq '') {
-                $SMBSigningIssue.Computers = $computer
+        
+        $ping = New-Object System.Net.NetworkInformation.Ping
+        $reply = $ping.Send($computer, $Timeout * 1000)
+  
+        #If host is active, try SMB negotiation
+        if ($reply.Status -eq 'Success') {
+            Write-Host "Checking $computer for SMB signing..." -ForegroundColor Yellow
+            $Signingresult = Get-SMBSigning -ComputerName $computer -Timeout 2     
+            if ($Signingresult -eq "not required") {
+                if ($SMBSigningIssue.Computers -eq '') {
+                    $SMBSigningIssue.Computers = $computer
+                }
+                else {
+                    $SMBSigningIssue.Computers += "`r`n$computer"
+                }
+                $SMBsigningcount++
             }
-            else {
-                $SMBSigningIssue.Computers += "`r`n$computer"
-            }
-            $SMBsigningcount++
         }
     }
     if ($SMBSigningIssue.Computers -ne '') {

@@ -85,7 +85,7 @@ function Find-DomainInfo {
     GPOs                  = $numGPO
     CertificateAuthority  = $CAcomputer, $CAname
     CAtemplates           = $numCAtemplates
-    CertificiateTemplates = $CAtemplates
+    CertificateTemplates = $CAtemplates
   }
   $DomainInfo
 }

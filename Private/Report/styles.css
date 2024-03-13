@@ -26,7 +26,8 @@ body{
 /*risk overall bit*/
 .risk-overall{
     display:flex;
-    border: 1px solid #333333;
+    border: 2px solid #333333;
+    border-radius: 10px;
     margin-top: 10px;
     max-width: 80%;
     margin: auto;
@@ -52,6 +53,7 @@ body{
     max-width: 80%;
     margin: 0 auto;
     padding: 20px;
+    padding-left: 0px;
     display: flex;
     border-bottom: 1px solid #333333;
 }
@@ -119,14 +121,14 @@ body{
 }
 
 .risk-summary-heading {
-    max-width: 60%;
+    max-width: 65%;
     text-align: center;
     margin: 0 auto;
     padding: 10px;
 }
 
 .risk-prioritisation-summary {
-    width: 60%;
+    width: 65%;
     margin: 0 auto;
     border-collapse: collapse;
     margin-bottom: 20px;
@@ -188,12 +190,37 @@ table{
     border-collapse: collapse;
 }
 
+
+/*domain-info*/
+.domain-info{
+    max-width: 80%;
+    margin: auto;
+    margin-bottom: 20px;
+}
+.domain-info p{
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-align:center;
+    max-width: 80%;
+}
+.domain-info table{
+    margin: auto;
+    max-width: 80%;
+}
+.domain-info .grey{
+    background-color: #c4c4c4e0;
+    font-weight: 500;
+}
+
+
+/*other findings*/
 .finding-header {
     background-color: #263143;
     text-align: center;
     color: #fff;
     padding: 10px;
-    font-weight:500;
+    font-weight:bold;
 }
 
 .finding-container {
@@ -219,6 +246,15 @@ th,td {
 }
 th {
     background-color: #6bb3cb;
+}
+
+.code{
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 10px;
+    background-color: #f4f4f4;
+    
 }
 
 

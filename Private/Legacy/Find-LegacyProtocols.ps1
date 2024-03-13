@@ -282,19 +282,26 @@ function Find-LegacyProtocols {
     }
     $SMBv1count = 0
 
-    #check all computers in domain for SMB signing
+    $timeout = 1
+    #check all active computers in domain for SMBv1
     foreach ($computer in $ADComputers) {
-        Write-Host "Checking $computer for SMBv1... " -ForegroundColor Yellow
-        $GetSMBv1 = Get-SMBv1 -ComputerName $computer -Timeout 2 
+        $ping = New-Object System.Net.NetworkInformation.Ping
+        $reply = $ping.Send($computer, $Timeout * 1000)
+  
+        #If host is active, try SMBv1 negotiation
+        if ($reply.Status -eq 'Success') {
+            Write-Host "Checking $computer for SMBv1... " -ForegroundColor Yellow
+            $GetSMBv1 = Get-SMBv1 -ComputerName $computer -Timeout 2 
         
-        if ($GetSMBv1 -eq $true) {
-            if($SMBv1Issue.SMBv1Computers -eq '') {
-                $SMBv1Issue.SMBv1Computers += $computer
+            if ($GetSMBv1 -eq $true) {
+                if ($SMBv1Issue.SMBv1Computers -eq '') {
+                    $SMBv1Issue.SMBv1Computers += $computer
+                }
+                else {
+                    $SMBv1Issue.SMBv1Computers += "`r`n$computer"
+                }
+                $SMBv1count++
             }
-            else {
-                $SMBv1Issue.SMBv1Computers += "`r`n$computer"
-            }
-            $SMBv1count++
         }
     }
     if ($SMBv1Issue.SMBv1Computers -ne '') {
