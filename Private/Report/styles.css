@@ -58,15 +58,16 @@ body{
 
 /* Style for the tables */
 .table-container {
-    margin-bottom: 20px;
+    margin:5%;
 }
 
 /*left table*/
 .summary-table {
-    width: 80%;
+    max-width: 90%;
     border-collapse: collapse;
     font-weight:500;
     font-size: 14px;
+    margin: auto;
 }
 .summary-table th {
     background-color: #263143;
@@ -76,7 +77,10 @@ body{
 .summary-table td {
     width: 50%;
 }
-
+.left-section {
+    flex: 1;
+    max-width:30%;
+}
 
 .category-riskcritical {
     background-color: rgb(194, 36, 36);
@@ -95,17 +99,14 @@ body{
     background-color: rgb(98, 214, 117);
 }
 
-
-
 /*right table*/
 .executive-summary {
     flex: 2;
+    text-align: justify;
 }
 .custom-hr{
     width: 50%;
 }
-
-
 
 
 
@@ -248,12 +249,6 @@ th {
     cursor: pointer;
 }
 
-.left-section {
-    flex: 1;
-    /* Grow and shrink equally */
-    margin-right: 20px;
-}
-
 .attack-container{
     display: flex;
     flex-wrap: wrap;
@@ -274,5 +269,3 @@ th {
     display: block;
     margin-bottom: 10px;
 }
-
-.lin
