@@ -37,7 +37,8 @@ function Find-LegacyProtocols {
         $llmnr = Get-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows NT\DNSClient" -name EnableMulticast -ErrorAction Ignore
         if ($llmnr.EnableMulticast -ne 0) {
             $Issue = [pscustomobject]@{
-                Technique   = (to_red "[HIGH]") + " LLMNR is vulnerable to layer 2 poisoning attacks"
+                Risk        = (to_red "[HIGH]")
+                Technique   = "LLMNR is vulnerable to layer 2 poisoning attacks"
                 Score       = 25
                 RegistryKey = "HKLM:\Software\Policies\Microsoft\Windows NT\DNSClient\EnableMultiCast is not set to 0"
                 Issue       = "LLMNR is a legacy name resolution protocol not disabled in $domain via GPO"
@@ -56,7 +57,8 @@ function Find-LegacyProtocols {
     $nbtns = Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Services\netbt\Parameters\interfaces\tcpip_*' -name NetBiosOptions -ErrorAction Ignore
     if ($nbtns.NetBiosOptions -ne 2) {
         $Issue = [pscustomobject]@{
-            Technique   = (to_red "[HIGH]") + " NBT-NS is vulnerable to layer 2 poisoning attacks"
+            Risk        = (to_red "[HIGH]")
+            Technique   = "NBT-NS is vulnerable to layer 2 poisoning attacks"
             Score       = 25
             RegistryKey = "HKLM:\SYSTEM\CurrentControlSet\Services\netbt\Parameters\interfaces\tcpip_*\NetBiosOptions is not set to 2"
             Issue       = "NBT-NS is a legacy name resolution protocol not disabled in $domain via GPO"
@@ -75,7 +77,8 @@ function Find-LegacyProtocols {
         $mdns = Get-ItemProperty -path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\' -name EnableMDNS -ErrorAction Ignore
         if ($mdns.EnableMulticast -ne 0) {
             $Issue = [pscustomobject]@{
-                Technique   = (to_red "[HIGH]") + " mDNS is vulnerable to layer 2 poisoning attacks"
+                Risk        = (to_red "[HIGH]")
+                Technique   = "mDNS is vulnerable to layer 2 poisoning attacks"
                 Score       = 25
                 RegistryKey = "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\EnableMDNS is not set to 0"
                 Issue       = "mDNS is a legacy name resolution protocol not disabled in $domain via GPO"
@@ -107,7 +110,8 @@ function Find-LegacyProtocols {
     #if not explitly configured, NTLMv1 can be permitted depending on the OS version
     if ($null -eq $LMcompatibilitylevel -and ($dcOS -notmatch "2016" -and $dcOS -notmatch "2019" -and $dcOS -notmatch "2022" )) {
         $Issue = [pscustomobject]@{
-            Technique            = (to_red "[CRITICAL]") + " NTLMv1 is not disabled on domain controllers"
+            Risk                 = (to_red "[CRITICAL]")
+            Technique            = "NTLMv1 is not disabled on domain controllers"
             Score                = 50
             LMCompatibilityLevel = "Default 1/2"
             DomainControllerOS   = $dcOS
@@ -118,7 +122,8 @@ function Find-LegacyProtocols {
     #check if NTLMv1 is refused
     elseif ($null -ne $LMcompatibilitylevel -and $LMcompatibilitylevel -notmatch "Send NTLMv2 response only" ) {
         $Issue = [pscustomobject]@{
-            Technique            = (to_red "[CRITICAL]") + " NTLMv1 is not disabled on domain controllers"
+            Risk                 = (to_red "[CRITICAL]")
+            Technique            = "NTLMv1 is not disabled on domain controllers"
             Score                = 50
             LMCompatibilityLevel = $LMcompatibilitylevel
             Issue                = "NTLMv1 is permitted for authentication negotiation with domain controllers. The LM Compatibility level is not set to 'Send NTLMv2 response only. Refuse LM & NTLM' in the Default Domain Controllers GPO"
@@ -275,7 +280,8 @@ function Find-LegacyProtocols {
 
     #Intialise issue
     $SMBv1Issue = [pscustomobject]@{
-        Technique      = (to_red "[HIGH]") + " SMBv1 is enabled on computers"
+        Risk           = (to_red "[HIGH]")
+        Technique      = "SMBv1 is enabled on computers"
         Score          = 25
         SMBv1Computers = ""
         Issue          = ""

@@ -90,7 +90,8 @@ specifies which AD principals have specific permissions over the template.
     # filter owner rights removing all members of domain/enterprise admins group (as they might have owner rights if they created template)
     if ( ($_.objectClass -eq 'pKICertificateTemplate') -and ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch)) {
       $Issue = [pscustomobject]@{
-        Technique         = (to_red "[CRITICAL]") + " ESC4"
+        Risk              = (to_red "[CRITICAL]")
+        Technique         = "ESC4"
         Score             = 50
         Name              = $_.Name
         DistinguishedName = $_.DistinguishedName
@@ -131,7 +132,8 @@ specifies which AD principals have specific permissions over the template.
         ($entry.ActiveDirectoryRights -match $DangerousRights)
       ) {
         $Issue = [pscustomobject]@{
-          Technique             = (to_red "[CRITICAL]") + " ESC4"
+          Risk                  = (to_red "[CRITICAL]")
+          Technique             = "ESC4"
           Score                 = 50
           Name                  = $_.Name
           DistinguishedName     = $_.DistinguishedName

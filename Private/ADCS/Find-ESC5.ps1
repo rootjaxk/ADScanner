@@ -96,7 +96,8 @@ function Find-ESC5 {
       # if any low-privileged users have dangerous rights over the CA object, ESC5
       if (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch)) {
         $Issue = [pscustomobject]@{
-          Technique             = (to_red "[CRITICAL]") + " ESC5"
+          Risk                  = (to_red "[CRITICAL]")
+          Technique             = "ESC5"
           Score                 = 50
           Name                  = $CAComputername
           DistinguishedName     = $CAdistinguishedname

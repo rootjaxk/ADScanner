@@ -102,7 +102,8 @@ function Find-ACLs {
         #if any low-privileged users have dangerous rights over the domain itself (tier 0)
         if ((($DomainACLs.path -split '/')[-1] -eq $searchBase) -and ($ace.ActiveDirectoryRights -match $DangerousRights) -and ($ace.AccessControlType -eq "Allow") -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch)) {
           $Issue = [pscustomobject]@{
-            Technique             = (to_red "[CRITICAL]") + " Low privileged principal with dangerous rights"
+            Risk                  = (to_red "[CRITICAL]")
+            Technique             = "Low privileged principal has dangerous rights"
             Score                 = 50
             ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference
@@ -115,7 +116,8 @@ function Find-ACLs {
         #check for RBCD (write over computer object) - if computer object then RBCD. DC will have higher risk
         elseif (($object -match "CN=Computers" -or $object -match "OU=Domain Controllers") -and ($ace.AccessControlType -eq "Allow") -and ($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
           $Issue = [pscustomobject]@{
-            Technique             = if ($object -match "OU=Domain Controllers") {(to_red "[CRITICAL]") + " [RBCD] Low privileged principal with dangerous RBCD rights"} else {(to_red "[HIGH]") + " Low privileged principal with dangerous RBCD rights"}
+            Risk                  = if ($object -match "OU=Domain Controllers") {(to_red "[CRITICAL]")} else {(to_red "[HIGH]")}
+            Technique             = "Low privileged principal has dangerous RBCD rights"
             Score                 = if ($object -match "OU=Domain Controllers") { 50 } else { 35 }
             ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference
@@ -128,7 +130,8 @@ function Find-ACLs {
         # else if any low-privileged users have dangerous rights over object
         elseif (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($ace.AccessControlType -eq "Allow") -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
           $Issue = [pscustomobject]@{
-            Technique             = (to_red "[HIGH]") + " Low privileged principal with dangerous rights"
+            Risk                  = (to_red "[HIGH]")
+            Technique             = "Low privileged principal has dangerous rights"
             Score                 = 35
             ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference
@@ -141,7 +144,8 @@ function Find-ACLs {
         #Parse DCSync (not in standard AD rights, need to search for matching ACL GUID)
         elseif (($ace.ObjectType -match '1131f6ad-9c07-11d1-f79f-00c04fc2dcd2') -and ($ace.AccessControlType -eq "Allow") -and ($SID -notmatch $PrivilegedACLUsers -and $SID -notmatch $privilegedGroupMatch)) {
           $Issue = [pscustomobject]@{
-            Technique             = (to_red "[CRITICAL]") + " Low privileged principal with DCSync rights"
+            Risk                  = (to_red "[CRITICAL]")
+            Technique             = "Low privileged principal has DCSync rights"
             Score                 = 50
             ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference
@@ -154,7 +158,8 @@ function Find-ACLs {
         #check for LAPS permissions read - f00000000-0000-0000-0000-000000000000 GUID - (read all properties - can read ms-mcs-admpwd) 
         elseif (($object -match "CN=Computers" -or ($object -match "OU=Domain Controllers" -and $object -notmatch "CN=.*,OU=Domain Controllers")) -and ($ace.ObjectType -eq "00000000-0000-0000-0000-000000000000") -and ($ace.ActiveDirectoryRights -match "ExtendedRights") -and ($SID -notmatch $PrivilegedACLUsers -and $SID -notmatch $privilegedGroupMatch)) {
           $Issue = [pscustomobject]@{
-            Technique             = if ($object -match "OU=Domain Controllers") {(to_red "[CRITICAL]") + " Low privileged principal can LAPS password"} else {(to_red "[HIGH]") + " Low privileged principal can LAPS password"}
+            Risk                  = if ($object -match "OU=Domain Controllers") {(to_red "[CRITICAL]")} else {(to_red "[HIGH]")}
+            Technique             = "Low privileged principal can read LAPS password" 
             Score                 = if ($object -match "OU=Domain Controllers") { 50 } else { 35 }
             ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference
@@ -184,7 +189,8 @@ function Find-ACLs {
 
   #Initialise issue
   $ModifiablelogonIssue = [pscustomobject]@{
-    Technique             = (to_red "[HIGH]") + " modifiable logon script - see baby2 for example exploitation"
+    Risk                  = (to_red "[HIGH]")
+    Technique             = "Modifiable logon script - see baby2 for example exploitation"
     Score                 = 30
     File                  = ""
     IdentityReference     = ""

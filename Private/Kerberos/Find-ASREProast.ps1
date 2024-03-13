@@ -44,7 +44,8 @@ function Find-ASREProast {
 
   #Initalise issues
   $ASREPDisabled = [pscustomobject]@{
-    Technique = (to_green "[LOW]") + " Disabled ASREP-roastable user"
+    Risk      = (to_green "[LOW]")
+    Technique = "Disabled ASREP-roastable user"
     Score     = 9
     Users     = ""
     Enabled   = "False"
@@ -53,7 +54,8 @@ function Find-ASREProast {
   $ASREPDisabledcount = 0
 
   $ASREPprivileged_weakpwd = [pscustomobject]@{
-    Technique = (to_red "[CRITICAL]") + " Highly privileged ASREP-roastable user with a weak password"
+    Risk      = (to_red "[CRITICAL]")
+    Technique = "Highly privileged ASREP-roastable user with a weak password"
     Score     = 50
     Users     = ""
     Memberof  = ""
@@ -63,7 +65,8 @@ function Find-ASREProast {
   $ASREPprivileged_weakpwdcount = 0
 
   $ASREPprivileged_strongpwd = [pscustomobject]@{
-    Technique = (to_red "[HIGH]") + " Highly privileged ASREP-roastable user with a strong password"
+    Risk      = (to_red "[HIGH]")
+    Technique = "Highly privileged ASREP-roastable user with a strong password"
     Score     = 39
     Users     = ""
     Memberof  = ""
@@ -73,7 +76,8 @@ function Find-ASREProast {
   $ASREPprivileged_strongpwdcount = 0
  
   $ASREPlowprivileged_weakpwd = [pscustomobject]@{
-    Technique = (to_red "[HIGH]") + " Low privileged ASREP-roastable user with a weak password"
+    Risk      = (to_red "[HIGH]")
+    Technique = "Low privileged ASREP-roastable user with a weak password"
     Score     = 25
     Users     = ""
     Enabled   = "True"
@@ -82,7 +86,8 @@ function Find-ASREProast {
   $ASREPlowprivileged_weakpwdcount = 0
 
   $ASREPlowprivileged_strongpwd = [pscustomobject]@{
-    Technique = (to_yellow "[MEDIUM]") + " Low privileged ASREP-roastable user with a strong password set"
+    Risk      = (to_yellow "[MEDIUM]")
+    Technique = "Low privileged ASREP-roastable user with a strong password set"
     Score     = 12
     Users     = ""
     Enabled   = "True"
@@ -179,5 +184,4 @@ function Find-ASREProast {
     $ASREPdisabled.Issue = "$ASREPdisabledcount users do not require Kerberos pre-authentication but are disabled"
     $ASREPDisabled
   }
-  
 }

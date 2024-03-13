@@ -27,7 +27,8 @@ function Find-Delegations {
 
   #Initialise objects
   $ConstrainedIssue = [pscustomobject]@{
-    Technique           = (to_red "[HIGH]") + " Constrained delegation"
+    Risk                = (to_red "[HIGH]")
+    Technique           = "Constrained delegation"
     Score               = 30
     Object              = ""
     AllowedToDelegateTo = ""
@@ -35,7 +36,8 @@ function Find-Delegations {
   }
 
   $UnconstrainedIssue = [pscustomobject]@{
-    Technique            = (to_red "[HIGH]") + " Unconstrained delegation"
+    Risk                 = (to_red "[HIGH]")
+    Technique            = "Unconstrained delegation"
     Score                = 30
     Object               = ""
     TrustedForDelegation = "$True"
@@ -43,7 +45,8 @@ function Find-Delegations {
   }
 
   $ResourcebasedIssue = [pscustomobject]@{
-    Technique                                  = (to_red "[HIGH]") + " Resource-based constrained delegation"
+    Risk                                       = (to_red "[HIGH]")
+    Technique                                  = "Resource-based constrained delegation"
     Score                                      = 30
     Object                                     = ""
     'msDS-AllowedToActOnBehalfOfOtherIdentity' = ""

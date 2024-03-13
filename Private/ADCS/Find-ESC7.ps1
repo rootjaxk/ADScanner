@@ -46,7 +46,8 @@ function Find-ESC7 {
     }
     if (($ace.Rights -match 'ManageCA' -OR $ace.Rights -match 'ManageCertificates') -and ($SID -notmatch $PrivilegedUsers)) {
       $Issue = [pscustomobject]@{
-        Technique             = (to_red "[CRITICAL]") + " ESC7"
+        Risk                  = (to_red "[CRITICAL]")
+        Technique             = "ESC7"
         Score                 = 50
         Name                  = $CAname
         IdentityReference     = $ace.IdentityReference

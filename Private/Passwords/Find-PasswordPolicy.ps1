@@ -75,7 +75,8 @@ function Find-PasswordPolicy {
  
   if ($Complexity -eq $false) {
     $PWDIssues += [pscustomobject]@{
-      Technique         = (to_red "[HIGH]") + " Password complexity requirement is not enabled"
+      Risk              = (to_red "[HIGH]")
+      Technique         = "Password complexity requirement is not enabled"
       Score             = 20
       ComplexityEnabled = $Complexity
       Issue             = "The password complexity requirement not being enforced allows passwords without a capital letter, number, special character or can contain the user's username"
@@ -83,7 +84,8 @@ function Find-PasswordPolicy {
   }
   if ($LengthIssue -eq $true) {
     $PWDIssues += [pscustomobject]@{
-      Technique = (to_red "[HIGH]") + " Password length requirement is less than 12 characters"
+      Risk      = (to_red "[HIGH]")
+      Technique = "Password length requirement is less than 12 characters"
       Score     = 25
       Length    = $PwdPolicy.MinPasswordLength
       Issue     = "Passwords with lengths less than 14 characters can easily be bruteforced, and if hash is obtained, easily cracked. NCSC recommends 12 characters as a minimum length for a password"
@@ -91,7 +93,8 @@ function Find-PasswordPolicy {
   }
   if ($LockoutIssue -eq $true) {
     $PWDIssues += [pscustomobject]@{
-      Technique        = (to_red "[HIGH]") + " Account lockout threshold is greator than 10"
+      Risk             = (to_red "[HIGH]")
+      Technique        = "Account lockout threshold is greator than 10"
       Score            = 20
       LockoutThreshold = $PwdPolicy.LockoutThreshold
       Issue            = "If the account lockout threshold is too large or not set, attackers get a large number of attempts to guess or brute force a users password. This makes it much easier for accounts to be compromised"
@@ -99,7 +102,8 @@ function Find-PasswordPolicy {
   }
   if ($MinPwdAgeIssue -eq $true) {
     $PWDIssues += [pscustomobject]@{
-      Technique      = (to_green "[LOW]") + " The minimum password age is less than 1 day"#otherwise user can rotate back to previous password - https://www.tenable.com/audits/items/CIS_MS_Windows_Server_2008_R2_MS_Level_1_v3.3.0.audit:f6acf617d6b6a9efd90267aba213653b 
+      Risk           = (to_green "[LOW]")
+      Technique      = "The minimum password age is less than 1 day"#otherwise user can rotate back to previous password - https://www.tenable.com/audits/items/CIS_MS_Windows_Server_2008_R2_MS_Level_1_v3.3.0.audit:f6acf617d6b6a9efd90267aba213653b 
       Score          = 9
       MinPasswordAge = $PwdPolicy.MinPasswordAge.Days
       Issue          = "If minimum password age is not set, if a user is forced to change their password, they can cycle through the passwordhistory and change it straight away to a previously used password (password reuse). The recommended minimum password age is 1 day."
@@ -107,7 +111,8 @@ function Find-PasswordPolicy {
   }
   if ($MaxPwdAgeIssue -eq $true) {
     $PWDIssues += [pscustomobject]@{
-      Technique      = (to_red "[HIGH]") + " The maximum password age is less than 365 days" 
+      Risk           = (to_red "[HIGH]")
+      Technique      = "The maximum password age is less than 365 days" 
       Score          = 20
       MaxPasswordAge = $PwdPolicy.MaxPasswordAge.Days
       Issue          = "NCSC guidance recommends passwords should not expire, in favour of one long complex password that is only changed if thought to be compromised. If users change their passwords to regularly they are more likely to use weaker passwords. If you must enforce a maximum password age, the recommended maximum password age is 365 days."
@@ -115,7 +120,8 @@ function Find-PasswordPolicy {
   }
   if ($PasswordHistoryIssue -eq $true) {
     $PWDIssues += [pscustomobject]@{
-      Technique            = (to_green "[LOW]") + " The password history count is less than 24" 
+      Risk                 = (to_green "[LOW]")
+      Technique            = "The password history count is less than 24" 
       Score                = 9
       PasswordHistoryCount = $PwdPolicy.PasswordHistoryCount
       Issue                = "Enforce password history setting prevents the easy reuse of old passwords, preventing users from changing their password to any of their last X number. This prevents password reuse"
@@ -123,7 +129,8 @@ function Find-PasswordPolicy {
   }
   if ($LockoutDurationIssue -eq $true) {
     $PWDIssues += [pscustomobject]@{
-      Technique       = (to_yellow "[MEDIUM]") + " The account lockout duration is less than 15 minutes" 
+      Risk            = (to_yellow "[MEDIUM]")
+      Technique       = "The account lockout duration is less than 15 minutes" 
       Score           = 10
       LockoutDuration = $PwdPolicy.LockoutDuration
       Issue           = "After too many failed login attempts defined in the lockout threshold, the account will be locked out for a period of time. If the lockout threshold is too short, this can be taken advantage of to brute force the account after the lockout period has expired."
@@ -131,7 +138,8 @@ function Find-PasswordPolicy {
   }
   if ($ReverseEncryption -eq $True) {
     $PWDIssues += [pscustomobject]@{
-      Technique         = (to_red "[HIGH]") + " Reversible encryption is enabled"  # encrypted passwords stored can be decrypted
+      Risk              = (to_red "[HIGH]")
+      Technique         = "Reversible encryption is enabled"  # encrypted passwords stored can be decrypted
       Score             = 20
       ReverseEncryption = $PwdPolicy.ReversibleEncryptionEnabled
       Issue             = "Passwords stored with reversible encryption is the same as storing them in plaintext, meaning they can be extracted from memory in plaintext."

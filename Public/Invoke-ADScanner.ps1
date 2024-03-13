@@ -186,18 +186,20 @@ function Invoke-ADScanner {
 
     $DomainInfohtml = @"
 <table>
-<tr><td>Domain:</td><td>$($domaininfo.Domain)</td></tr>
-<tr><td>FunctionalLevel:</td><td>$($domaininfo.FunctionalLevel)</td></tr>
-<tr><td>DomainControllers:</td><td>$($domaininfo.DomainControllers)</td></tr>
-<tr><td>Users:</td><td>$($domaininfo.Users)</td></tr>
-<tr><td>Groups:</td><td>$($domaininfo.Groups)</td></tr>
-<tr><td>Computers:</td><td>$($domaininfo.Computers)</td></tr>
-<tr><td>Trusts:</td><td>$($domaininfo.Trusts)</td></tr>
-<tr><td>OUs:</td><td>$($domaininfo.OUs)</td></tr>
-<tr><td>GPOs:</td><td>$($domaininfo.GPOs)</td></tr>
-<tr><td>CertificateAuthority:</td><td>$CertificateAuthority</td></tr>
-<tr><td>CAtemplates:</td><td>$($domaininfo.CAtemplates)</td></tr>
-<tr><td>CertificateTemplates:</td><td>$CertificateTemplates</td></tr>
+<th>Category</th>
+<th>Value</th>
+<tr><td class="grey">Domain:</td><td>$($domaininfo.Domain)</td></tr>
+<tr><td class="grey">FunctionalLevel:</td><td>$($domaininfo.FunctionalLevel)</td></tr>
+<tr><td class="grey">DomainControllers:</td><td>$($domaininfo.DomainControllers)</td></tr>
+<tr><td class="grey">Users:</td><td>$($domaininfo.Users)</td></tr>
+<tr><td class="grey">Groups:</td><td>$($domaininfo.Groups)</td></tr>
+<tr><td class="grey">Computers:</td><td>$($domaininfo.Computers)</td></tr>
+<tr><td class="grey">Trusts:</td><td>$($domaininfo.Trusts)</td></tr>
+<tr><td class="grey">OUs:</td><td>$($domaininfo.OUs)</td></tr>
+<tr><td class="grey">GPOs:</td><td>$($domaininfo.GPOs)</td></tr>
+<tr><td class="grey">CertificateAuthority:</td><td>$CertificateAuthority</td></tr>
+<tr><td class="grey">CAtemplates:</td><td>$($domaininfo.CAtemplates)</td></tr>
+<tr><td class="grey">CertificateTemplates:</td><td>$CertificateTemplates</td></tr>
 </table>
 "@
 
@@ -351,7 +353,7 @@ function Invoke-ADScanner {
         }catch{}
         }
         $Risksummaries
-        $Allissues | Where-Object { $null -ne $_.Score } | Select-Object Technique, Category, Score | Sort-Object -Property Score -Descending | Format-Table
+        $Allissues | Where-Object { $null -ne $_.Score } | Select-Object Risk, Technique, Category, Score | Sort-Object -Property Score -Descending | Format-Table
     }
 
     if ($Scans -eq "Info" -or $Scans -eq "All") {

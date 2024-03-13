@@ -42,7 +42,8 @@ function Find-MAQ {
   #Check if the MAQ is default
   if ($MAQ -ne 0 -and $additionprivileges -eq "NT AUTHORITY\Authenticated Users") {
     $Issue = [pscustomobject]@{
-      Technique                   = (to_yellow "[MEDIUM]") + " Non-admin users can add computers to the domain"
+      Risk                        = (to_yellow "[MEDIUM]")
+      Technique                   = "Non-admin users can add computers to the domain"
       Score                       = 19
       MachineAccountQuota         = $MAQ
       PermissiontoAddWorkstations = $additionprivileges
@@ -53,7 +54,8 @@ function Find-MAQ {
   #If group changed to a custom group, may be mitigated but need to check - lower risk
   elseif ($MAQ -ne 0 -and $additionprivileges -ne "NT AUTHORITY\Authenticated Users" -and $additionprivileges -notmatch  $privilegedgroups) {
     $Issue = [pscustomobject]@{
-      Technique                   = (to_green "[LOW]") + " Potential for non-admin users can add computers to the domain"
+      Risk                        = (to_green "[LOW]")
+      Technique                   = "Potential for non-admin users can add computers to the domain"
       Score                       = 5
       MachineAccountQuota         = $MAQ
       PermissiontoAddWorkstations = $additionprivileges
