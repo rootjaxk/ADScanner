@@ -36,7 +36,7 @@ function Find-EfficiencyImprovements {
 
   if ($emptyOU) {
     $emptyOUissue = [pscustomobject]@{
-      Risk        = (to_cyan "[INFORMATIONAL]")
+      Risk        = (to_cyan "INFORMATIONAL")
       Technique   = "Domain effiency improvement - empty Organizational Units"
       Score       = 1
       NumEmptyOUs = $emptyOU.count
@@ -62,7 +62,7 @@ function Find-EfficiencyImprovements {
   #Loop through for issues
   if ($GPOs) {
     $emptyGPOissue = [pscustomobject]@{
-      Risk         = (to_cyan "[INFORMATIONAL]")
+      Risk         = (to_cyan "INFORMATIONAL")
       Technique    = "Domain effiency improvement - unlinked GPOs"
       Score        = 1
       NumUnlinked  = $GPOs.count

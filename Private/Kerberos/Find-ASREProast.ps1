@@ -44,7 +44,7 @@ function Find-ASREProast {
 
   #Initalise issues
   $ASREPDisabled = [pscustomobject]@{
-    Risk      = (to_green "[LOW]")
+    Risk      = (to_green "LOW")
     Technique = "Disabled ASREP-roastable user"
     Score     = 9
     Users     = ""
@@ -54,7 +54,7 @@ function Find-ASREProast {
   $ASREPDisabledcount = 0
 
   $ASREPprivileged_weakpwd = [pscustomobject]@{
-    Risk      = (to_red "[CRITICAL]")
+    Risk      = (to_red "CRITICAL")
     Technique = "Highly privileged ASREP-roastable user with a weak password"
     Score     = 50
     Users     = ""
@@ -65,7 +65,7 @@ function Find-ASREProast {
   $ASREPprivileged_weakpwdcount = 0
 
   $ASREPprivileged_strongpwd = [pscustomobject]@{
-    Risk      = (to_red "[HIGH]")
+    Risk      = (to_red "HIGH")
     Technique = "Highly privileged ASREP-roastable user with a strong password"
     Score     = 39
     Users     = ""
@@ -76,7 +76,7 @@ function Find-ASREProast {
   $ASREPprivileged_strongpwdcount = 0
  
   $ASREPlowprivileged_weakpwd = [pscustomobject]@{
-    Risk      = (to_red "[HIGH]")
+    Risk      = (to_red "HIGH")
     Technique = "Low privileged ASREP-roastable user with a weak password"
     Score     = 25
     Users     = ""
@@ -86,7 +86,7 @@ function Find-ASREProast {
   $ASREPlowprivileged_weakpwdcount = 0
 
   $ASREPlowprivileged_strongpwd = [pscustomobject]@{
-    Risk      = (to_yellow "[MEDIUM]")
+    Risk      = (to_yellow "MEDIUM")
     Technique = "Low privileged ASREP-roastable user with a strong password set"
     Score     = 12
     Users     = ""

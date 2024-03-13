@@ -106,7 +106,7 @@ function Find-LAPS {
       #check for LAPS read
       if ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch) {
         $Issue = [pscustomobject]@{
-          Risk              = (to_red "[CRITICAL]")
+          Risk              = (to_red "CRITICAL")
           Technique         = "Low privileged principal can read LAPS password on domain controllers"
           Score             = 50
           IdentityReference = $user
@@ -135,7 +135,7 @@ function Find-LAPS {
       #check for LAPS read
       if ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch) {
         $Issue = [pscustomobject]@{
-          Risk              = (to_red "[HIGH]")
+          Risk              = (to_red "HIGH")
           Technique         = "Low privileged principal can read LAPS password on domain computers"
           Score             = 35
           IdentityReference = $user

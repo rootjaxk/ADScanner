@@ -27,7 +27,7 @@ function Find-Delegations {
 
   #Initialise objects
   $ConstrainedIssue = [pscustomobject]@{
-    Risk                = (to_red "[HIGH]")
+    Risk                = (to_red "HIGH")
     Technique           = "Constrained delegation"
     Score               = 30
     Object              = ""
@@ -36,7 +36,7 @@ function Find-Delegations {
   }
 
   $UnconstrainedIssue = [pscustomobject]@{
-    Risk                 = (to_red "[HIGH]")
+    Risk                 = (to_red "HIGH")
     Technique            = "Unconstrained delegation"
     Score                = 30
     Object               = ""
@@ -45,7 +45,7 @@ function Find-Delegations {
   }
 
   $ResourcebasedIssue = [pscustomobject]@{
-    Risk                                       = (to_red "[HIGH]")
+    Risk                                       = (to_red "HIGH")
     Technique                                  = "Resource-based constrained delegation"
     Score                                      = 30
     Object                                     = ""

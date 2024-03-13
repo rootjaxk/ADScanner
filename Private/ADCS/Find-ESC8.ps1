@@ -83,7 +83,7 @@ function Find-ESC8 {
     #Check first if kerberos is disabled on http
     if ($httpwwwAuthenticate -match 'NTLM') {
       $Issue = [pscustomobject]@{
-        Risk      = (to_red "[CRITICAL]")
+        Risk      = (to_red "CRITICAL")
         Technique = "ESC8"
         Score     = 50
         Name      = $CAname
@@ -104,7 +104,7 @@ function Find-ESC8 {
     # Check if HTTPS & Extended Protection is enabled (full channel binding mitigation)
     if ($httpswwwAuthenticate -match 'NTLM') {
       $Issue = [pscustomobject]@{
-        Risk      = (to_red "[CRITICAL]")
+        Risk      = (to_red "CRITICAL")
         Technique = "ESC8"
         Score     = 50
         Name      = $CAname

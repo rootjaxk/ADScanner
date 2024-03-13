@@ -42,7 +42,7 @@ function Find-SensitiveAccounts {
 
     #Initialise issue
     $sensitiveIssue = [pscustomobject]@{
-        Risk                = (to_yellow "[MEDIUM]")
+        Risk                = (to_yellow "MEDIUM")
         Technique           = "Highly privileged account does not have the 'Account is sensitive and cannot be delegated' flag set"
         Score               = 19
         Users               = ""

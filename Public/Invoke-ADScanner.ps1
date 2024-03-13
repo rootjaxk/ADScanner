@@ -353,7 +353,15 @@ function Invoke-ADScanner {
         }catch{}
         }
         $Risksummaries
-        $Allissues | Where-Object { $null -ne $_.Score } | Select-Object Risk, Technique, Category, Score | Sort-Object -Property Score -Descending | Format-Table
+        $AllissuesHTML = $Allissues | Where-Object { $null -ne $_.Score } | Select-Object Risk, Technique, Category, Score | Sort-Object -Property Score -Descending
+        $AllissuesHTML | Format-Table
+        $HTML = $AllissuesHTML | ConvertTo-Html -Fragment
+        $HTML = $HTML.Replace('<tr><td>CRITICAL', '<tr class="critical"><td>Critical')
+        $HTML = $HTML.Replace('<tr><td>HIGH', '<tr class="high"><td>High')
+        $HTML = $HTML.Replace('<tr><td>MEDIUM', '<tr class="medium"><td>Medium')
+        $HTML = $HTML.Replace('<tr><td>LOW', '<tr class="low"><td>Low')
+        $HTML = $HTML.Replace('<tr><td>CINFORMATIONAL', '<tr class="information"><td>Informational')
+        
     }
 
     if ($Scans -eq "Info" -or $Scans -eq "All") {

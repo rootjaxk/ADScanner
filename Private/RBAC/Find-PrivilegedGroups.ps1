@@ -69,7 +69,7 @@ Find-PrivilegedGroups -Domain test.local
 
     if ($groupName -eq "Administrators" -and $userCount -gt 10) {
       $Issue = [pscustomobject]@{
-        Risk        = (to_red "[HIGH]")
+        Risk        = (to_red "HIGH")
         Issue       = "Administrators group does not meet the benchmark (maximum 10 users required)."
         Score       = 20
         Members     = $group.Value
@@ -79,7 +79,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Domain Admins" -and $userCount -gt 10) {
       $Issue = [pscustomobject]@{
-        Risk        = (to_red "[HIGH]")
+        Risk        = (to_red "HIGH")
         Technique   = "Domain Admins group does not meet the benchmark (maximum 10 users required)."
         Score       = 20
         Members     = $group.Value
@@ -89,7 +89,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Enterprise Admins" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Risk        = (to_red "[HIGH]")
+        Risk        = (to_red "HIGH")
         Technique   = "Enterprise Admins group does not meet the benchmark (maximum 0 users required)."
         Score       = 20
         Members     = $group.Value
@@ -99,7 +99,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "DnsAdmins" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Risk        = (to_red "[HIGH]")
+        Risk        = (to_red "HIGH")
         Technique   = "DnsAdmins group does not meet the benchmark (maximum 0 users required)."
         Score       = 20
         Members     = $group.Value
@@ -109,7 +109,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Backup Operators" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Risk        = (to_red "[HIGH]")
+        Risk        = (to_red "HIGH")
         Technique   = "BackupOperators group does not meet the benchmark (maximum 0 users required)."
         Score       = 20
         Members     = $group.Value
@@ -119,7 +119,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Server Operators" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Risk        = (to_red "[HIGH]")
+        Risk        = (to_red "HIGH")
         Technique   = "Server Operators group does not meet the benchmark (maximum 0 users required)."
         Score       = 20
         Members     = $group.Value
@@ -129,7 +129,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Account Operators" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Risk        = (to_red "[HIGH]")
+        Risk        = (to_red "HIGH")
         Technique   = "Account Operators group does not meet the benchmark (maximum 0 users required)."
         Score       = 20
         Members     = $group.Value
@@ -139,7 +139,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Print Operators" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Risk        = (to_red "[HIGH]")
+        Risk        = (to_red "HIGH")
         Technique   = "Print Operators group does not meet the benchmark (maximum 0 users required)."
         Score       = 20
         Members     = $group.Value
@@ -149,7 +149,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Remote Desktop Users" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Risk        = (to_red "[HIGH]")
+        Risk        = (to_red "HIGH")
         Technique   = "Remote Desktop Users group does not meet the benchmark (maximum 0 users required)."
         Score       = 20
         Members     = $group.Value
@@ -159,7 +159,7 @@ Find-PrivilegedGroups -Domain test.local
     }
     elseif ($groupName -eq "Schema Admins" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
-        Risk        = (to_red "[HIGH]")
+        Risk        = (to_red "HIGH")
         Technique   = "Schema Admins group does not meet the benchmark (maximum 0 users required)."
         Score       = 20
         Members     = $group.Value

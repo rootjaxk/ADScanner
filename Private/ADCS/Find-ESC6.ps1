@@ -35,7 +35,7 @@ function Find-ESC6 {
 
   if ($match -eq $pattern) {
     $Issue = [pscustomobject]@{
-      Risk       = (to_red "[CRITICAL]")
+      Risk       = (to_red "CRITICAL")
       Technique  = "ESC6"
       Score      = 50
       CAName     = $ADCSinfo.displayname

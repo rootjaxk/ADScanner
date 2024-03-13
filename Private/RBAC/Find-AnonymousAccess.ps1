@@ -37,7 +37,7 @@ function Find-AnonymousAccess {
 
     if ($domainGuest.enabled -eq $true) {
         $Issue = [pscustomobject]@{
-            Risk      = (to_red "[HIGH]")
+            Risk      = (to_red "HIGH")
             Technique = "Domain anonymous access is permitted allowing anonymous access to the domain"
             Score     = 20
             Account   = $domainguest.distinguishedname
@@ -54,7 +54,7 @@ function Find-AnonymousAccess {
     
     if ($localguest.enabled -eq $true) {
         $Issue = [pscustomobject]@{
-            Risk      = (to_red "[HIGH]")
+            Risk      = (to_red "HIGH")
             Technique = "Local anonymous access is permitted allowing anonymous access to the system"
             Score     = 20
             Account   = "$Hostname\$($localguest.name)"

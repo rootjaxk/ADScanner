@@ -41,7 +41,7 @@ function Find-InactiveAccounts {
   # Get number of stale users (not in privileged groups - just number).
   if ($stale_not_disabled) {
     $Issue = [pscustomobject]@{
-      Risk          = (to_green "[LOW]")
+      Risk          = (to_green "LOW")
       Technique     = "Inactive/stale accounts are not disabled"
       Score         = 5
       Totalinactive = $totalstale
@@ -65,7 +65,7 @@ function Find-InactiveAccounts {
 
   #Initialise issues
   $stalePrivileged = [pscustomobject]@{
-    Risk             = (to_red "[HIGH]")
+    Risk             = (to_red "HIGH")
     Technique        = "Inactive/stale accounts are not disabled in privileged groups"
     Score            = 20
     Users            = ""

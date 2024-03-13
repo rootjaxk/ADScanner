@@ -33,7 +33,7 @@ function Find-GoldenTicket {
 
   if ($isPwdExpired -gt 180) {
     $Issue = [pscustomobject]@{
-      Risk       = (to_red "[HIGH]")
+      Risk       = (to_red "HIGH")
       Technique  = "Golden ticket attack"
       Score      = 25
       Name       = "krbtgt"

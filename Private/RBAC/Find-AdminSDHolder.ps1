@@ -64,7 +64,7 @@ function Find-AdminSDHolder {
 
   #Initalise issue
   $AdminSDIssue = [pscustomobject]@{
-    Risk       = (to_yellow "[MEDIUM]")
+    Risk       = (to_yellow "MEDIUM")
     Technique  = "Suspicious / legacy admin account"
     Score      = 15
     Name       = ""

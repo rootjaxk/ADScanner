@@ -37,7 +37,7 @@ function Find-SensitiveInfo {
 
     #Initialise issues
     $PlaintextCredIssue = [pscustomobject]@{
-        Risk       = (to_red "[HIGH]")
+        Risk       = (to_red "HIGH")
         Technique  = "Plaintext credentials found readable by low privileged user"
         Score      = 30
         File       = ""

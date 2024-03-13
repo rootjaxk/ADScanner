@@ -36,7 +36,7 @@ function Find-PwdNotRequired {
   
   #Initialise issues
   $PWDdisabled = [pscustomobject]@{
-    Risk      = (to_green "[LOW]")
+    Risk      = (to_green "LOW")
     Technique = "Disabled account does not require a password"
     Score     = 5  
     Users     = ""
@@ -46,7 +46,7 @@ function Find-PwdNotRequired {
   $PWDdisabledcount = 0
 
   $PWDprivileged = [pscustomobject]@{
-    Risk      = (to_red "[CRITICAL]")
+    Risk      = (to_red "CRITICAL")
     Technique = "Highly privileged user does not require a password"
     Score     = 40
     Users     = ""
@@ -57,7 +57,7 @@ function Find-PwdNotRequired {
   $PWDprivilegedcount = 0
 
   $PWDstandard = [pscustomobject]@{
-    Risk      = (to_yellow "[MEDIUM]")
+    Risk      = (to_yellow "MEDIUM")
     Technique = "Standard user does not require a password"
     Score     = 15
     Users     = ""

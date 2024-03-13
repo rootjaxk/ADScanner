@@ -75,7 +75,7 @@ function Find-PasswordPolicy {
  
   if ($Complexity -eq $false) {
     $PWDIssues += [pscustomobject]@{
-      Risk              = (to_red "[HIGH]")
+      Risk              = (to_red "HIGH")
       Technique         = "Password complexity requirement is not enabled"
       Score             = 20
       ComplexityEnabled = $Complexity
@@ -84,7 +84,7 @@ function Find-PasswordPolicy {
   }
   if ($LengthIssue -eq $true) {
     $PWDIssues += [pscustomobject]@{
-      Risk      = (to_red "[HIGH]")
+      Risk      = (to_red "HIGH")
       Technique = "Password length requirement is less than 12 characters"
       Score     = 25
       Length    = $PwdPolicy.MinPasswordLength
@@ -93,7 +93,7 @@ function Find-PasswordPolicy {
   }
   if ($LockoutIssue -eq $true) {
     $PWDIssues += [pscustomobject]@{
-      Risk             = (to_red "[HIGH]")
+      Risk             = (to_red "HIGH")
       Technique        = "Account lockout threshold is greator than 10"
       Score            = 20
       LockoutThreshold = $PwdPolicy.LockoutThreshold
@@ -102,7 +102,7 @@ function Find-PasswordPolicy {
   }
   if ($MinPwdAgeIssue -eq $true) {
     $PWDIssues += [pscustomobject]@{
-      Risk           = (to_green "[LOW]")
+      Risk           = (to_green "LOW")
       Technique      = "The minimum password age is less than 1 day"#otherwise user can rotate back to previous password - https://www.tenable.com/audits/items/CIS_MS_Windows_Server_2008_R2_MS_Level_1_v3.3.0.audit:f6acf617d6b6a9efd90267aba213653b 
       Score          = 9
       MinPasswordAge = $PwdPolicy.MinPasswordAge.Days
@@ -111,7 +111,7 @@ function Find-PasswordPolicy {
   }
   if ($MaxPwdAgeIssue -eq $true) {
     $PWDIssues += [pscustomobject]@{
-      Risk           = (to_red "[HIGH]")
+      Risk           = (to_red "HIGH")
       Technique      = "The maximum password age is less than 365 days" 
       Score          = 20
       MaxPasswordAge = $PwdPolicy.MaxPasswordAge.Days
@@ -120,7 +120,7 @@ function Find-PasswordPolicy {
   }
   if ($PasswordHistoryIssue -eq $true) {
     $PWDIssues += [pscustomobject]@{
-      Risk                 = (to_green "[LOW]")
+      Risk                 = (to_green "LOW")
       Technique            = "The password history count is less than 24" 
       Score                = 9
       PasswordHistoryCount = $PwdPolicy.PasswordHistoryCount
@@ -129,7 +129,7 @@ function Find-PasswordPolicy {
   }
   if ($LockoutDurationIssue -eq $true) {
     $PWDIssues += [pscustomobject]@{
-      Risk            = (to_yellow "[MEDIUM]")
+      Risk            = (to_yellow "MEDIUM")
       Technique       = "The account lockout duration is less than 15 minutes" 
       Score           = 10
       LockoutDuration = $PwdPolicy.LockoutDuration
@@ -138,7 +138,7 @@ function Find-PasswordPolicy {
   }
   if ($ReverseEncryption -eq $True) {
     $PWDIssues += [pscustomobject]@{
-      Risk              = (to_red "[HIGH]")
+      Risk              = (to_red "HIGH")
       Technique         = "Reversible encryption is enabled"  # encrypted passwords stored can be decrypted
       Score             = 20
       ReverseEncryption = $PwdPolicy.ReversibleEncryptionEnabled

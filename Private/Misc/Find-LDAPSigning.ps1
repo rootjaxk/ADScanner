@@ -71,7 +71,7 @@ function Find-LDAPSigning {
        # $LDAPinfo - if want to output or not in domain info section
         if ($globalcatalogLDAP -eq $true -or $connectionLDAP -eq $true) {
             $Issue = [pscustomobject]@{
-                Risk             = (to_yellow "[MEDIUM]")
+                Risk             = (to_yellow "MEDIUM")
                 Technique        = "LDAP signing or channel binding is not enforced"
                 Score            = 19
                 DomainController = $dc

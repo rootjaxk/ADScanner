@@ -187,7 +187,7 @@ function Find-SMBSigning {
 
     #Initialise issue
     $SMBSigningIssue = [pscustomobject]@{
-        Risk       = (to_yellow "[MEDIUM]")
+        Risk       = (to_yellow "MEDIUM")
         Technique  = "SMB signing is not enforced"
         Score      = 19
         Computers  = ""
