@@ -79,7 +79,7 @@ function Invoke-ADScanner {
   / ____ \| |__| |____) | (_| (_| | | | | | | |  __/ |   
  /_/    \_\_____/|_____/ \___\__,_|_| |_|_| |_|\___|_|   
 
- [+] Version: 1.0.0 - 13/03/2024
+ [+] Version: 1.0.0 - 15/03/2024
  [+] Jack G (@rootjack) https://github.com/rootjaxk/ADScanner
                                                    
 "@
@@ -181,10 +181,34 @@ function Invoke-ADScanner {
         $DomainInfo += Find-DomainInfo -Domain $Domain
     }
     #Generate report
+    $htmlreportheader = @"
+    <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$Domain Vulnerability Report</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="/Private/Report/Images/favicon-32x32.png">
+</head>
+
+<body>
+    <div class="banner">
+        <img src="./Images/kerberos-text2.png" alt="ADScanner logo" class="banner-img">
+    </div>
+    <div class="main-header">Domain vulnerability report for $Domain</div>
+"@
+
+
+
     $CertificateTemplates = $domaininfo.CertificateTemplates -join ', '
     $CertificateAuthority = $domaininfo.CertificateAuthority -join ', '
 
     $DomainInfohtml = @"
+<!-- Technical section -->
+<div class="main-header">Technical section</div>
+<div class="finding-header">Domain info</div>
+<div class="domain-info">
+<p>This section provides a general overview of the Active Directory domain, which can be taken as an indication of the size and complexity of the domain. Before appreciating any risks it is important to understand which assets within the domain require protecting.</p>
 <table>
 <th>Category</th>
 <th>Value</th>
@@ -201,6 +225,7 @@ function Invoke-ADScanner {
 <tr><td class="grey">CAtemplates:</td><td>$($domaininfo.CAtemplates)</td></tr>
 <tr><td class="grey">CertificateTemplates:</td><td>$CertificateTemplates</td></tr>
 </table>
+</div>
 "@
 
     #output to a file
@@ -277,13 +302,51 @@ function Invoke-ADScanner {
         $endTime = Get-Date
         $elapsedTime = $endTime - $startTime
         $Runinfo = [PSCustomObject]@{
-            "Domain Checked" = $Domain
-            "Ran as User"    = "$env:USERDOMAIN\$env:USERNAME"
-            "Ran on Host"    = (Get-ADComputer -Identity $env:COMPUTERNAME).dnshostname
-            "Date and Time"  = $startTime
-            "Time to Run"    = $($elapsedTime.TotalSeconds)
+            "Domain Assessed" = $Domain
+            "Ran as User"     = "$env:USERDOMAIN\$env:USERNAME"
+            "Ran on Host"     = (Get-ADComputer -Identity $env:COMPUTERNAME).dnshostname
+            "Date and Time"   = $startTime
+            "Time to Run"     = $($elapsedTime.TotalSeconds)
         }
         $Runinfo | Format-List
+
+        $runinfoHTML = @"
+        <!-- Executive summary section -->
+        <div class="summary">
+        <!-- Left section for the tables -->
+        <div class="left-section">
+            <div class="table-container">
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Details when ran</th>
+                        </tr>
+                        <tr>
+                            <td>Domain Assessed</td>
+                            <td>$Domain</td>
+                        </tr>
+                        <tr>
+                            <td>Ran as User</td>
+                            <td>$env:USERDOMAIN\$env:USERNAME</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ran on Host</td>
+                            <td>$($(Get-ADComputer -Identity $env:COMPUTERNAME).dnshostname)</td>
+                        </tr>
+                        <tr>
+                            <td>Date and Time</td>
+                            <td>$startTime</td>
+                        </tr>
+                        <tr>
+                            <td>Time to Run</td>
+                            <td>$($elapsedTime.TotalSeconds)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+"@
 
         Write-Host @"
 #####################################################################################
@@ -296,12 +359,12 @@ function Invoke-ADScanner {
             @{Name = "PKI"; Variable = $PKI },
             @{Name = "RBAC"; Variable = $RBAC },
             @{Name = "ACLs"; Variable = $ACLs },
-            @{Name = "Pwd"; Variable = $Pwd },
+            @{Name = "Passwords"; Variable = $Pwd },
             @{Name = "MISC"; Variable = $MISC },
             @{Name = "Legacy"; Variable = $Legacy }
         )
 
-        #Total risk score
+        #Domain risk score
         foreach ($item in $categoryVariables) {
             $totaldomainriskscore += ($item.Variable | Measure-Object -Property Score -Sum).Sum
         } 
@@ -312,14 +375,90 @@ function Invoke-ADScanner {
         Write-Host "[*] Domain risk score:"
         $Domainrisk | Format-Table
 
+        $riskOverallHTML = @"
+        <!-- Risk overall section -->
+        <div class="risk-overall">
+        <div class="left-image">  
+                <img src="./Images/Risk-scores/Critical.png" alt="Overall risk score">
+        </div>
+        <div class="risk-overall-text">
+            <h1>Domain risk level: $TotalDomainRiskScore / 100</h1>
+             <p>The maximum score is 100, anything above this presents a significant risk to ransomware.</p>
+             <p>Attackers will always exploit the path of least resistance (higher scores) - low hanging fruit.</p>
+             <a href="#category-summary">See score breakdown table</a>
+        </div>
+    </div>
+"@
+
+
+        #Category risk scores
         Write-Host "`r`n[*] Category Risk scores:"
         $categoryRisks += foreach ($item in $categoryVariables) {
+            $score = ($item.Variable | Measure-Object -Property Score -Sum).Sum
             [PSCustomObject]@{
-                Category   = $item.Name
-                Score = ($item.Variable | Measure-Object -Property Score -Sum).Sum
+                Category = $item.Name
+                Score    = $score
             }
         }
         $categoryRisks | Sort-Object -Property TotalScore -Descending
+
+        $categoryRisksHTML = @"
+        <div class="table-container">
+                <table class="summary-table" id="category-summary">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Risk Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+"@
+        foreach ($item in $categoryVariables) {
+            $score = ($item.Variable | Measure-Object -Property Score -Sum).Sum
+            if ($score -ge 100) {
+                $categoryRisksHTML += @"
+                <tr>
+                    <td>$($item.Name)</td>
+                    <td class="category-riskcritical">$score</td>
+                </tr>
+"@
+            } elseif ($score -ge 75) {
+                $categoryRisksHTML += @"
+                <tr>
+                    <td>$($item.Name)</td>
+                    <td class="category-riskhigh">$score</td>
+                </tr>
+"@
+            } elseif ($score -ge 50) {
+                $categoryRisksHTML += @"
+                <tr>
+                    <td>$($item.Name)</td>
+                    <td class="category-riskmedium">$score</td>
+                </tr>
+"@
+            } elseif ($score -ge 1) {
+                $categoryRisksHTML += @"
+                <tr>
+                    <td>$($item.Name)</td>
+                    <td class="category-risklow">$score</td>
+                </tr>
+"@          
+            } elseif ($score -eq 0) {
+                $categoryRisksHTML += @"
+                <tr>
+                    <td>$($item.Name)</td>
+                    <td class="category-riskinformational">$score</td>
+                </tr>       
+"@
+            }
+        }
+        $categoryRisksHTML += @"
+                    </tbody>
+                </table>
+            </div>
+        </div>
+"@
+
 
         #Ordered summary of risks
         $Risksummaries = "`r`n[*] Risk summaries:"
@@ -327,45 +466,127 @@ function Invoke-ADScanner {
 
         #Add category to each issue
         $Allissues | ForEach-Object {
-            try{
-            if ($_ -in $PKI) {
-                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "PKI"
-            }
-            elseif ($_ -in $Kerberos) {
-                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "Kerberos"
-            }
-            elseif ($_ -in $RBAC) {
-                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "RBAC"
-            }
-            elseif ($_ -in $ACLs) {
-                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "ACLs"
-            }
-            elseif ($_ -in $Pwd) {
-                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "Passwords"
-            }
-            elseif ($_ -in $Legacy) {
-                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "Legacy"
-            }
-            elseif ($_ -in $MISC) {
-                $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "MISC"
-            }
+            try {
+                if ($_ -in $PKI) {
+                    $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "PKI"
+                }
+                elseif ($_ -in $Kerberos) {
+                    $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "Kerberos"
+                }
+                elseif ($_ -in $RBAC) {
+                    $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "RBAC"
+                }
+                elseif ($_ -in $ACLs) {
+                    $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "ACLs"
+                }
+                elseif ($_ -in $Pwd) {
+                    $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "Passwords"
+                }
+                elseif ($_ -in $Legacy) {
+                    $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "Legacy"
+                }
+                elseif ($_ -in $MISC) {
+                    $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "MISC"
+                }
             
-        }catch{}
+            }
+            catch {}
         }
         $Risksummaries
         $AllissuesHTML = $Allissues | Where-Object { $null -ne $_.Score } | Select-Object Risk, Technique, Category, Score | Sort-Object -Property Score -Descending
         $AllissuesHTML | Format-Table
-        $HTML = $AllissuesHTML | ConvertTo-Html -Fragment
-        $HTML = $HTML.Replace('<tr><td>CRITICAL', '<tr class="critical"><td>Critical')
-        $HTML = $HTML.Replace('<tr><td>HIGH', '<tr class="high"><td>High')
-        $HTML = $HTML.Replace('<tr><td>MEDIUM', '<tr class="medium"><td>Medium')
-        $HTML = $HTML.Replace('<tr><td>LOW', '<tr class="low"><td>Low')
-        $HTML = $HTML.Replace('<tr><td>CINFORMATIONAL', '<tr class="information"><td>Informational')
-        
+
+
+        #Define top of table
+        $RisksummaryHTMLoutput = @"
+        <!-- Risk prioritisation section -->
+        <div class="risk-summary-container">
+        <div class="risk-summary-heading">
+            <h2>Risk Prioritisation Summary</h2>
+            <p>The table below summarizes the number and severity of findings in order of decreasing risk. Full
+                details can be found by clicking on each vulnerability which will take you to the relevant technical
+                section.</p>
+        </div>
+        <table class="risk-prioritisation-summary">
+            <thead>
+                <tr>
+                    <th class="risk-column">Risk</th>
+                    <th class="technique-column">Technique</a></th>
+                    <th class="category-column">Category</th>
+                    <th class="score-column">Score</th>
+                </tr>
+            </thead>
+            <tbody>
+"@
+
+        #Dynamically add rows to table based on risk
+        foreach ($row in $AllissuesHTML) {
+            $nospace = $row.Technique.Replace(" ", "-")
+            if ($row.risk -match "CRITICAL") {
+                #replace whitespace with - as HTML id's cannot have whitespace
+                $RisksummaryHTMLoutput += @"
+                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#$nospace">$($row.technique)</a></td>
+                    <td>$($row.category)</td>
+                    <td>$($row.score)</td>
+                </tr>
+"@
+            }
+            elseif ($row.risk -match "HIGH") {
+                $RisksummaryHTMLoutput += @"
+                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#$nospace">$($row.technique)</a></td>
+                    <td>$($row.category)</td>
+                    <td>$($row.score)</td>
+                </tr>
+"@
+            }
+            elseif ($row.risk -match "MEDIUM") {
+                $RisksummaryHTMLoutput += @"
+                <tr class="medium">
+                    <td>Medium</td>
+                    <td><a href="#$nospace">$($row.technique)</a></td>
+                    <td>$($row.category)</td>
+                    <td>$($row.score)</td>
+                </tr>
+"@
+            }
+            elseif ($row.risk -match "LOW") {
+                $RisksummaryHTMLoutput += @"
+                <tr class="low">
+                    <td>Low</td>
+                    <td><a href="#$nospace">$($row.technique)</a></td>
+                    <td>$($row.category)</td>
+                    <td>$($row.score)</td>
+                </tr>
+"@
+            }
+            elseif ($row.risk -match "INFO") {
+                $RisksummaryHTMLoutput += @"
+                <tr class="information">
+                    <td>Informational</td>
+                    <td><a href="#$nospace">$($row.technique)</a></td>
+                    <td>$($row.category)</td>
+                    <td>$($row.score)</td>
+                </tr>
+"@
+            }
+        }
+        #end the table
+        $RisksummaryHTMLoutput += "</tbody></table></div>"
     }
 
+
+
+    # $HTML = $AllissuesHTML | ConvertTo-Html -Fragment
+    # $HTML = $HTML.Replace('<tr><td>CRITICAL</td><td>', '<tr class="critical"><td>Critical</td><td><a href="')
+    
+        
+    # Output all findings in separate sections
     if ($Scans -eq "Info" -or $Scans -eq "All") {
-        # Output all findings in separate sections
+        
         Write-Host @"
 #####################################################################################
 #                                    Domain Info                                    #
@@ -446,8 +667,32 @@ function Invoke-ADScanner {
     # Caclulate-risk-score
 
     #Get generative AI input
-
+    $executiveSummaryHTML = @"
+    <!-- Right section for the executive summary -->
+        <div class="executive-summary">
+            <h2>Executive Summary (GPT to contextualize)</h2>
+            <p>ADscanner was commissioned to perform a vulnerability assessment against the test.local Active Directory
+                domain to ensure correct security configuration and operation of the Directory.
+                The audit indicates that the security of the Active Directory is reduced by the X, Y & Z. a number of
+                misconfigurations significantly increases the attack surface of Active Directory, and therefore the
+                network could be exploited by a determined attacker deploying ransomware and malware.</p>
+            <p>ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...</p>
+            <p>ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...</p>
+            <p>ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...</p>
+        </div>
+    </div>
+"@
 
     #Produce report
     #Generate-Report
+
+
+    $htmlreportheader # banner and top heading
+    $riskOverallHTML # domain risk level
+    $runinfoHTML   # details when ran
+    $categoryRisksHTML # category risk scores
+    $executiveSummaryHTML # executive summary with GPT
+    $RisksummaryHTMLoutput # risk prioritisation summary
+    $DomainInfohtml # first bit of technical section
+    
 }

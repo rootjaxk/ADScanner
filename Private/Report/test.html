@@ -1,11 +1,10 @@
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>test.local Vulnerability Report</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/x-icon" href="/Private/Report/Images/kerberos-favicon.png">
+    <link rel="icon" type="image/x-icon" href="/Private/Report/Images/favicon-32x32.png">
 </head>
 
 <body>
@@ -21,9 +20,9 @@
         </div>
         <div class="risk-overall-text">
             <h1>Domain risk level: 150 / 100</h1>
-             <p>The maximum score is 100, anything above this presents significant risk to ransomware</p>
-             <p>attackers will go for the path of least resistance (higher scores) - low hanging fruit</p>
-             <p><u>See score breakdown table</u></p>
+             <p>The maximum score is 100, anything above this presents a significant risk to ransomware.</p>
+             <p>Attackers will always exploit the path of least resistance (higher scores) - low hanging fruit.</p>
+             <a href="#category-summary">See score breakdown table</a>
         </div>
     </div>
 
@@ -64,7 +63,7 @@
                 </table>
             </div>
             <div class="table-container">
-                <table class="summary-table">
+                <table class="summary-table" id="category-summary">
                     <thead>
                         <tr>
                             <th>Category</th>
@@ -103,7 +102,6 @@
                     </tbody>
                 </table>
             </div>
-
         </div>
         <!-- Right section for the executive summary -->
         <div class="executive-summary">
@@ -119,7 +117,7 @@
         </div>
     </div>
 
-    <!-- Executive prioritisation section -->
+    <!-- Risk prioritisation section -->
     <div class="risk-summary-container">
         <div class="risk-summary-heading">
             <h2>Risk Prioritisation Summary</h2>
@@ -169,83 +167,15 @@
                 </tr>
             </tbody>
         </table>
-
-        <table>
-            <colgroup><col/><col/><col/><col/></colgroup>
-            <tr><th>Risk</th><th>Technique</th><th>Category</th><th>Score</th></tr>
-            <tr><td>CRITICAL</td><td>ESC8</td><td>PKI</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>Highly privileged Kerberoastable user with a weak password</td><td>Kerberos</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>ESC6</td><td>PKI</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>ESC7</td><td>PKI</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>Low privileged principal has DCSync rights</td><td>ACLs</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>Low privileged principal has dangerous RBCD rights</td><td>ACLs</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>Highly privileged ASREP-roastable user with a weak password</td><td>Kerberos</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>Low privileged principal has dangerous rights</td><td>ACLs</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>ESC5</td><td>PKI</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>ESC3</td><td>PKI</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>ESC4</td><td>PKI</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>ESC2</td><td>PKI</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>ESC1</td><td>PKI</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>ESC4</td><td>PKI</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>ESC5</td><td>PKI</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>ESC4</td><td>PKI</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>ESC5</td><td>PKI</td><td>50</td></tr>
-            <tr><td>CRITICAL</td><td>Highly privileged user does not require a password</td><td>Passwords</td><td>40</td></tr>
-            <tr><td>HIGH</td><td>Low privileged principal has dangerous rights</td><td>ACLs</td><td>35</td></tr>
-            <tr><td>HIGH</td><td>Low privileged principal has dangerous rights</td><td>ACLs</td><td>35</td></tr>
-            <tr><td>HIGH</td><td>Low privileged principal has dangerous RBCD rights</td><td>ACLs</td><td>35</td></tr>
-            <tr><td>HIGH</td><td>Low privileged principal has dangerous rights</td><td>ACLs</td><td>35</td></tr>
-            <tr><td>HIGH</td><td>Low privileged principal has dangerous rights</td><td>ACLs</td><td>35</td></tr>
-            <tr><td>HIGH</td><td>Low privileged principal has dangerous RBCD rights</td><td>ACLs</td><td>35</td></tr>
-            <tr><td>HIGH</td><td>Low privileged principal has dangerous rights</td><td>ACLs</td><td>35</td></tr>
-            <tr><td>HIGH</td><td>Unrestricted outbound access</td><td>MISC</td><td>35</td></tr>
-            <tr><td>HIGH</td><td>Constrained delegation</td><td>Kerberos</td><td>30</td></tr>
-            <tr><td>HIGH</td><td>Outdated Operating Systems found</td><td>Legacy</td><td>30</td></tr>
-            <tr><td>HIGH</td><td>Resource-based constrained delegation</td><td>Kerberos</td><td>30</td></tr>
-            <tr><td>HIGH</td><td>Unconstrained delegation</td><td>Kerberos</td><td>30</td></tr>
-            <tr><td>HIGH</td><td>Spooler service is enabled (authentication coercion) </td><td>MISC</td><td>30</td></tr>
-            <tr><td>HIGH</td><td>Modifiable logon script - see baby2 for example exploitation</td><td>ACLs</td><td>30</td></tr>
-            <tr><td>HIGH</td><td>Plaintext credentials found readable by low privileged user</td><td>Passwords</td><td>30</td></tr>
-            <tr><td>HIGH</td><td>SMBv1 is enabled on computers</td><td>Legacy</td><td>25</td></tr>
-            <tr><td>HIGH</td><td>Password length requirement is less than 12 characters</td><td>Passwords</td><td>25</td></tr>
-            <tr><td>HIGH</td><td>LLMNR is vulnerable to layer 2 poisoning attacks</td><td>Legacy</td><td>25</td></tr>
-            <tr><td>HIGH</td><td>Low privileged Kerberoastable user with a weak password</td><td>Kerberos</td><td>25</td></tr>
-            <tr><td>HIGH</td><td>NBT-NS is vulnerable to layer 2 poisoning attacks</td><td>Legacy</td><td>25</td></tr>
-            <tr><td>HIGH</td><td>mDNS is vulnerable to layer 2 poisoning attacks</td><td>Legacy</td><td>25</td></tr>
-            <tr><td>HIGH</td><td>Low privileged ASREP-roastable user with a weak password</td><td>Kerberos</td><td>25</td></tr>
-            <tr><td>HIGH</td><td>Reversible encryption is enabled</td><td>Passwords</td><td>20</td></tr>
-            <tr><td>HIGH</td><td>Password complexity requirement is not enabled</td><td>Passwords</td><td>20</td></tr>
-            <tr><td>HIGH</td><td>Schema Admins group does not meet the benchmark (maximum 0 users required).</td><td>RBAC</td><td>20</td></tr>
-            <tr><td>HIGH</td><td>Domain anonymous access is permitted allowing anonymous access to the domain</td><td>RBAC</td><td>20</td></tr>
-            <tr><td>HIGH</td><td>Local anonymous access is permitted allowing anonymous access to the system</td><td>RBAC</td><td>20</td></tr>
-            <tr><td>HIGH</td><td>Enterprise Admins group does not meet the benchmark (maximum 0 users required).</td><td>RBAC</td><td>20</td></tr>
-            <tr><td>HIGH</td><td>Inactive/stale accounts are not disabled in privileged groups</td><td>RBAC</td><td>20</td></tr>
-            <tr><td>HIGH</td><td>Server Operators group does not meet the benchmark (maximum 0 users required).</td><td>RBAC</td><td>20</td></tr>
-            <tr><td>MEDIUM</td><td>SMB signing is not enforced</td><td>MISC</td><td>19</td></tr>
-            <tr><td>MEDIUM</td><td>LDAP signing or channel binding is not enforced</td><td>MISC</td><td>19</td></tr>
-            <tr><td>MEDIUM</td><td>Highly privileged account does not have the &#39;Account is sensitive and cannot be delegated&#39; flag set</td><td>RBAC</td><td>19</td></tr>
-            <tr><td>MEDIUM</td><td>Suspicious / legacy admin account</td><td>RBAC</td><td>15</td></tr>
-            <tr><td>MEDIUM</td><td>Standard user does not require a password</td><td>Passwords</td><td>15</td></tr>
-            <tr><td>MEDIUM</td><td>Outdated, but disabled, Operating Systems found</td><td>Legacy</td><td>10</td></tr>
-            <tr><td>LOW</td><td>The password history count is less than 24</td><td>Passwords</td><td>9</td></tr>
-            <tr><td>LOW</td><td>Disabled ASREP-roastable user</td><td>Kerberos</td><td>9</td></tr>
-            <tr><td>LOW</td><td>Disabled Kerberoastable account</td><td>Kerberos</td><td>9</td></tr>
-            <tr><td>LOW</td><td>Inactive/stale accounts are not disabled</td><td>RBAC</td><td>5</td></tr>
-            <tr><td>LOW</td><td>Potential for non-admin users can add computers to the domain</td><td>MISC</td><td>5</td></tr>
-            <tr><td>LOW</td><td>Disabled account does not require a password</td><td>Passwords</td><td>5</td></tr>
-            <tr><td>INFORMATIONAL</td><td>Domain effiency improvement - empty Organizational Units</td><td>MISC</td><td>1</td></tr>
-            <tr><td>INFORMATIONAL</td><td>Domain effiency improvement - unlinked GPOs</td><td>MISC</td><td>1</td></tr>
-            </table>
     </div>
 
-
-
+   
 
     <!-- Technical section -->
     <div class="main-header">Technical section</div>
     <div class="finding-header">Domain info</div>
     <div class="domain-info">
-        <p>This section provides a general overview of the domain, which can be taken as an indication of the size and complexity of the domain. Before appreciating any risks it is important to understand what within the domain requires protecting.</p>
+        <p>This section provides a general overview of the Active Directory domain, which can be taken as an indication of the size and complexity of the domain. Before appreciating any risks it is important to understand which assets within the domain require protecting.</p>
         <table>
             <th>Category</th>
             <th>Value</th>
