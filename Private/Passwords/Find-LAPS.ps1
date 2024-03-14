@@ -69,7 +69,7 @@ function Find-LAPS {
   }
 
   #check if LAPS is installed on device
-  if ($LAPS -notmatch 'AdmPwd.dll') {
+  if (!$LAPS) {
     $Issue = [pscustomobject]@{
       Risk      = (to_red "[HIGH]")
       Technique = "LAPS is not utilized on all computers."

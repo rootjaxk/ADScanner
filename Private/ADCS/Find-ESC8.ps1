@@ -86,7 +86,8 @@ function Find-ESC8 {
         Risk      = (to_red "CRITICAL")
         Technique = "ESC8"
         Score     = 50
-        Name      = $CAname
+        "CA Name"      = $CAname
+        "CA Endpoint"  = $httpurl
         Issue     = "$httpurl is vulnerable to NTLM relay attacks"
       }
       $Issue
@@ -107,7 +108,8 @@ function Find-ESC8 {
         Risk      = (to_red "CRITICAL")
         Technique = "ESC8"
         Score     = 50
-        Name      = $CAname
+        "CA Name"      = $CAname
+        "CA Endpoint"  = $httpsurl
         Issue     = "$httpsurl is possibly vulnerable to NTLM relay attacks if Extended Protection for Authentication (EPA) is not enforced"
       }
       $Issue

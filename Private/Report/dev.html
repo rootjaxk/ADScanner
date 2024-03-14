@@ -1,0 +1,455 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>test.local Vulnerability Report</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="/Private/Report/Images/favicon-32x32.png">
+</head>
+
+<body>
+    <div class="banner">
+        <img src="./Images/kerberos-text2.png" alt="ADScanner logo" class="banner-img">
+    </div>
+    <div class="main-header">Domain vulnerability report for test.local</div>
+        <!-- Risk overall section -->
+        <div class="risk-overall">
+        <div class="left-image">             <img src="./Images/Risk-scores/Critical.png" alt="Overall risk score">
+            </div>        <div class="risk-overall-text">
+            <h1>Domain risk level: 1856 / 100</h1>
+             <p>The maximum score is 100, anything above this presents a significant risk to ransomware.</p>
+             <p>Attackers will always exploit the path of least resistance (higher scores) - low hanging fruit.</p>
+             <a href="#category-summary">See score breakdown table</a>
+        </div>
+    </div>
+        <!-- Executive summary section -->
+        <div class="summary">
+        <!-- Left section for the tables -->
+        <div class="left-section">
+            <div class="table-container">
+                <table class="summary-table">
+                    <thead>
+                        <tr>
+                            <th colspan="2">Details when ran</th>
+                        </tr>
+                        <tr>
+                            <td>Domain Assessed</td>
+                            <td>test.local</td>
+                        </tr>
+                        <tr>
+                            <td>Ran as User</td>
+                            <td>TEST\jack</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ran on Host</td>
+                            <td>CA.test.local</td>
+                        </tr>
+                        <tr>
+                            <td>Date and Time</td>
+                            <td>03/14/2024 15:28:11</td>
+                        </tr>
+                        <tr>
+                            <td>Time to Run</td>
+                            <td>53.2504325</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        <div class="table-container">
+                <table class="summary-table" id="category-summary">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Risk Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>                <tr>
+                    <td>Kerberos</td>
+                    <td class="category-riskcritical">258</td>
+                </tr>                <tr>
+                    <td>PKI</td>
+                    <td class="category-riskcritical">600</td>
+                </tr>                <tr>
+                    <td>RBAC</td>
+                    <td class="category-riskcritical">159</td>
+                </tr>                <tr>
+                    <td>ACLs</td>
+                    <td class="category-riskcritical">425</td>
+                </tr>                <tr>
+                    <td>Passwords</td>
+                    <td class="category-riskcritical">164</td>
+                </tr>                <tr>
+                    <td>MISC</td>
+                    <td class="category-riskcritical">110</td>
+                </tr>                <tr>
+                    <td>Legacy</td>
+                    <td class="category-riskcritical">140</td>
+                </tr>                    </tbody>
+                </table>
+            </div>
+        </div>
+    <!-- Right section for the executive summary -->
+        <div class="executive-summary">
+            <h2>Executive Summary (GPT to contextualize)</h2>
+            <p>ADscanner was commissioned to perform a vulnerability assessment against the test.local Active Directory
+                domain to ensure correct security configuration and operation of the Directory.
+                The audit indicates that the security of the Active Directory is reduced by the X, Y & Z. a number of
+                misconfigurations significantly increases the attack surface of Active Directory, and therefore the
+                network could be exploited by a determined attacker deploying ransomware and malware.</p>
+            <p>ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...</p>
+            <p>ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...</p>
+            <p>ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...</p>
+        </div>
+    </div>
+        <!-- Risk prioritisation section -->
+        <div class="risk-summary-container">
+        <div class="risk-summary-heading">
+            <h2>Risk Prioritisation Summary</h2>
+            <p>The table below summarizes the number and severity of findings in order of decreasing risk. Full
+                details can be found by clicking on each vulnerability which will take you to the relevant technical
+                section.</p>
+        </div>
+        <table class="risk-prioritisation-summary">
+            <thead>
+                <tr>
+                    <th class="risk-column">Risk</th>
+                    <th class="technique-column">Issue</a></th>
+                    <th class="category-column">Category</th>
+                    <th class="score-column">Score</th>
+                </tr>
+            </thead>
+            <tbody>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#ESC8">ESC8</a></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#Highly-privileged-Kerberoastable-user-with-a-weak-password">Highly privileged Kerberoastable user with a weak password</a></td>
+                    <td>Kerberos</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#ESC6">ESC6</a></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#ESC7">ESC7</a></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#Low-privileged-principal-has-DCSync-rights">Low privileged principal has DCSync rights</a></td>
+                    <td>ACLs</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#Low-privileged-principal-has-dangerous-RBCD-rights">Low privileged principal has dangerous RBCD rights</a></td>
+                    <td>ACLs</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#Highly-privileged-ASREP-roastable-user-with-a-weak-password">Highly privileged ASREP-roastable user with a weak password</a></td>
+                    <td>Kerberos</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#Low-privileged-principal-has-dangerous-rights">Low privileged principal has dangerous rights</a></td>
+                    <td>ACLs</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#ESC5">ESC5</a></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#ESC3">ESC3</a></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#ESC4">ESC4</a></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#ESC2">ESC2</a></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#ESC1">ESC1</a></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#ESC4">ESC4</a></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#ESC5">ESC5</a></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#ESC4">ESC4</a></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#ESC5">ESC5</a></td>
+                    <td>PKI</td>
+                    <td>50</td>
+                </tr>                <tr class="critical">
+                    <td>Critical</td>
+                    <td><a href="#Highly-privileged-user-does-not-require-a-password">Highly privileged user does not require a password</a></td>
+                    <td>Passwords</td>
+                    <td>40</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Low-privileged-principal-has-dangerous-rights">Low privileged principal has dangerous rights</a></td>
+                    <td>ACLs</td>
+                    <td>35</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Low-privileged-principal-has-dangerous-rights">Low privileged principal has dangerous rights</a></td>
+                    <td>ACLs</td>
+                    <td>35</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Low-privileged-principal-has-dangerous-RBCD-rights">Low privileged principal has dangerous RBCD rights</a></td>
+                    <td>ACLs</td>
+                    <td>35</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Low-privileged-principal-has-dangerous-rights">Low privileged principal has dangerous rights</a></td>
+                    <td>ACLs</td>
+                    <td>35</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Low-privileged-principal-has-dangerous-rights">Low privileged principal has dangerous rights</a></td>
+                    <td>ACLs</td>
+                    <td>35</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Low-privileged-principal-has-dangerous-RBCD-rights">Low privileged principal has dangerous RBCD rights</a></td>
+                    <td>ACLs</td>
+                    <td>35</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Low-privileged-principal-has-dangerous-rights">Low privileged principal has dangerous rights</a></td>
+                    <td>ACLs</td>
+                    <td>35</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Unrestricted-outbound-access">Unrestricted outbound access</a></td>
+                    <td>MISC</td>
+                    <td>35</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Constrained-delegation">Constrained delegation</a></td>
+                    <td>Kerberos</td>
+                    <td>30</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Outdated-Operating-Systems-found">Outdated Operating Systems found</a></td>
+                    <td>Legacy</td>
+                    <td>30</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Resource-based-constrained-delegation">Resource-based constrained delegation</a></td>
+                    <td>Kerberos</td>
+                    <td>30</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Unconstrained-delegation">Unconstrained delegation</a></td>
+                    <td>Kerberos</td>
+                    <td>30</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Spooler-service-is-enabled-(authentication-coercion)-">Spooler service is enabled (authentication coercion) </a></td>
+                    <td>MISC</td>
+                    <td>30</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Modifiable-logon-script---see-baby2-for-example-exploitation">Modifiable logon script - see baby2 for example exploitation</a></td>
+                    <td>ACLs</td>
+                    <td>30</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Plaintext-credentials-found-readable-by-low-privileged-user">Plaintext credentials found readable by low privileged user</a></td>
+                    <td>Passwords</td>
+                    <td>30</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#SMBv1-is-enabled-on-computers">SMBv1 is enabled on computers</a></td>
+                    <td>Legacy</td>
+                    <td>25</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Password-length-requirement-is-less-than-12-characters">Password length requirement is less than 12 characters</a></td>
+                    <td>Passwords</td>
+                    <td>25</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#LLMNR-is-vulnerable-to-layer-2-poisoning-attacks">LLMNR is vulnerable to layer 2 poisoning attacks</a></td>
+                    <td>Legacy</td>
+                    <td>25</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Low-privileged-Kerberoastable-user-with-a-weak-password">Low privileged Kerberoastable user with a weak password</a></td>
+                    <td>Kerberos</td>
+                    <td>25</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#NBT-NS-is-vulnerable-to-layer-2-poisoning-attacks">NBT-NS is vulnerable to layer 2 poisoning attacks</a></td>
+                    <td>Legacy</td>
+                    <td>25</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#mDNS-is-vulnerable-to-layer-2-poisoning-attacks">mDNS is vulnerable to layer 2 poisoning attacks</a></td>
+                    <td>Legacy</td>
+                    <td>25</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Low-privileged-ASREP-roastable-user-with-a-weak-password">Low privileged ASREP-roastable user with a weak password</a></td>
+                    <td>Kerberos</td>
+                    <td>25</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Reversible-encryption-is-enabled">Reversible encryption is enabled</a></td>
+                    <td>Passwords</td>
+                    <td>20</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Password-complexity-requirement-is-not-enabled">Password complexity requirement is not enabled</a></td>
+                    <td>Passwords</td>
+                    <td>20</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Schema-Admins-group-does-not-meet-the-benchmark-(maximum-0-users-required).">Schema Admins group does not meet the benchmark (maximum 0 users required).</a></td>
+                    <td>RBAC</td>
+                    <td>20</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Domain-anonymous-access-is-permitted-allowing-anonymous-access-to-the-domain">Domain anonymous access is permitted allowing anonymous access to the domain</a></td>
+                    <td>RBAC</td>
+                    <td>20</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Local-anonymous-access-is-permitted-allowing-anonymous-access-to-the-system">Local anonymous access is permitted allowing anonymous access to the system</a></td>
+                    <td>RBAC</td>
+                    <td>20</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Enterprise-Admins-group-does-not-meet-the-benchmark-(maximum-0-users-required).">Enterprise Admins group does not meet the benchmark (maximum 0 users required).</a></td>
+                    <td>RBAC</td>
+                    <td>20</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Inactive/stale-accounts-are-not-disabled-in-privileged-groups">Inactive/stale accounts are not disabled in privileged groups</a></td>
+                    <td>RBAC</td>
+                    <td>20</td>
+                </tr>                <tr class="high">
+                    <td>High</td>
+                    <td><a href="#Server-Operators-group-does-not-meet-the-benchmark-(maximum-0-users-required).">Server Operators group does not meet the benchmark (maximum 0 users required).</a></td>
+                    <td>RBAC</td>
+                    <td>20</td>
+                </tr>                <tr class="medium">
+                    <td>Medium</td>
+                    <td><a href="#SMB-signing-is-not-enforced">SMB signing is not enforced</a></td>
+                    <td>MISC</td>
+                    <td>19</td>
+                </tr>                <tr class="medium">
+                    <td>Medium</td>
+                    <td><a href="#LDAP-signing-or-channel-binding-is-not-enforced">LDAP signing or channel binding is not enforced</a></td>
+                    <td>MISC</td>
+                    <td>19</td>
+                </tr>                <tr class="medium">
+                    <td>Medium</td>
+                    <td><a href="#Highly-privileged-account-does-not-have-the-'Account-is-sensitive-and-cannot-be-delegated'-flag-set">Highly privileged account does not have the 'Account is sensitive and cannot be delegated' flag set</a></td>
+                    <td>RBAC</td>
+                    <td>19</td>
+                </tr>                <tr class="medium">
+                    <td>Medium</td>
+                    <td><a href="#Suspicious-/-legacy-admin-account">Suspicious / legacy admin account</a></td>
+                    <td>RBAC</td>
+                    <td>15</td>
+                </tr>                <tr class="medium">
+                    <td>Medium</td>
+                    <td><a href="#Standard-user-does-not-require-a-password">Standard user does not require a password</a></td>
+                    <td>Passwords</td>
+                    <td>15</td>
+                </tr>                <tr class="medium">
+                    <td>Medium</td>
+                    <td><a href="#Outdated,-but-disabled,-Operating-Systems-found">Outdated, but disabled, Operating Systems found</a></td>
+                    <td>Legacy</td>
+                    <td>10</td>
+                </tr>                <tr class="low">
+                    <td>Low</td>
+                    <td><a href="#The-password-history-count-is-less-than-24">The password history count is less than 24</a></td>
+                    <td>Passwords</td>
+                    <td>9</td>
+                </tr>                <tr class="low">
+                    <td>Low</td>
+                    <td><a href="#Disabled-ASREP-roastable-user">Disabled ASREP-roastable user</a></td>
+                    <td>Kerberos</td>
+                    <td>9</td>
+                </tr>                <tr class="low">
+                    <td>Low</td>
+                    <td><a href="#Disabled-Kerberoastable-account">Disabled Kerberoastable account</a></td>
+                    <td>Kerberos</td>
+                    <td>9</td>
+                </tr>                <tr class="low">
+                    <td>Low</td>
+                    <td><a href="#Inactive/stale-accounts-are-not-disabled">Inactive/stale accounts are not disabled</a></td>
+                    <td>RBAC</td>
+                    <td>5</td>
+                </tr>                <tr class="low">
+                    <td>Low</td>
+                    <td><a href="#Potential-for-non-admin-users-can-add-computers-to-the-domain">Potential for non-admin users can add computers to the domain</a></td>
+                    <td>MISC</td>
+                    <td>5</td>
+                </tr>                <tr class="low">
+                    <td>Low</td>
+                    <td><a href="#Disabled-account-does-not-require-a-password">Disabled account does not require a password</a></td>
+                    <td>Passwords</td>
+                    <td>5</td>
+                </tr>                <tr class="information">
+                    <td>Informational</td>
+                    <td><a href="#Domain-effiency-improvement---empty-Organizational-Units">Domain effiency improvement - empty Organizational Units</a></td>
+                    <td>MISC</td>
+                    <td>1</td>
+                </tr>                <tr class="information">
+                    <td>Informational</td>
+                    <td><a href="#Domain-effiency-improvement---unlinked-GPOs">Domain effiency improvement - unlinked GPOs</a></td>
+                    <td>MISC</td>
+                    <td>1</td>
+                </tr></tbody></table></div>
+<!-- Technical section -->
+<div class="main-header">Technical section</div>
+<div class="finding-header">Domain info</div>
+<div class="domain-info">
+<p>This section provides a general overview of the Active Directory domain, which can be taken as an indication of the size and complexity of the domain. Before appreciating any risks it is important to understand which assets within the domain require protecting.</p>
+<table>
+<th>Category</th>
+<th>Value</th>
+<tr><td class="grey">Domain:</td><td>test.local</td></tr>
+<tr><td class="grey">FunctionalLevel:</td><td>Windows2016Domain</td></tr>
+<tr><td class="grey">DomainControllers:</td><td>DC.test.local</td></tr>
+<tr><td class="grey">Users:</td><td>444</td></tr>
+<tr><td class="grey">Groups:</td><td>49</td></tr>
+<tr><td class="grey">Computers:</td><td>11</td></tr>
+<tr><td class="grey">Trusts:</td><td>None</td></tr>
+<tr><td class="grey">OUs:</td><td>225</td></tr>
+<tr><td class="grey">GPOs:</td><td>5</td></tr>
+<tr><td class="grey">CertificateAuthority:</td><td>CA.test.local, test-CA-CA</td></tr>
+<tr><td class="grey">CAtemplates:</td><td>18</td></tr>
+<tr><td class="grey">CertificateTemplates:</td><td>ESC4ACL-template, ESC4-template, ESC3-enrolltemplate, ESC3-template, ESC2-template, ESC1-template, Workstation, DirectoryEmailReplication, DomainControllerAuthentication, KerberosAuthentication, EFSRecovery, EFS, DomainController, WebServer, Machine, User, SubCA, Administrator</td></tr>
+</table>
+</div>

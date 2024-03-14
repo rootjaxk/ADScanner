@@ -375,12 +375,45 @@ function Invoke-ADScanner {
         Write-Host "[*] Domain risk score:"
         $Domainrisk | Format-Table
 
+        #Dynamically resolve risk image based on score
         $riskOverallHTML = @"
         <!-- Risk overall section -->
         <div class="risk-overall">
-        <div class="left-image">  
-                <img src="./Images/Risk-scores/Critical.png" alt="Overall risk score">
-        </div>
+        <div class="left-image"> 
+"@
+        if ($TotalDomainRiskScore -ge 100){
+            $riskOverallHTML += @"  
+            <img src="./Images/Risk-scores/Critical.png" alt="Overall risk score">
+            </div>
+"@
+        } elseif ($TotalDomainRiskScore -ge 75) {
+            $riskOverallHTML += @"
+            <img src="./Images/Risk-scores/High.png" alt="Overall risk score">
+            </div>
+"@
+        } elseif ($TotalDomainRiskScore -ge 50) {
+            $riskOverallHTML += @"
+            <img src="./Images/Risk-scores/Medium.png" alt="Overall risk score">
+            </div>
+"@ 
+        } elseif ($TotalDomainRiskScore -ge 25) {
+            $riskOverallHTML += @"
+            <img src="./Images/Risk-scores/Low.png" alt="Overall risk score">
+            </div>
+"@   
+        } elseif ($TotalDomainRiskScore -eq 1) {
+            $riskOverallHTML += @"
+            <img src="./Images/Risk-scores/Very-low.png" alt="Overall risk score">
+            </div> 
+"@
+        } elseif ($TotalDomainRiskScore -eq 0) {
+            $riskOverallHTML += @"
+            <img src="./Images/Risk-scores/Perfect.png" alt="Overall risk score">
+            </div> 
+"@   
+        }
+        #Risk level commentry
+        $riskOverallHTML += @"
         <div class="risk-overall-text">
             <h1>Domain risk level: $TotalDomainRiskScore / 100</h1>
              <p>The maximum score is 100, anything above this presents a significant risk to ransomware.</p>
@@ -511,7 +544,7 @@ function Invoke-ADScanner {
             <thead>
                 <tr>
                     <th class="risk-column">Risk</th>
-                    <th class="technique-column">Technique</a></th>
+                    <th class="technique-column">Issue</a></th>
                     <th class="category-column">Category</th>
                     <th class="score-column">Score</th>
                 </tr>
