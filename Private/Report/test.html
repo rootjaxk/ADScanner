@@ -236,11 +236,15 @@
                                         <th>Issue explanation</th>
                                     </tr>
                                     <tr>
-                                        <td>PScustomobject info</td>
-                                        <td>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">CA Name</td><td>test-CA-CA</td></tr>
+                                            <tr><td class="grey">CA Endpoint</td><td>http://CA.test.local/certsrv/</td></tr>
+                                            </table></td>
+                                        <td class="explanation">
                                             <p>ESC8 is a vulnerability within ADCS where a certificate authority has the Web Enrollment service installed and is enabled via HTTP.
                                                 The web enrollment interface (http://$CAserver/certsrv) is vulnerable to 'NTLM relay' attacks. 
                                                     Without necessary protections, the web services endpoint can by-default be exploited to issue arbitrary certificates in the context of the coerced authentication to any low privileged user.</p>
+                                            <p>This allows a low-privileged user to escalate to a domain controller and extract all user passwords from the domain.</p>
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://posts.specterops.io/certified-pre-owned-d95910965cd2>">Link 1</a></p>
                                             <p><a href="https://www.blackhillsinfosec.com/abusing-active-directory-certificate-services-part-3/">Link 2</a></p>
@@ -314,9 +318,7 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove the ability for users to supply an arbitrary SAN in the
-                                                certificate template or restrict who can enroll within the template to
-                                                privileged users only</p>
+                                            <p>Enforce HTTPS & EPA, disable Kerberos or disable the endpoint</p>
                                             <p>run command 1</p>
                                             <p>run command 2</p>
                                         </td>

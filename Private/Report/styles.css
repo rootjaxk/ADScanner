@@ -208,13 +208,31 @@ table{
     margin: auto;
     max-width: 80%;
 }
-.domain-info .grey{
+.relevantinfo{
+    vertical-align: top;
+}
+.relevantinfo td{
+    display:flex;
+}
+.grey{
     background-color: #c4c4c4e0;
     font-weight: 500;
 }
+.explanation{
+    text-align: justify;
+}
+
 
 
 /*other findings*/
+.novuln{
+    max-width: 80%;
+    margin: auto;
+    text-align:center;
+    margin-bottom: 30px;
+    margin-top: 25px;
+
+}
 .finding-header {
     background-color: #263143;
     text-align: center;
@@ -297,7 +315,7 @@ th {
   
 .image-cell{
     flex: 1;
-    max-width: 40%; 
+    max-width: 45%; 
 }
 .image-cell img{
     width: 100%;

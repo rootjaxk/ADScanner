@@ -71,7 +71,7 @@ function Find-LAPS {
   #check if LAPS is installed on device
   if (!$LAPS) {
     $Issue = [pscustomobject]@{
-      Risk      = (to_red "[HIGH]")
+      Risk      = (to_red "HIGH")
       Technique = "LAPS is not utilized on all computers."
       Score     = 20
       Computer  = $hostname
