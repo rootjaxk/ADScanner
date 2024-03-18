@@ -6,6 +6,7 @@ Searches the Active Directory domain searching for the members of default privil
 Baselines:
 Administrators       - 10
 Domain Admins        - 10
+Protected Users      - 
 Enterprise Admins    - 0
 DNS Admins           - 0
 Backup Operators     - 0
@@ -13,6 +14,7 @@ Server Operators     - 0
 Account Operators    - 0
 Print Operators      - 0
 Remote Desktop Users - 0
+Remote Management Users - 0
 Schema Admins        - 0
 
 .PARAMETER Domain
@@ -38,8 +40,8 @@ Find-PrivilegedGroups -Domain test.local
 
   #Define groups - https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-groups
   $groups = @("Administrators", "Enterprise Admins", "Domain Admins", "DnsAdmins", "Backup Operators",
-    "Server Operators", "Account Operators", "Print Operators", "Remote Desktop Users",
-    "Schema Admins", "Cert Publishers")
+    "Server Operators", "Account Operators", "Print Operators", "Remote Desktop Users", "Remote Management Users"
+    "Schema Admins", "Protected Users")
 
   #Recursive to get all members of the group (including nested groups) and store in hashtable
   foreach ($group in $groups) {
@@ -66,7 +68,7 @@ Find-PrivilegedGroups -Domain test.local
       Count   = $userCount
     }
     $PrivilegedMembers += $MemberCounts
-
+    
     if ($groupName -eq "Administrators" -and $userCount -gt 10) {
       $Issue = [pscustomobject]@{
         Risk        = (to_red "HIGH")
@@ -157,6 +159,16 @@ Find-PrivilegedGroups -Domain test.local
       }
       $PrivilegedIssues += $Issue
     }
+    elseif ($groupName -eq "Remote Management Users" -and $userCount -gt 0) {
+      $Issue = [pscustomobject]@{
+        Risk        = (to_red "HIGH")
+        Technique   = "Remote Management Users group does not meet the benchmark (maximum 0 users required)."
+        Score       = 20
+        Members     = $group.Value
+        MemberCount = $group.Value.Count
+      }
+      $PrivilegedIssues += $Issue
+    }
     elseif ($groupName -eq "Schema Admins" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
         Risk        = (to_red "HIGH")
@@ -167,7 +179,20 @@ Find-PrivilegedGroups -Domain test.local
       }
       $PrivilegedIssues += $Issue
     }
-  } 
-  #$PrivilegedMembers - info could be used later in web report
+    elseif ($groupName -eq "Protected Users") {
+      $numAdmin = $groupMembers["Administrators"].Count
+      if ($userCount -lt $numAdmin) {
+        $Issue = [pscustomobject]@{
+          Risk        = (to_red "HIGH")
+          Technique   = "Protected Users group does not meet the benchmark (not all privileged users)."
+          Score       = 20
+          Members     = $group.Value
+          MemberCount = $group.Value.Count
+        }
+        $PrivilegedIssues += $Issue
+      }
+    } 
+  }
+  #$PrivilegedMembers #- info could be used later in web report
   $PrivilegedIssues
 }
