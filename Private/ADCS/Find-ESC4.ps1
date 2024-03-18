@@ -95,6 +95,7 @@ specifies which AD principals have specific permissions over the template.
         Score             = 50
         Name              = $_.Name
         DistinguishedName = $_.DistinguishedName
+        Owner             = $_.nTSecurityDescriptor.Owner
         Issue             = "$($_.nTSecurityDescriptor.Owner) has Owner rights on this template"
       }
       $Issue
