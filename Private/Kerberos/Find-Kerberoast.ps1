@@ -67,7 +67,7 @@ function Find-Kerberoast {
 
   $Kerberoastprivileged_strongpwd = [pscustomobject]@{
     Risk      = (to_red "HIGH")
-    Technique = "Highly privileged Kerberoastable user with strong password"
+    Technique = "Highly privileged Kerberoastable user with a strong password"
     Score     = 39
     Users     = ""
     SPN       = ""
@@ -90,7 +90,7 @@ function Find-Kerberoast {
 
   $Kerberoastlowprivileged_strongpwd = [pscustomobject]@{
     Risk      = (to_yellow "MEDIUM")
-    Technique = "Low privileged Kerberoasable user, but strong password set"
+    Technique = "Low privileged Kerberoasable user with a strong password set"
     Score     = 12
     Users     = ""
     SPN       = ""
