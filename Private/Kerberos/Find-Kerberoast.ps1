@@ -49,6 +49,7 @@ function Find-Kerberoast {
     Users     = ""
     SPN       = ""
     Enabled   = "False"
+    NumUsers  = ""
     Issue     = ""
   }
   $KerberoastDisabledcount = 0
@@ -61,6 +62,7 @@ function Find-Kerberoast {
     SPN       = ""
     Memberof  = ""
     Enabled   = "True"
+    NumUsers  = ""
     Issue     = ""
   }
   $Kerberoastprivileged_weakpwdcount = 0
@@ -73,6 +75,7 @@ function Find-Kerberoast {
     SPN       = ""
     Memberof  = ""
     Enabled   = "True"
+    NumUsers  = ""
     Issue     = ""
   }
   $Kerberoastprivileged_strongpwdcount = 0
@@ -84,6 +87,7 @@ function Find-Kerberoast {
     Users     = ""
     SPN       = ""
     Enabled   = "True"
+    NumUsers  = ""
     Issue     = ""
   }
   $Kerberoastlowprivileged_weakpwdcount = 0
@@ -95,6 +99,7 @@ function Find-Kerberoast {
     Users     = ""
     SPN       = ""
     Enabled   = "True"
+    NumUsers  = ""
     Issue     = ""
   }
   $Kerberoastlowprivileged_strongpwdcount = 0
@@ -178,22 +183,27 @@ function Find-Kerberoast {
 
   #output if users are present in any of the issues in order of severity
   if ($Kerberoastprivileged_weakpwd.Users) {
+    $Kerberoastprivileged_weakpwd.NumUsers = $Kerberoastprivileged_weakpwdcount
     $Kerberoastprivileged_weakpwd.Issue = "$Kerberoastprivileged_weakpwdcount users have an SPN set with a weak password and is a member of a privileged group."
     $Kerberoastprivileged_weakpwd
   }
   if ($Kerberoastprivileged_strongpwd.Users) {
+    $Kerberoastprivileged_strongpwd.NumUsers = $Kerberoastprivileged_strongpwdcount
     $Kerberoastprivileged_strongpwd.Issue = "$Kerberoastprivileged_strongpwdcount users have an SPN set and is a member of a privileged group but has a strong password set. A threat actor with unlimited computation power can compromise this account and thus the full domain"
     $Kerberoastprivileged_strongpwd
   }
   if ($Kerberoastlowprivileged_weakpwd.Users) {
+    $Kerberoastlowprivileged_weakpwd.NumUsers = $Kerberoastlowprivileged_weakpwdcount
     $Kerberoastlowprivileged_weakpwd.Issue = "$Kerberoastlowprivileged_weakpwdcount users have an SPN and a weak password set. This service wont facilitate direct domain privilege escalation but allows full compromise of the service"
     $Kerberoastlowprivileged_weakpwd
   }
   if ($Kerberoastlowprivileged_strongpwd.Users) {
+    $Kerberoastlowprivileged_strongpwd.NumUsers = $Kerberoastlowprivileged_strongpwdcount
     $Kerberoastlowprivileged_strongpwd.Issue = "$Kerberoastlowprivileged_strongpwdcount users have an SPN set but are not a member of a privileged group and has a strong password set. A threat actor with unlimited computation power can compromise this service"
     $Kerberoastlowprivileged_strongpwd
   }
   if ($KerberoastDisabled.Users) {
+    $KerberoastDisabled.NumUsers = $KerberoastDisabledcount
     $KerberoastDisabled.Issue = "$KerberoastDisabledcount users have an SPN set but are disabled"
     $KerberoastDisabled
   }

