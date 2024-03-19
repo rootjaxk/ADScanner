@@ -322,12 +322,12 @@ function Invoke-ADScanner {
                                     </tr>
                                     <tr>
                                         <td class="relevantinfo"><table>
-                                            <tr><td class="grey">Users</td><td>$($finding.Users)</td></tr>
+                                            <tr><td class="grey">Users</td><td>$($finding.Users -replace "`r?`n", "<br>")</td></tr>
 "@  
                 #If privileged match the groups
                 if ($finding.Technique -match "Highly privileged") {
                     $Kerberoshtml += @"
-                    <tr><td class="grey">MemberOf</td><td>$($finding.Memberof)</td></tr>
+                    <tr><td class="grey">MemberOf</td><td>$($finding.Memberof -replace "`r?`n", "<br>")</td></tr>
 "@
                 } 
                 $Kerberoshtml += @"
@@ -453,13 +453,13 @@ function Invoke-ADScanner {
                                     </tr>
                                     <tr>
                                         <td class="relevantinfo"><table>
-                                            <tr><td class="grey">Users</td><td>$($finding.Users)</td></tr>
-                                            <tr><td class="grey">SPN</td><td>$($finding.SPN)</td></tr>
+                                            <tr><td class="grey">Users</td><td>$($finding.Users -replace "`r?`n", "<br>")</td></tr>
+                                            <tr><td class="grey">SPN</td><td>$($finding.SPN -replace "`r?`n", "<br>")</td></tr>
 "@  
                 #If privileged match the groups
                 if ($finding.Technique -match "Highly privileged") {
                     $Kerberoshtml += @"
-                    <tr><td class="grey">MemberOf</td><td>$($finding.Memberof)</td></tr>
+                    <tr><td class="grey">MemberOf</td><td>$($finding.Memberof -replace "`r?`n", "<br>")</td></tr>
 "@
                 }
                 $Kerberoshtml += @"
@@ -568,8 +568,8 @@ function Invoke-ADScanner {
                                     </tr>
                                     <tr>
                                         <td class="relevantinfo"><table>
-                                            <tr><td class="grey">Object</td><td>$($finding.Object)</td></tr>
-                                            <tr><td class="grey">TrustedForDelegation</td><td>$($finding.TrustedForDelegation)</td></tr>
+                                            <tr><td class="grey">Object</td><td>$($finding.Object -replace "`r?`n", "<br>")</td></tr>
+                                            <tr><td class="grey">TrustedForDelegation</td><td>$($finding.TrustedForDelegation -replace "`r?`n", "<br>")</td></tr>
                                         </table></td>
                                         <td class="explanation">
                                             <p>Servers with unconstrained delegation configured cache user's tickets when they authenticate to the frontend service, in order to delegate on behalf of the user to another backend service. This is dangerous if a high privleged user or a domain controller (a connection can be forced using the spooler service) then the domain can be compromised.</p>
@@ -699,8 +699,8 @@ function Invoke-ADScanner {
                                     </tr>
                                     <tr>
                                         <td class="relevantinfo"><table>
-                                            <tr><td class="grey">Object</td><td>$($finding.Object)</td></tr>
-                                            <tr><td class="grey">AllowedToDelegateTo</td><td>$($finding.AllowedToDelegateTo)</td></tr>
+                                            <tr><td class="grey">Object</td><td>$($finding.Object -replace "`r?`n", "<br>")</td></tr>
+                                            <tr><td class="grey">AllowedToDelegateTo</td><td>$($finding.AllowedToDelegateTo -replace "`r?`n", "<br>")</td></tr>
                                         </table></td>
                                         <td class="explanation">
                                             <p>Constrained delegation allows a computer to delegate to specific services on another server. Constrained delegation is configured on the computer or user object. It is set through the msds-allowedtodelegateto property by specifying the SPN the current object is allowed constrained delegation against.</p>
@@ -796,8 +796,8 @@ function Invoke-ADScanner {
                                     </tr>
                                     <tr>
                                         <td class="relevantinfo"><table>
-                                            <tr><td class="grey">Object</td><td>$($finding.Object)</td></tr>
-                                            <tr><td class="grey">msDS-AllowedToActOnBehalfOfOtherIdentity</td><td>$($finding.'msDS-AllowedToActOnBehalfOfOtherIdentity')</td></tr>
+                                            <tr><td class="grey">Object</td><td>$($finding.Object -replace "`r?`n", "<br>")</td></tr>
+                                            <tr><td class="grey">msDS-AllowedToActOnBehalfOfOtherIdentity</td><td>$($finding.'msDS-AllowedToActOnBehalfOfOtherIdentity' -replace "`r?`n", "<br>")</td></tr>
                                         </table></td>
                                         <td class="explanation">
                                             <p>Resource-based constrained delelgation (RBCD) was introduced in Windows server 2012 and is where a server permits delegation from a frontend service to a backend service. This is configured on the backend service via the 'msDS-AllowedToActOnBehalfOfOtherIdentity' property. This type of delegation was seen as more secure than unconstrained or constrained, however if the frontend service is compromised, the backend service will also be by proxy.</p>
