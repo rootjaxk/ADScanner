@@ -95,15 +95,22 @@ function Find-ESC5 {
       }
       # if any low-privileged users have dangerous rights over the CA object, ESC5
       if (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($SID -notmatch $PrivilegedUsers -and !$privilegedGroupMatch)) {
+        # account operators doesn't translate properly bug
+        if($ace.IdentityReference -match 'S-1-5-32-548'){
+          $user = (($domain -split '\.')[0]).toupper() + "\Account Operators"
+        }
+        else{
+          $user = $ace.IdentityReference
+        }
         $Issue = [pscustomobject]@{
           Risk                  = (to_red "CRITICAL")
           Technique             = "ESC5"
           Score                 = 50
           Name                  = $CAComputername
           DistinguishedName     = $CAdistinguishedname
-          IdentityReference     = $ace.IdentityReference
+          IdentityReference     = $user
           ActiveDirectoryRights = $ace.ActiveDirectoryRights
-          Issue                 = "$($ace.IdentityReference) has $($ace.ActiveDirectoryRights) rights over this CA object"
+          Issue                 = "$user has $($ace.ActiveDirectoryRights) rights over this CA object"
         }
         $Issue
       }
