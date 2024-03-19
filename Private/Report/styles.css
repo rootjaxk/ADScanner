@@ -214,6 +214,9 @@ table{
 .relevantinfo td{
     display:flex;
 }
+.explanation{
+    vertical-align: top;
+}
 .grey{
     background-color: #c4c4c4e0;
     font-weight: 500;
