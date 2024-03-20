@@ -38,10 +38,11 @@ function Find-LegacyProtocols {
         if ($llmnr.EnableMulticast -ne 0) {
             $Issue = [pscustomobject]@{
                 Risk        = (to_red "HIGH")
-                Technique   = "LLMNR is vulnerable to layer 2 poisoning attacks"
+                Technique   = "LLMNR is not disabled"
                 Score       = 25
-                RegistryKey = "HKLM:\Software\Policies\Microsoft\Windows NT\DNSClient\EnableMultiCast is not set to 0"
-                Issue       = "LLMNR is a legacy name resolution protocol not disabled in $domain via GPO"
+                RegistryKey = "HKLM:\Software\Policies\Microsoft\Windows NT\DNSClient\EnableMultiCast"
+                CorrectValue = "0"
+                Issue       = "LLMNR is a legacy name resolution protocol that is vulnerable to layer 2 poisoning attacks and is not disabled in $domain via GPO"
             }
             $Issue
         }
@@ -58,10 +59,11 @@ function Find-LegacyProtocols {
     if ($nbtns.NetBiosOptions -ne 2) {
         $Issue = [pscustomobject]@{
             Risk        = (to_red "HIGH")
-            Technique   = "NBT-NS is vulnerable to layer 2 poisoning attacks"
+            Technique   = "NBT-NS is not disabled"
             Score       = 25
-            RegistryKey = "HKLM:\SYSTEM\CurrentControlSet\Services\netbt\Parameters\interfaces\tcpip_*\NetBiosOptions is not set to 2"
-            Issue       = "NBT-NS is a legacy name resolution protocol not disabled in $domain via GPO"
+            RegistryKey = "HKLM:\SYSTEM\CurrentControlSet\Services\netbt\Parameters\interfaces\tcpip_*\NetBiosOptions"
+            CorrectValue = "2"
+            Issue       = "NBT-NS is a legacy name resolution protocol that is vulnerable to layer 2 poisoning attacks and is not disabled in $domain via GPO"
         }
         $Issue
     }
@@ -78,10 +80,11 @@ function Find-LegacyProtocols {
         if ($mdns.EnableMulticast -ne 0) {
             $Issue = [pscustomobject]@{
                 Risk        = (to_red "HIGH")
-                Technique   = "mDNS is vulnerable to layer 2 poisoning attacks"
+                Technique   = "mDNS is not disabled"
                 Score       = 25
-                RegistryKey = "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\EnableMDNS is not set to 0"
-                Issue       = "mDNS is a legacy name resolution protocol not disabled in $domain via GPO"
+                RegistryKey = "HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\EnableMDNS"
+                CorrectValue = "0"
+                Issue       = "mDNS is a legacy name resolution protocol that is vulnerable to layer 2 poisoning attacks and is not disabled in $domain via GPO"
             }
             $Issue
         } 
@@ -123,7 +126,7 @@ function Find-LegacyProtocols {
     elseif ($null -ne $LMcompatibilitylevel -and $LMcompatibilitylevel -notmatch "Send NTLMv2 response only" ) {
         $Issue = [pscustomobject]@{
             Risk                 = (to_red "CRITICAL")
-            Technique            = "NTLMv1 is not disabled on domain controllers"
+            Technique            = "NTLMv1 is not disabled"
             Score                = 50
             LMCompatibilityLevel = $LMcompatibilitylevel
             Issue                = "NTLMv1 is permitted for authentication negotiation with domain controllers. The LM Compatibility level is not set to 'Send NTLMv2 response only. Refuse LM & NTLM' in the Default Domain Controllers GPO"
@@ -281,9 +284,10 @@ function Find-LegacyProtocols {
     #Intialise issue
     $SMBv1Issue = [pscustomobject]@{
         Risk           = (to_red "HIGH")
-        Technique      = "SMBv1 is enabled on computers"
+        Technique      = "SMBv1 is not disabled on computers"
         Score          = 25
         SMBv1Computers = ""
+        Count          = ""
         Issue          = ""
     }
     $SMBv1count = 0
@@ -312,6 +316,7 @@ function Find-LegacyProtocols {
     }
     if ($SMBv1Issue.SMBv1Computers -ne '') {
         $SMBv1issue.Issue = "SMBv1 is enabled on $SMBv1count computers. All of these computers could be vulnerable to EternalBlue and other SMBv1 exploits facilitating DoS and RCE"
+        $SMBv1issue.Count = $SMBV1count
         $SMBv1Issue
     }
 }

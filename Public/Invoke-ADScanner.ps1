@@ -270,6 +270,7 @@ function Invoke-ADScanner {
         $RBAC += Find-InactiveAccounts -Domain $Domain
         $RBAC += Find-AnonymousAccess -Domain $Domain
         $RBAC += Find-SensitiveAccounts -Domain $Domain
+        $RBAC += Find-AdminCount -Domain $Domain
     }
     if (!$RBAC) {
         $RBAChtml = @"
@@ -289,7 +290,7 @@ function Invoke-ADScanner {
 
 
 
-    
+
 
     # Passwords
     if ($Scans -eq "PwdPolicy" -or $Scans -eq "All" ) {
@@ -298,6 +299,7 @@ function Invoke-ADScanner {
         $Passwords += Find-LAPS -Domain $Domain
         $Passwords += Find-SensitiveInfo -Domain $Domain
         #$Passwords += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
+        $Passwords = $Passwords | Sort-Object -Property Score -Descending
     }
     if (!$Passwords) {
         $Passwordshtml = @"
@@ -321,6 +323,7 @@ function Invoke-ADScanner {
         $MISC += Find-Spooler -Domain $Domain
         $MISC += Find-WebDAV -Domain $Domain
         $MISC += Find-EfficiencyImprovements -Domain $Domain
+        $MISC = $MISC | Sort-Object -Property Score -Descending
     }
     if (!$MISC) {
         $MISChtml = @"
@@ -339,20 +342,11 @@ function Invoke-ADScanner {
     if ($Scans -eq "Legacy" -or $Scans -eq "All") {
         $Legacy += Find-LegacyProtocols -Domain $Domain
         $Legacy += Find-UnsupportedOS -Domain $Domain
+        $Legacy = $Legacy | Sort-Object -Property Score -Descending
     }
-    if (!$Legacy) {
-        $Legacyhtml = @"
-        <div class="finding-header">Legacy</div>
-        <h2 class="novuln">No vulnerabilities found!</h2>
-"@
-    }
-    else {
-        $Legacyhtml = @"
-        <div class="finding-header">Legacy</div>
-"@
-    }
+    $Legacyhtml = Generate-Legacyhtml -Legacy $Legacy
 
-
+   
     #Generate report
     Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Generating report..." -ForegroundColor Yellow
     if ($Scans -eq "All") {

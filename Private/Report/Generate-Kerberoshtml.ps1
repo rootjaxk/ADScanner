@@ -123,7 +123,7 @@ function Generate-Kerberoshtml {
                                             <hr>
                                             <div class="attack-container">
                                                 <div class="attack-text">
-                                                    <p>3. If the password is weak the password hash can be cracked using a common wordlist to obtain the plaintext password, or is can be bruteforced using a powerful GPU.</p>
+                                                    <p>3. If the password is weak the password hash can be cracked using a common wordlist to obtain the plaintext password, or it can be bruteforced using a powerful GPU.</p>
                                                     <p class="code">john --wordlist=./password-list.txt hash.txt</p>
                                                 </div>
                                                 <span class="image-cell">
@@ -254,7 +254,7 @@ function Generate-Kerberoshtml {
                                             <hr>
                                             <div class="attack-container">
                                                 <div class="attack-text">
-                                                    <p>3. If the password is weak the password hash can be cracked using a common wordlist to obtain the plaintext password, or is can be bruteforced using a powerful GPU.</p>
+                                                    <p>3. If the password is weak the password hash can be cracked using a common wordlist to obtain the plaintext password, or it can be bruteforced using a powerful GPU.</p>
                                                     <p class="code">john --format=krb5tgs --wordlist=./password-list.txt hash.txt</p>
                                                 </div>
                                                 <span class="image-cell">

