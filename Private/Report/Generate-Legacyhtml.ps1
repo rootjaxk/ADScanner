@@ -406,7 +406,7 @@ function Generate-Legacyhtml {
                                             <div class="attack-container">
                                                 <div class="attack-text">
                                                     <p>3. As NTLMv1 is cryptographically broken the hash can be downgraded by submitting a converted hash to https://crack.sh/, which will return the NTLM hash of the domain controller.</p>
-                                                    <p class="code">python3 ntlmv1.py --ntlmv1 DC$::TEST:449E6F3103C027D2BB5DA499D65BDACBCD44668B616FBB82:449E6F3103C027D2BB5DA499D65BDACBCD44668B616FBB82:1122334455667788</p>            
+                                                    <p class="code">python3 ntlmv1.py --ntlmv1 <DC hash></p>            
                                                 </div>
                                                 <span class="image-cell">
                                                     <img src="/Private/Report/Images/Legacy/NTLMv1-3.png" alt="Cracking the NTLMv1 hash">

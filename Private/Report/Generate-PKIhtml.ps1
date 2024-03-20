@@ -896,7 +896,7 @@ function Generate-PKIhtml {
                                                     <p class="code">python3 printerbug.py test:'Password123'@192.168.10.141
                                                         192.168.10.130</p>
                                                     <p class="code">python3 dfscoerce.py -u test -p 'Password123!' -d test.local
-                                                        192.168.10.130 192.168.18.141</p>
+                                                        192.168.10.130 192.168.10.141</p>
                                                 </div>
                                                 <span class="image-cell">
                                                     <img src="/Private/Report/Images/PKI/ESC8-2.png"
