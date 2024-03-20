@@ -265,6 +265,9 @@ th,td {
     background-color: #abb9c0;
     font-weight:500;
 }
+.finding {
+    display:none;
+}
 th {
     background-color: #6bb3cb;
 }

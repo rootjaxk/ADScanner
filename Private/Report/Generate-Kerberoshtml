@@ -186,7 +186,7 @@ function Generate-Kerberoshtml {
                 elseif ($finding.Technique -eq "Low privileged Kerberoastable user with a strong password") {
                     $html += "<td>Password hash of a low privileged account can be obtained.</td>"
                 }
-                elseif ($finding.Technique -eq "Disabled Kerberoastable user") {
+                elseif ($finding.Technique -eq "Disabled Kerberoastable account") {
                     $html += "<td>Password hash of a disabled account can be obtained and cracked.</td>"
                 }
                 $html += @"

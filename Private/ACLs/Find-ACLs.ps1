@@ -179,7 +179,7 @@ function Find-ACLs {
             IdentityReference     = $ace.IdentityReference
             AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
-            Issue                 = "$($ace.IdentityReference) can read LAPS password over over $object."
+            Issue                 = "$($ace.IdentityReference) can read LAPS password over $object."
           }
           $Issue
         }
@@ -218,7 +218,7 @@ function Find-ACLs {
   #Initialise issue
   $ModifiablelogonIssue = [pscustomobject]@{
     Risk                  = (to_red "HIGH")
-    Technique             = "Modifiable logon script - see baby2 for example exploitation"
+    Technique             = "Modifiable logon script"
     Score                 = 30
     File                  = ""
     IdentityReference     = ""

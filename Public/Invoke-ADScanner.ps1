@@ -258,58 +258,10 @@ function Invoke-ADScanner {
     # ACLs
     if ($Scans -eq "ACLs" -or $Scans -eq "All") {
         $ACLs += Find-ACLs -Domain $Domain
+        $ACLs = $ACLs | Sort-Object -Property Score -Descending
     }
-    if (!$ACLs) {
-        $ACLshtml = @"
-        <div class="finding-header">ACLs</div>
-        <h2 class="novuln">No vulnerabilities found!</h2>
-"@
-    }
-    else {
-        $ACLshtml = @"
-        <div class="finding-header">ACLs</div>
-        <div class="finding-container">
-        <table>
-            <thead>
-                <tr>
-                    <th class="table-header">Issue</th>
-                    <th class="table-header">Risk</th>
-                </tr>
-            </thead>
-            <tbody>
-"@
-        foreach ($finding in $ACLs) {
-            if ($finding.Technique -eq "Low privileged principal has dangerous rights over the entire domain") {
-                $nospaceid = $finding.Technique.Replace(" ", "-")
-                $ACLshtml += @"
-"@
-            }
-            if ($finding.Technique -eq "Low privileged principal has DCSync rights") {
-                $nospaceid = $finding.Technique.Replace(" ", "-")
-                $ACLshtml += @"
-"@
-            }
-            elseif ($finding.Technique -eq "Low privileged principal has dangerous RBCD rights") {
-                $nospaceid = $finding.Technique.Replace(" ", "-")
-                $ACLshtml += @"
-"@
-            }
-            elseif ($finding.Technique -eq "Low privileged principal has dangerous rights") {
-                $nospaceid = $finding.Technique.Replace(" ", "-")
-                $ACLshtml += @"
-"@
-            }
-            elseif ($finding.Technique -eq "Low privileged principal has dangerous rights over GPOs") {
-                $nospaceid = $finding.Technique.Replace(" ", "-")
-                $ACLshtml += @"
-"@
-            }
-
-        }
-        $ACLshtml += "</tbody></table></div>"
-    }
-
-
+    $ACLshtml = Generate-ACLshtml -ACLs $ACLs
+    
     
     # RBAC
     if ($Scans -eq "RBAC" -or $Scans -eq "All") {
@@ -331,6 +283,13 @@ function Invoke-ADScanner {
 "@
     }
 
+
+
+
+
+
+
+    
 
     # Passwords
     if ($Scans -eq "PwdPolicy" -or $Scans -eq "All" ) {
