@@ -61,12 +61,12 @@ function Find-Delegations {
       if ($ConstrainedIssue.Object -eq '') {
         $ConstrainedIssue.Object += $delegation.SamAccountName
         $ConstrainedIssue.AllowedToDelegateTo += $delegation.'msDS-AllowedToDelegateTo'
-        $ConstrainedIssue.Issue += "$($delegation.samaccountname) has constrained delegation to $($delegation.'msDS-AllowedToDelegateTo')"
+        $ConstrainedIssue.Issue += "$($delegation.samaccountname) has constrained delegation to $($delegation.'msDS-AllowedToDelegateTo'). "
       }
       else {
         $ConstrainedIssue.Object += "`r`n$($delegation.SamAccountName)"
-        $ConstrainedIssue.AllowedToDelegateTo += "`r`n$delegation.'msDS-AllowedToDelegateTo'"
-        $ConstrainedIssue.Issue += "`r`n$($delegation.samaccountname) has constrained delegation to $($delegation.'msDS-AllowedToDelegateTo')"
+        $ConstrainedIssue.AllowedToDelegateTo += "`r`n$($delegation.'msDS-AllowedToDelegateTo')"
+        $ConstrainedIssue.Issue += "$($delegation.samaccountname) has constrained delegation to $($delegation.'msDS-AllowedToDelegateTo'). "
       }
     }
   }
@@ -98,12 +98,12 @@ function Find-Delegations {
       if ($ResourcebasedIssue.Object -eq '') {
         $ResourcebasedIssue.Object += $delegation.SamAccountName
         $ResourcebasedIssue.'msDS-AllowedToActOnBehalfOfOtherIdentity' += $delegation.'msDS-AllowedToActOnBehalfOfOtherIdentity'.access.identityreference.value
-        $ResourcebasedIssue.Issue += "$($delegation.SamAccountName) has the msDS-AllowedToActOnBehalfOfOtherIdentity property set to $($delegation.'msDS-AllowedToActOnBehalfOfOtherIdentity'.access.identityreference.value). `n$($delegation.'msDS-AllowedToActOnBehalfOfOtherIdentity'.access.identityreference.value) can delegate to any resource on $($delegation.SamAccountName) (can fully compromise it)"
+        $ResourcebasedIssue.Issue += "$($delegation.'msDS-AllowedToActOnBehalfOfOtherIdentity'.access.identityreference.value) can delegate to any resource on $($delegation.SamAccountName) (has full admin access permitting lateral movement). "
       }
       else {
         $ResourcebasedIssue.Object += "`r`n$($delegation.SamAccountName)"
         $ResourcebasedIssue.'msDS-AllowedToActOnBehalfOfOtherIdentity' += "`r`n$($delegation.'msDS-AllowedToActOnBehalfOfOtherIdentity'.access.identityreference.value)"
-        $ResourcebasedIssue.Issue += "`r`n$($delegation.SamAccountName) has the msDS-AllowedToActOnBehalfOfOtherIdentity property set to $($delegation.'msDS-AllowedToActOnBehalfOfOtherIdentity'.access.identityreference.value). `n$($delegation.'msDS-AllowedToActOnBehalfOfOtherIdentity'.access.identityreference.value) can delegate to any resource on $($delegation.SamAccountName) (can fully compromise it)"
+        $ResourcebasedIssue.Issue += "$($delegation.'msDS-AllowedToActOnBehalfOfOtherIdentity'.access.identityreference.value) can delegate to any resource on $($delegation.SamAccountName) (has full admin access permitting lateral movement). "
       }
     }
   }

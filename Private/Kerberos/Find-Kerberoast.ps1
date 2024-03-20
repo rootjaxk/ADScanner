@@ -131,12 +131,12 @@ function Find-Kerberoast {
         if ($Kerberoastprivileged_weakpwd.Users -eq '') {
           $Kerberoastprivileged_weakpwd.Users += $kerberoastableuser.SamAccountName
           $Kerberoastprivileged_weakpwd.SPN += $kerberoastableuser.servicePrincipalName
-          $Kerberoastprivileged_weakpwd.MemberOf += $kerberoastableuser.memberof
+          $Kerberoastprivileged_weakpwd.MemberOf += "$($kerberoastableuser.memberof)."
         }
         else {
           $Kerberoastprivileged_weakpwd.Users += "`r`n$($kerberoastableuser.SamAccountName)"
           $Kerberoastprivileged_weakpwd.SPN += "`r`n$($kerberoastableuser.servicePrincipalName)"
-          $Kerberoastprivileged_weakpwd.MemberOf += "`r`n$($kerberoastableuser.memberof)"
+          $Kerberoastprivileged_weakpwd.MemberOf += "`r`n$($kerberoastableuser.memberof)."
         }
         $Kerberoastprivileged_weakpwdcount++
       }
@@ -145,12 +145,12 @@ function Find-Kerberoast {
         if ($Kerberoastprivileged_strongpwd.Users -eq '') {
           $Kerberoastprivileged_strongpwd.Users += $kerberoastableuser.SamAccountName
           $Kerberoastprivileged_strongpwd.SPN += $kerberoastableuser.servicePrincipalName
-          $Kerberoastprivileged_strongpwd.MemberOf += $kerberoastableuser.memberof
+          $Kerberoastprivileged_strongpwd.MemberOf += "$($kerberoastableuser.memberof)."
         }
         else {
           $Kerberoastprivileged_strongpwd.Users += "`r`n$($kerberoastableuser.SamAccountName)"
           $Kerberoastprivileged_strongpwd.SPN += "`r`n$($kerberoastableuser.servicePrincipalName)"
-          $Kerberoastprivileged_strongpwd.MemberOf += "`r`n$($kerberoastableuser.memberof)"
+          $Kerberoastprivileged_strongpwd.MemberOf += "`r`n$($kerberoastableuser.memberof)."
         }
         $Kerberoastprivileged_strongpwdcount++
       }

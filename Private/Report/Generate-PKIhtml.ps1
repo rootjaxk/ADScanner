@@ -950,12 +950,6 @@ function Generate-PKIhtml {
         }
         $html += "</tbody></table></div>"
     }
-
     return $html
 }
-
-
-
-
-#Possible to-do - automated remediation?
 

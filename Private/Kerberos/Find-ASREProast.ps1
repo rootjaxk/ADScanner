@@ -125,11 +125,11 @@ function Find-ASREProast {
       if ($IsPrivileged -and $WeakPwdPolicy) {
         if ($ASREPprivileged_weakpwd.Users -eq '') {
           $ASREPprivileged_weakpwd.Users += $ASREPuser.SamAccountName
-          $ASREPprivileged_weakpwd.MemberOf += $ASREPuser.memberof
+          $ASREPprivileged_weakpwd.MemberOf += "$($ASREPuser.memberof)."
         }
         else {
           $ASREPprivileged_weakpwd.Users += "`r`n$($ASREPuser.SamAccountName)"
-          $ASREPprivileged_weakpwd.MemberOf += "`r`n$($ASREPuser.memberof)"
+          $ASREPprivileged_weakpwd.MemberOf += "`r`n$($ASREPuser.memberof)."
         }
         $ASREPprivileged_weakpwdcount++
       }
@@ -137,11 +137,11 @@ function Find-ASREProast {
       elseif ($IsPrivileged -and !$WeakPwdPolicy) {
         if ($ASREPprivileged_strongpwd.Users -eq '') {
           $ASREPprivileged_strongpwd.Users += $ASREPuser.SamAccountName
-          $ASREPprivileged_strongpwd.MemberOf += $ASREPuser.memberof
+          $ASREPprivileged_strongpwd.MemberOf += "$($ASREPuser.memberof)."
         }
         else {
           $ASREPprivileged_strongpwd.Users += "`r`n$($ASREPuser.SamAccountName)"
-          $ASREPprivileged_strongpwd.MemberOf += "`r`n$($ASREPuser.memberof)"
+          $ASREPprivileged_strongpwd.MemberOf += "`r`n$($ASREPuser.memberof)."
         }
         $ASREPprivileged_strongpwdcount++ 
       }
