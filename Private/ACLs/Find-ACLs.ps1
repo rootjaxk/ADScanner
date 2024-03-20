@@ -77,6 +77,7 @@ function Find-ACLs {
 
   #All objects in domain
   $Alldomainobjects = (Get-ADObject -SearchBase $searchBase -LDAPFilter '(&(objectClass=*))').distinguishedname
+  $GPOissues = @()
 
   #Get ACLs over iterating over all domain objects
   foreach ($object in $Alldomainobjects) {
@@ -103,13 +104,13 @@ function Find-ACLs {
         if ((($DomainACLs.path -split '/')[-1] -eq $searchBase) -and ($ace.ActiveDirectoryRights -match $DangerousRights) -and ($ace.AccessControlType -eq "Allow") -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch)) {
           $Issue = [pscustomobject]@{
             Risk                  = (to_red "CRITICAL")
-            Technique             = "Low privileged principal has dangerous rights"
+            Technique             = "Low privileged principal has dangerous rights over the entire domain"
             Score                 = 50
             ObjectName            = ($DomainACLs.path -split '/')[-1]
             IdentityReference     = $ace.IdentityReference
             AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
-            Issue                 = "$($ace.IdentityReference) has dangerous ($($ace.ActiveDirectoryRights)) rights over $object"
+            Issue                 = "$($ace.IdentityReference) has dangerous rights ($($ace.ActiveDirectoryRights)) over $object."
           }
           $Issue
         }
@@ -123,12 +124,24 @@ function Find-ACLs {
             IdentityReference     = $ace.IdentityReference
             AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
-            Issue                 = "$($ace.IdentityReference) has dangerous RBCD privileges ($($ace.ActiveDirectoryRights)) over $object"
+            Issue                 = "$($ace.IdentityReference) has dangerous RBCD privileges ($($ace.ActiveDirectoryRights)) over $object."
           }
           $Issue
         }
         # else if any low-privileged users have dangerous rights over object
-        elseif (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($ace.AccessControlType -eq "Allow") -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID)) {
+        elseif (($ace.ActiveDirectoryRights -match $DangerousRights) -and ($ace.AccessControlType -eq "Allow") -and ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch -and $SID -notmatch $DNSAdminsSID) -and (($DomainACLs.path -split '/')[-1]) -notmatch "TPM Devices") {
+          if($($DomainACLs.path -split '/'[-1] -match "CN=Policies")){
+            $GPOIssues += [pscustomobject]@{
+              Risk                  = (to_red "HIGH")
+              Technique             = "Low privileged principal has dangerous rights over GPOs"
+              Score                 = 35
+              ObjectName            = ($DomainACLs.path -split '/')[-1]
+              IdentityReference     = $ace.IdentityReference
+              AccessControlType     = $ace.AccessControlType
+              ActiveDirectoryRights = $ace.ActiveDirectoryRights
+              Issue                 = "$($ace.IdentityReference) has dangerous rights ($($ace.ActiveDirectoryRights)) over $object."
+            }
+          } else {
           $Issue = [pscustomobject]@{
             Risk                  = (to_red "HIGH")
             Technique             = "Low privileged principal has dangerous rights"
@@ -137,9 +150,10 @@ function Find-ACLs {
             IdentityReference     = $ace.IdentityReference
             AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
-            Issue                 = "$($ace.IdentityReference) has dangerous ($($ace.ActiveDirectoryRights)) rights over $object"
+            Issue                 = "$($ace.IdentityReference) has dangerous rights ($($ace.ActiveDirectoryRights)) over $object."
           }
           $Issue
+          }
         }
         #Parse DCSync (not in standard AD rights, need to search for matching ACL GUID)
         elseif (($ace.ObjectType -match '1131f6ad-9c07-11d1-f79f-00c04fc2dcd2') -and ($ace.AccessControlType -eq "Allow") -and ($SID -notmatch $PrivilegedACLUsers -and $SID -notmatch $privilegedGroupMatch)) {
@@ -151,7 +165,7 @@ function Find-ACLs {
             IdentityReference     = $ace.IdentityReference
             AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
-            Issue                 = "$($ace.IdentityReference) has DCSync ($($ace.ActiveDirectoryRights)) rights over $searchBase"
+            Issue                 = "$($ace.IdentityReference) has DCSync ($($ace.ActiveDirectoryRights)) rights over $searchBase."
           }
           $Issue
         }
@@ -165,10 +179,24 @@ function Find-ACLs {
             IdentityReference     = $ace.IdentityReference
             AccessControlType     = $ace.AccessControlType
             ActiveDirectoryRights = $ace.ActiveDirectoryRights
-            Issue                 = "$($ace.IdentityReference) can read LAPS password over over $object"
+            Issue                 = "$($ace.IdentityReference) can read LAPS password over over $object."
           }
           $Issue
         }
+      }
+    }
+  }
+
+  #sort out GPOs - as otherwise each GPO ACL issue is repeated three times for CN=user, CN=machine and CN={xxx} policy
+  $uniqueGPOs = @{}
+  foreach ($Issue in $GPOIssues) {
+    $GPOName = ($Issue.ObjectName -split ',')[-5..-1] -join ','
+    $uniqueGPOs[$GPOname] = $true
+  }
+  foreach ($key in $uniqueGPOs.Keys) {
+    foreach ($Issue in $GPOIssues) {
+      if ($Issue.ObjectName -eq $key) {
+        $Issue
       }
     }
   }

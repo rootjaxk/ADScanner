@@ -268,10 +268,49 @@ function Invoke-ADScanner {
     else {
         $ACLshtml = @"
         <div class="finding-header">ACLs</div>
+        <div class="finding-container">
+        <table>
+            <thead>
+                <tr>
+                    <th class="table-header">Issue</th>
+                    <th class="table-header">Risk</th>
+                </tr>
+            </thead>
+            <tbody>
 "@
+        foreach ($finding in $ACLs) {
+            if ($finding.Technique -eq "Low privileged principal has dangerous rights over the entire domain") {
+                $nospaceid = $finding.Technique.Replace(" ", "-")
+                $ACLshtml += @"
+"@
+            }
+            if ($finding.Technique -eq "Low privileged principal has DCSync rights") {
+                $nospaceid = $finding.Technique.Replace(" ", "-")
+                $ACLshtml += @"
+"@
+            }
+            elseif ($finding.Technique -eq "Low privileged principal has dangerous RBCD rights") {
+                $nospaceid = $finding.Technique.Replace(" ", "-")
+                $ACLshtml += @"
+"@
+            }
+            elseif ($finding.Technique -eq "Low privileged principal has dangerous rights") {
+                $nospaceid = $finding.Technique.Replace(" ", "-")
+                $ACLshtml += @"
+"@
+            }
+            elseif ($finding.Technique -eq "Low privileged principal has dangerous rights over GPOs") {
+                $nospaceid = $finding.Technique.Replace(" ", "-")
+                $ACLshtml += @"
+"@
+            }
+
+        }
+        $ACLshtml += "</tbody></table></div>"
     }
 
 
+    
     # RBAC
     if ($Scans -eq "RBAC" -or $Scans -eq "All") {
         $RBAC += Find-PrivilegedGroups -Domain $Domain
