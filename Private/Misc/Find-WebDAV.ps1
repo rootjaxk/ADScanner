@@ -80,15 +80,15 @@ function Find-WebDAV {
     #check if ldap signing returns true
     if ($checkldapsigning) {
       $WebDAVIssue.Risk= (to_red "HIGH")
-      $WebDAVIssue.Score = 30
+      $WebDAVIssue.Score = 35
       $WebDAVIssue.Technique = "Admin compromise of computer via WebDAV to LDAP to RBCD authentication relay"
-      $WebDAVIssue.Issue = "WebDAV is enabled on $WebDAVcount computers and LDAP signing is not required. Each computer actively running the WebClient service can be remotely be fully compromised via WebDAV to LDAP to RBCD authentication relay"
+      $WebDAVIssue.Issue = "WebDAV is enabled on $WebDAVcount computers and LDAP signing is not required. Each computer actively running the WebClient service can be remotely be fully compromised via a WebDAV HTTP to LDAP to RBCD authentication relay."
     }
     else {
       $WebDAVIssue.Risk= (to_green "LOW")
       $WebDAVIssue.Score = 5
       $WebDAVIssue.Technique = "WebDAV service is running - this is the default on workstations"
-      $WebDAVIssue.Issue = "WebDAV is enabled on $WebDAVcount computers but LDAP signing is required mitigating relaying attacks. Check if the WebClient service is required as unnecessary services should be disabled"
+      $WebDAVIssue.Issue = "WebDAV is enabled on $WebDAVcount computers but LDAP signing is required mitigating relaying attacks. Check if the WebClient service is required as unnecessary services should be disabled."
     }
     $WebDAVIssue
   }

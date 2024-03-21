@@ -313,7 +313,6 @@ function Invoke-ADScanner {
 "@
     }
     
-
     # MISC
     if ($Scans -eq "MISC" -or $Scans -eq "All") {
         $MISC += Find-MAQ -Domain $Domain
@@ -485,6 +484,7 @@ function Invoke-ADScanner {
                 Score    = $score
             }
         }
+        #Order category by score
         $categoryRisks = $categoryRisks | Sort-Object -Property Score -Descending
         $categoryRisks
 
