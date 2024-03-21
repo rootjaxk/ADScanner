@@ -198,8 +198,6 @@ function Invoke-ADScanner {
     <div class="main-header">Domain vulnerability report for $Domain</div>
 "@
 
-
-
     $CertificateTemplates = $domaininfo.CertificateTemplates -join ', '
     $CertificateAuthority = $domaininfo.CertificateAuthority -join ', '
 
@@ -227,7 +225,6 @@ function Invoke-ADScanner {
 </table>
 </div>
 "@
-
 
     # PKI - ADCS
     if ($Scans -eq "ADCS" -or $Scans -eq "All") {
@@ -272,24 +269,7 @@ function Invoke-ADScanner {
         $RBAC += Find-SensitiveAccounts -Domain $Domain
         $RBAC += Find-AdminSDHolder -Domain $Domain
     }
-    if (!$RBAC) {
-        $RBAChtml = @"
-        <div class="finding-header">RBAC</div>
-        <h2 class="novuln">No vulnerabilities found!</h2>
-"@
-    }
-    else {
-        $RBAChtml = @"
-        <div class="finding-header">RBAC</div>
-"@
-    }
-
-
-
-
-
-
-
+    $RBAChtml = Generate-RBAChtml -RBAC $RBAC
 
 
     # Passwords
@@ -301,18 +281,9 @@ function Invoke-ADScanner {
         #$Passwords += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
         $Passwords = $Passwords | Sort-Object -Property Score -Descending
     }
-    if (!$Passwords) {
-        $Passwordshtml = @"
-        <div class="finding-header">Passwords</div>
-        <h2 class="novuln">No vulnerabilities found!</h2>
-"@
-    }
-    else {
-        $Passwordshtml = @"
-        <div class="finding-header">Passwords</div>
-"@
-    }
+    $Passwordshtml = Generate-Passwordshtml -Passwords $Passwords
     
+
     # MISC
     if ($Scans -eq "MISC" -or $Scans -eq "All") {
         $MISC += Find-MAQ -Domain $Domain
@@ -325,6 +296,7 @@ function Invoke-ADScanner {
         $MISC = $MISC | Sort-Object -Property Score -Descending
     }
     $MISChtml = Generate-MISChtml -MISC $MISC
+
 
     # Legacy
     if ($Scans -eq "Legacy" -or $Scans -eq "All") {

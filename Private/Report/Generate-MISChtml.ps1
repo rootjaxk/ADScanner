@@ -396,11 +396,11 @@ function Generate-MISChtml {
                                             <tr><td class="grey">LDAP Signing</td><td>False</td></tr>
                                         </table></td>
                                         <td class="explanation">    
-                                            <p>The WebClient service allows users to connect to WebDAV shares and is commonly seen in organizations that use OneDrive or SharePoint or when mounting drives with a WebDAV connection string. The service is installed by default on Windows 10 machines, however is vulnerable to a 'by-design' authentication coercion bug. Machine account authentication coerced from a machine via WebDAV will use the HTTP protocol, which can be relayed to LDAP (if signing requirements are not enforced) and perform any action that machine has permission to perfrom. Machine accounts have permission to update their own 'msDS-AllowedToActOnBehalfOfOtherIdentity' property meaning that authentication can be coerced, relayed to ldap, then set resource-based constrained delegation on themselves to give a low privileged attacker full control over any machine running the WebClient service.</p>
+                                            <p>LDAP is the protocol that users, applications and devices use to query and commnunicate with the Active Directory. The security of LDAP can be increased significant by requiring LDAP channel binding else machines running the WebClient service can be compromised by relaying authentication to LDAP (if signing requirements are not enforced) and perform any action that machine has permission to perfrom. Machine accounts have permission to update their own 'msDS-AllowedToActOnBehalfOfOtherIdentity' property meaning that authentication can be coerced, relayed to ldap, then set resource-based constrained delegation on themselves to give a low privileged attacker full control over any machine running the WebClient service.</p>
                                             <p>$($finding.Issue).</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://www.hackingarticles.in/lateral-movement-webclient-workstation-takeover/">Link 1</a></p>
-                                            <p><a href="https://www.fortalicesolutions.com/posts/shadow-credentials-workstation-takeover-edition">Link 2</a></p>
+                                            <p><a href="https://support.microsoft.com/en-gb/topic/2020-2023-and-2024-ldap-channel-binding-and-ldap-signing-requirements-for-windows-kb4520412-ef185fb8-00f7-167d-744c-f299a66fc00a">Link 2</a></p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -681,7 +681,7 @@ function Generate-MISChtml {
                                             <hr>
                                             <div class="attack-container">
                                                 <div class="attack-text">
-                                                    <p>4. With control of the frontend service (the added attacker computer), an adversary can request a ticket for any service on the backend as they are alloweed to delegte to this service as setup by the HTTP to LDAP relay.</p>
+                                                    <p>4. With control of the frontend service (the added attacker computer), an adversary can request a ticket for any service on the backend as they are allowed to delegate to this service as setup by the HTTP to LDAP relay.</p>
                                                     <p class="code">impacket-getST -spn cifs/DESKTOP-JKTS35O.test.local test.local/attackerComputer\$:h4x -impersonate administrator</p>
                                                     <p>With a ticket obtained for the backend service, an adversary can remotely extract all the credential matter from the target computer running the WebClient service.</p>
                                                     <p class="code">export KRB5CCNAME=administrator.ccache</p>

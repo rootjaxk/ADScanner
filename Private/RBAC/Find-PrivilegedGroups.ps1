@@ -112,7 +112,7 @@ Find-PrivilegedGroups -Domain test.local
     elseif ($groupName -eq "Backup Operators" -and $userCount -gt 0) {
       $Issue = [pscustomobject]@{
         Risk        = (to_red "HIGH")
-        Technique   = "BackupOperators group does not meet the benchmark (maximum 0 users required)."
+        Technique   = "Backup Operators group does not meet the benchmark (maximum 0 users required)."
         Score       = 20
         Members     = $group.Value
         MemberCount = $group.Value.Count
