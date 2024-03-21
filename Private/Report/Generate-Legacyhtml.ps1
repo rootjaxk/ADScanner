@@ -60,7 +60,7 @@ function Generate-Legacyhtml {
                                 </table></td>
                                 <td class="explanation">
                                     <p>LLMNR is a legacy fallback name resolution protocol that is vulnerable to layer 2 poisoning attacks. It is enabled by default in Active Directory networks in conjuction with NBT-NS and mDNS. When a DNS query fails in Windows, the host broadcasts an LLMNR/NBT-NS/mDNS request at layer 2 on the local network to see if any other host can answer to resolve the hostname. However, as anyone can respond to an LLMNR request, an attacker listening on the network can respond to an LLMNR query and force the host to authenticate to the attacking machine, intercepting NTLMv2 password hashes. The hashes can be taken offline and cracked or relayed against systems with SMB signing disabled to gain administrative privileges within the network.</p>
-                                    <p>LLMNR is not disabled by $domain by GPO as $($finding.RegistryKey) is not set to $($finding.CorrectValue).</p> 
+                                    <p>LLMNR is not disabled in $domain by GPO as $($finding.RegistryKey) is not set to $($finding.CorrectValue).</p> 
                                     <p class="links"><b>Further information:</b></p>
                                     <p><a href="https://tcm-sec.com/llmnr-poisoning-and-how-to-prevent-it/">Link 1</a></p>
                                     <p><a href="https://redfoxsec.com/blog/what-is-llmnr-poisoning-and-how-to-avoid-it/">Link 2</a></p>
@@ -163,7 +163,7 @@ function Generate-Legacyhtml {
                                         </table></td>
                                         <td class="explanation">
                                             <p>Like LLMNR, NBT-NS is a legacy fallback name resolution protocol that is vulnerable to layer 2 poisoning attacks. It is enabled by default in Active Directory networks in conjuction with LLMNR and mDNS. When a DNS query fails in Windows, the host broadcasts an LLMNR/NBT-NS/mDNS request at layer 2 on the local network to see if any other host can answer to resolve the hostname. However, as anyone can respond to an LLMNR request, an attacker listening on the network can respond to an LLMNR query and force the host to authenticate to the attacking machine, intercepting NTLMv2 password hashes. The hashes can be taken offline and cracked or relayed against systems with SMB signing disabled to gain administrative privileges within the network.</p>
-                                            <p>NBT-NS is not disabled by $domain by GPO as $($finding.RegistryKey) is not set to $($finding.CorrectValue).</p> 
+                                            <p>NBT-NS is not disabled in $domain by GPO as $($finding.RegistryKey) is not set to $($finding.CorrectValue).</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://tcm-sec.com/llmnr-poisoning-and-how-to-prevent-it/">Link 1</a></p>
                                             <p><a href="https://redfoxsec.com/blog/what-is-llmnr-poisoning-and-how-to-avoid-it/">Link 2</a></p>
@@ -266,7 +266,7 @@ function Generate-Legacyhtml {
                                         </table></td>
                                         <td class="explanation">
                                             <p>Like LLMNR and NBT-NS, mDNS is a legacy fallback name resolution protocol that is vulnerable to layer 2 poisoning attacks. It is enabled by default in Active Directory networks in conjuction with LLMNR and NBT-NS. When a DNS query fails in Windows, the host broadcasts an LLMNR/NBT-NS/mDNS request at layer 2 on the local network to see if any other host can answer to resolve the hostname. However, as anyone can respond to an LLMNR request, an attacker listening on the network can respond to an LLMNR query and force the host to authenticate to the attacking machine, intercepting NTLMv2 password hashes. The hashes can be taken offline and cracked or relayed against systems with SMB signing disabled to gain administrative privileges within the network.</p>
-                                            <p>mDNS is not disabled by $domain by GPO as $($finding.RegistryKey) is not set to $($finding.CorrectValue).</p> 
+                                            <p>mDNS is not disabled in $domain by GPO as $($finding.RegistryKey) is not set to $($finding.CorrectValue).</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://tcm-sec.com/llmnr-poisoning-and-how-to-prevent-it/">Link 1</a></p>
                                             <p><a href="https://redfoxsec.com/blog/what-is-llmnr-poisoning-and-how-to-avoid-it/">Link 2</a></p>
@@ -583,11 +583,13 @@ function Generate-Legacyhtml {
                                     <tr>
                                         <td class="relevantinfo"><table>
                                             <tr><td class="grey">Operating Systems</td><td>$($finding.OperatingSystems -replace "`r?`n", "<br>")</td></tr>
+                                            <tr><td class="grey">Vulnerable Computers</td><td>$($finding.VulnerableComputers -replace "`r?`n", "<br>")</td></tr>
                                             <tr><td class="grey">Number of outdated systems</td><td>$($finding.count)</td></tr>
+                                            <tr><td class="grey">Enabled</td><td>$($finding.Enabled)</td></tr>
                                         </table></td>
                                         <td class="explanation">
                                             <p>Legacy systems often run business-critical software that cannot be upgraded, however contain critical CVEs facilitating remote code execution and denial of service largely due to vulnerabilities in SMBv1.</p>
-                                            <p>There are $($finding.Count) legacy unsupported operating systems within the domain. All of these computers can be remotely taken over by attackers. If as a mitigating control the legacy OS is disabled in AD the risk is lower as although the system can be compromised, it cant be used for lateral movement.</p> 
+                                            <p>There are $($finding.Count) legacy unsupported operating systems within the domain. All of these computers can be remotely taken over by attackers exploiting criticl severity CVEs. If as a mitigating control the legacy OS is disabled in AD the risk is lower as although the system can be compromised, it cannot be used for lateral movement.</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://blog.netwrix.com/2021/11/30/what-is-smbv1-and-why-you-should-disable-it/">Link 1</a></p>
                                             <p><a href="https://www.rapid7.com/db/vulnerabilities/msft-cve-2017-0148/">Link 2</a></p>

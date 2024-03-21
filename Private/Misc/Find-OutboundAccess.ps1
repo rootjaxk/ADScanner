@@ -58,22 +58,22 @@ function Find-OutboundAccess {
   if ($admin -eq $true -and ($exploitresponse -match "200 OK" -or $socialURLresponse -match "200 OK" -or $nonessentialbuisnessURLresponse -match "200 OK")) {
     $Issue = [pscustomobject]@{
       Risk      = (to_red "HIGH")
-      Technique = "Unrestricted outbound access"
+      Technique = "Unrestricted outbound access permitted"
       Score     = 35
       Name      = $hostname
       User      = $userrun
-      Issue     = "Administrator account $userrun has internet access on $hostname. Block internet access for all administrative users. A tiering model should prevent admin accounts from having internet access in favour of a lower privileged account for everyday use"
+      Issue     = "Administrator account $userrun has internet access on $hostname. A tiering model should prevent admin accounts from having internet access in favour of a lower privileged account for everyday use."
     }
     $Issue
   }
   elseif ($exploitresponse -match "200 OK") {
     $Issue = [pscustomobject]@{
       Risk      = (to_red "HIGH")
-      Technique = "Unrestricted outbound access"
+      Technique = "Unrestricted outbound access permitted"
       Score     = 25
       Name      = $hostname
       User      = $userrun
-      Issue     = "$userrun has unrestricted outbound internet access on $hostname"
+      Issue     = "$userrun has unrestricted outbound internet access on $hostname permitting access to malicious sites or attacker controlled c2 infrastructure."
     }
     $Issue
   } 
@@ -81,11 +81,11 @@ function Find-OutboundAccess {
   elseif ($Isserver -match "server" -and ($socialURLresponse -match "200 OK" -or $nonessentialbuisnessURLresponse -match "200 OK")) {
     $Issue = [pscustomobject]@{
       Risk      = (to_red "HIGH")
-      Technique = "Unrestricted outbound access"
+      Technique = "Unrestricted outbound access permitted"
       Score     = 20
       Name      = $hostname
       User      = $userrun
-      Issue     = "$userrun can access non-essential business sites on $hostname. If this is a server, block internet access for all users"
+      Issue     = "$userrun can access non-essential business sites on $hostname, which as a server internet access should be heavily restricted for all users."
     }
     $Issue
   }

@@ -34,7 +34,9 @@ function Find-UnsupportedOS {
         Technique        = "Outdated Operating Systems found"
         Score            = 30
         OperatingSystems = ""
+        VulnerableComputers = ""
         Count            = ""
+        Enabled          = "True"
         Issues           = ""
     }
 
@@ -43,7 +45,9 @@ function Find-UnsupportedOS {
         Technique        = "Outdated, but disabled, Operating Systems found"
         Score            = 10
         OperatingSystems = ""
+        VulnerableComputers = ""
         Count            = ""
+        Enabled          = "False"
         Issues           = ""
     }
 
@@ -55,10 +59,12 @@ function Find-UnsupportedOS {
         foreach ($computer in $computers) {
             if ($computer.enabled -eq $true) {
                 if ($Outdated_EnabledIssue.OperatingSystems -eq '') {
+                    $Outdated_EnabledIssue.VulnerableComputers += $computer.DistinguishedName
                     $Outdated_EnabledIssue.OperatingSystems += $computer.operatingsystem
                     $Outdated_EnabledIssue.Issues += "$($computer.DistinguishedName) is enabled and running $($computer.operatingsystem)"
                 }
                 else {
+                    $Outdated_EnabledIssue.VulnerableComputers += "`r`n$($computer.DistinguishedName)"
                     $Outdated_EnabledIssue.OperatingSystems += "`r`n$($computer.operatingsystem)"
                     $Outdated_EnabledIssue.Issues += "`r`n$($computer.DistinguishedName) is enabled and running $($computer.operatingsystem)"
 
@@ -67,10 +73,12 @@ function Find-UnsupportedOS {
             }
             else {
                 if ($Outdated_DisabledIssue.OperatingSystems -eq '') {
+                    $Outdated_DisabledIssue.VulnerableComputers += $computer.DistinguishedName
                     $Outdated_DisabledIssue.OperatingSystems += $computer.operatingsystem
                     $Outdated_DisabledIssue.Issues += "$($computer.DistinguishedName) is running $($computer.operatingsystem) but is disabled"
                 }
                 else {
+                    $Outdated_DisabledIssue.VulnerableComputers += "`r`n$($computer.DistinguishedName)"
                     $Outdated_DisabledIssue.OperatingSystems += "`r`n$($computer.operatingsystem)"
                     $Outdated_DisabledIssue.Issues += "`r`n$($computer.DistinguishedName) is running $($computer.operatingsystem) but is disabled"
                 }

@@ -218,7 +218,7 @@ function Find-SMBSigning {
         }
     }
     if ($SMBSigningIssue.Computers -ne '') {
-        $SMBSigningIssue.Issue = "SMB signing is not enforced on $SMBsigningcount computers meaning authentication can be relayed to these computers"
+        $SMBSigningIssue.Issue = "SMB signing is not enforced on $SMBsigningcount computers meaning SMB authentication can be coerced and relayed to these computers, allowing an unauthenticated attacker to remotely take control of the system."
         $SMBSigningIssue
     }          
 }

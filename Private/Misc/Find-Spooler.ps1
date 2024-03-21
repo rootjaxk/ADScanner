@@ -69,7 +69,7 @@ function Find-Spooler {
     }
   }
   if ($SpoolerIssue.Computers -ne '') {
-    $SpoolerIssue.Issue = "Spooler service is enabled on $Spoolercount computers which are vulnerable to printerbug (authentication coercion)"
+    $SpoolerIssue.Issue = "The spooler service is enabled on $Spoolercount computers which are vulnerable to printerbug (authentication coercion)."
     $SpoolerIssue
   }
 }
