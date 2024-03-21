@@ -270,7 +270,7 @@ function Invoke-ADScanner {
         $RBAC += Find-InactiveAccounts -Domain $Domain
         $RBAC += Find-AnonymousAccess -Domain $Domain
         $RBAC += Find-SensitiveAccounts -Domain $Domain
-        $RBAC += Find-AdminCount -Domain $Domain
+        $RBAC += Find-AdminSDHolder -Domain $Domain
     }
     if (!$RBAC) {
         $RBAChtml = @"
@@ -325,18 +325,7 @@ function Invoke-ADScanner {
         $MISC += Find-EfficiencyImprovements -Domain $Domain
         $MISC = $MISC | Sort-Object -Property Score -Descending
     }
-    if (!$MISC) {
-        $MISChtml = @"
-        <div class="finding-header">MISC</div>
-        <h2 class="novuln">No vulnerabilities found!</h2>
-"@
-    }
-    else {
-        $MISChtml = @"
-        <div class="finding-header">MISC</div>
-"@
-    }
-
+    $MISChtml = Generate-MISChtml -MISC $MISC
 
     # Legacy
     if ($Scans -eq "Legacy" -or $Scans -eq "All") {
@@ -488,14 +477,16 @@ function Invoke-ADScanner {
 
         #Category risk scores
         Write-Host "`r`n[*] Category Risk scores:"
-        $categoryRisks += foreach ($item in $categoryVariables) {
+        $categoryRisks = @()
+        foreach ($item in $categoryVariables) {
             $score = ($item.Variable | Measure-Object -Property Score -Sum).Sum
-            [PSCustomObject]@{
+            $categoryRisks += [PSCustomObject]@{
                 Category = $item.Name
                 Score    = $score
             }
         }
-        $categoryRisks | Sort-Object -Property TotalScore -Descending
+        $categoryRisks = $categoryRisks | Sort-Object -Property Score -Descending
+        $categoryRisks
 
         $categoryRisksHTML = @"
         <div class="table-container">
@@ -508,45 +499,44 @@ function Invoke-ADScanner {
                     </thead>
                     <tbody>
 "@
-        foreach ($item in $categoryVariables) {
-            $score = ($item.Variable | Measure-Object -Property Score -Sum).Sum
-            if ($score -ge 100) {
+        foreach ($item in $categoryRisks) {
+            if ($item.score -ge 100) {
                 $categoryRisksHTML += @"
                 <tr>
-                    <td>$($item.Name)</td>
-                    <td class="category-riskcritical">$score</td>
+                    <td>$($item.Category)</td>
+                    <td class="category-riskcritical">$($item.score)</td>
                 </tr>
 "@
             }
-            elseif ($score -ge 75) {
+            elseif ($item.score -ge 75) {
                 $categoryRisksHTML += @"
                 <tr>
-                    <td>$($item.Name)</td>
-                    <td class="category-riskhigh">$score</td>
+                    <td>$($item.Category)</td>
+                    <td class="category-riskhigh">$($item.score)</td>
                 </tr>
 "@
             }
-            elseif ($score -ge 50) {
+            elseif ($item.score -ge 50) {
                 $categoryRisksHTML += @"
                 <tr>
-                    <td>$($item.Name)</td>
-                    <td class="category-riskmedium">$score</td>
+                    <td>$($item.Category)</td>
+                    <td class="category-riskmedium">$($item.score)</td>
                 </tr>
 "@
             }
-            elseif ($score -ge 1) {
+            elseif ($item.score -ge 1) {
                 $categoryRisksHTML += @"
                 <tr>
-                    <td>$($item.Name)</td>
-                    <td class="category-risklow">$score</td>
+                    <td>$($item.Category)</td>
+                    <td class="category-risklow">$($item.score)</td>
                 </tr>
 "@          
             }
-            elseif ($score -eq 0) {
+            elseif ($item.score -eq 0) {
                 $categoryRisksHTML += @"
                 <tr>
-                    <td>$($item.Name)</td>
-                    <td class="category-riskinformational">$score</td>
+                    <td>$($item.Category)</td>
+                    <td class="category-riskinformational">$($item.score)</td>
                 </tr>       
 "@
             }
@@ -677,10 +667,6 @@ function Invoke-ADScanner {
         $RisksummaryHTMLoutput += "</tbody></table></div>"
     }
 
-
-
-    # $HTML = $AllissuesHTML | ConvertTo-Html -Fragment
-    # $HTML = $HTML.Replace('<tr><td>CRITICAL</td><td>', '<tr class="critical"><td>Critical</td><td><a href="')
     
         
     # Output all findings in separate sections
@@ -786,13 +772,13 @@ function Invoke-ADScanner {
     #Generate-Report
 
 
-    # $htmlreportheader # banner and top heading
-    # $riskOverallHTML # domain risk level
-    # $runinfoHTML   # details when ran
-    # $categoryRisksHTML # category risk scores
-    # $executiveSummaryHTML # executive summary with GPT
-    # $RisksummaryHTMLoutput # risk prioritisation summary
-    # $DomainInfohtml # first bit of technical section
+    $htmlreportheader # banner and top heading
+    $riskOverallHTML # domain risk level
+    $runinfoHTML   # details when ran
+    $categoryRisksHTML # category risk scores
+    $executiveSummaryHTML # executive summary with GPT
+    $RisksummaryHTMLoutput # risk prioritisation summary
+    $DomainInfohtml # first bit of technical section
 
     #Technical sections
     #$PKIhtml
