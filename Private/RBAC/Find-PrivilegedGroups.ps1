@@ -184,7 +184,7 @@ Find-PrivilegedGroups -Domain test.local
       if ($userCount -lt $numAdmin) {
         $Issue = [pscustomobject]@{
           Risk        = (to_red "HIGH")
-          Technique   = "Protected Users group does not meet the benchmark (not all privileged users)."
+          Technique   = "Protected Users group does not meet the benchmark (all privileged users)."
           Score       = 20
           Members     = $group.Value
           MemberCount = $group.Value.Count
