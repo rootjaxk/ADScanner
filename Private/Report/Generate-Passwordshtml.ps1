@@ -229,7 +229,85 @@ function Generate-Passwordshtml {
             elseif ($finding.Technique -eq "Plaintext credentials found readable by low privileged user") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
-"@
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Files within SYSVOL can be read by any low-privileged user.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">File</td><td>$($finding.File -replace "`r?`n", "<br>")</td></tr>
+                                            <tr><td class="grey">Credential</td><td>$($finding.Credential -replace "`r?`n", "<br>")</td></tr>
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>Files within SYSVOL such as logon scripts often store hardcoded credentials used for things like mounting drives or running administrative tasks. What is not so well known is these files are readable and can be accessed by any low-privileged user.</p>
+                                            <p>$($finding.issue)</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://www.sentinelone.com/blog/credentials-harvesting-from-domain-shares/">Link 1</a></p>
+                                            <p><a href="https://offsec.blog/hidden-menace-how-to-identify-misconfigured-and-dangerous-logon-scripts/">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. Low-privileged users can search for sensitive information like passwords in any file stored on SYSVOL which often finds passwords hardcoded in logon scripts.</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Passwords/Sensitiveinfo.png" alt="Finding sensitive infomation in SYSVOL">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Remove hardcoded credentials from SYSVOL</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@  
             }
             elseif ($finding.Technique -match "user's Active Directory description field") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
@@ -279,7 +357,7 @@ function Generate-Passwordshtml {
                 $html += @"
                                         </table></td>
                                         <td class="explanation">
-                                            <p>Whilst storing user passwords in Active Directory description fields may seem convient, doing this exposes the user's credentials to all users in the domain as any user can read any user's description field within AD.</p>
+                                            <p>Whilst storing passwords within description fields in AD may seem convenient, however it should be noted that by default any authenticated user can read the description for any domain user, so storing passwords here effectively shares the password with everyone in the network.</p>
                                             <p>$($finding.issue) .</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://hackdefense.com/publications/wachtwoorden-in-het-omschrijvingen-veld/">Link 1</a></p>

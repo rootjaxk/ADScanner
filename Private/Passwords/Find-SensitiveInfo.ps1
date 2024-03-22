@@ -2,7 +2,6 @@ function Find-SensitiveInfo {
     <#
     .SYNOPSIS
     Searches for sensitive information in sysvol and netlogon folders. This includes credentials and misconfigured logon script permissions.
-    Also finds insecure ACLs on scripts in sysvol and netlogon folders.
 
     Inspired by https://github.com/techspence/ScriptSentry 
   
@@ -42,7 +41,7 @@ function Find-SensitiveInfo {
         Score      = 30
         File       = ""
         Credential = ""
-        Issue      = "Hardcoded plaintext credentials found in SYSVOL. These can be used by any authenticated user and any account utilising them should be considered compromised."
+        Issue      = "Hardcoded plaintext credentials were found in SYSVOL. These can be used by any authenticated user and any account utilising them should be considered compromised."
     }
     
     #find hardcoded creds or secrets in scripts
