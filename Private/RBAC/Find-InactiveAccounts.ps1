@@ -46,6 +46,8 @@ function Find-InactiveAccounts {
       Score         = 5
       Totalinactive = $totalstale
       StaleUsers    = $stale_not_disabled.samaccountname
+      Enabled       = "True"
+      Inactivityperiod = "90 days"
       Issue         = "The are $totalstale inactive accounts found in $domain. A JML process should be enforced that disables accounts not used after a period of inactivity to prevent unauthorised use and conform to principle of least privilege"
     }
     $Issue
@@ -68,6 +70,7 @@ function Find-InactiveAccounts {
     Risk             = (to_red "HIGH")
     Technique        = "Inactive/stale accounts are not disabled in privileged groups"
     Score            = 20
+    Totalinactive    =  ""
     Users            = ""
     Memberof         = ""
     Enabled          = "True"
@@ -97,6 +100,7 @@ function Find-InactiveAccounts {
     }
   }
   if ($stalePrivileged.Users -ne '') {
+    $stalePrivileged.Totalinactive = $privilegedCount
     $stalePrivileged.Issue = "$privilegedCount privileged users have not logged in 90 days. A JML process should be enforced that disables accounts not used after a period of inactivity to prevent unauthorised use and conform to principle of least privilege. If a privilege is not required it should be removed"
     $stalePrivileged
   }

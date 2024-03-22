@@ -267,7 +267,7 @@ function Invoke-ADScanner {
         $RBAC += Find-InactiveAccounts -Domain $Domain
         $RBAC += Find-AnonymousAccess -Domain $Domain
         $RBAC += Find-SensitiveAccounts -Domain $Domain
-        $RBAC += Find-AdminSDHolder -Domain $Domain
+        $RBAC = $RBAC | Sort-Object -Property Score -Descending
     }
     $RBAChtml = Generate-RBAChtml -RBAC $RBAC
 

@@ -106,7 +106,7 @@ function Find-AdminSDHolder {
     }
   }
   if ($AdminSDIssue.Name -ne '') {
-    $AdminSDIssue.Issue = "$AdminSDcount users have the admincount attribute set to 1 but is not a member of default privileged groups. These user may have unaudited high privileges."
+    $AdminSDIssue.Issue = "$AdminSDcount users have the admincount attribute set to 1 but is not a member of default privileged groups. These users may provide an attacker persistent access and have unaudited high privileges."
     $AdminSDIssue
   }
 }

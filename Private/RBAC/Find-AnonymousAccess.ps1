@@ -41,7 +41,7 @@ function Find-AnonymousAccess {
             Technique = "Domain anonymous access is permitted allowing anonymous access to the domain"
             Score     = 20
             Account   = $domainguest.distinguishedname
-            Issue     = "Domain Guest account is enabled"
+            Issue     = "The domain Guest account is enabled, facilitating anonymous access to the domain."
         }
         $Issue
     }
@@ -58,7 +58,7 @@ function Find-AnonymousAccess {
             Technique = "Local anonymous access is permitted allowing anonymous access to the system"
             Score     = 20
             Account   = "$Hostname\$($localguest.name)"
-            Issue     = "BUILTIN Guest account is enabled"
+            Issue     = "The BUILTIN Guest account is enabled, facilitating anonymous access to the local system."
         }
         $Issue
     }

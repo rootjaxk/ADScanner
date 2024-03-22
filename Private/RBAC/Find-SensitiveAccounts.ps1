@@ -68,7 +68,7 @@ function Find-SensitiveAccounts {
     }
     #If issue output it
     if ($sensitiveIssue.Users) {
-        $sensitiveIssue.Issue = "$sensitiveaccountcount privileged users do not have the 'Account is sensitive and cannot be delegated' flag set. Enabling this on all administrative accounts ensures their credentials cannot forwarded to other computers or services on the network by a trusted application. This prevents account impersonation by a malicious threat actor."
+        $sensitiveIssue.Issue = "$sensitiveaccountcount privileged users do not have the 'Account is sensitive and cannot be delegated' flag set. Enabling this on all administrative accounts ensures their credentials cannot forwarded to other computers or services on the network by a trusted application. This prevents account impersonation by a malicious threat actor meaning attacks such as constrained delegation will fail."
         $sensitiveIssue
     }
 }

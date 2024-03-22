@@ -58,11 +58,11 @@ function Generate-RBAChtml {
                                 <tr><td class="grey">adminCount</td><td>$($finding.adminCount)</td></tr>
                             </table></td>
                             <td class="explanation">
-                                <p>.</p>
+                                <p>Any user account that is added to default privileged groups in active directory (account operators, domain admins, etc) is assigned an adminCount property of 1. This is done to ensure members of protected groups have standardized and controlled security descriptors, as every 60 minutes Active Directory will take the ACL's of the AdminSDHolder and apply it to the protected users and groups with AdminCount set to 1, to ensure they have no rogue ACLs set and remain protected. If accounts have the adminCount set to 1 but are not a member of default privileged groups this is suspicious and may indicate an attacker has applied their own ACL's to AdminSDHolder and have waited for them to propogate in order to achieve persistence over these accounts.</p>
                                 <p>$($finding.Issue).</p> 
                                 <p class="links"><b>Further information:</b></p>
-                                <p><a href="">Link 1</a></p>
-                                <p><a href="">Link 2</a></p>
+                                <p><a href="https://blog.netwrix.com/2022/09/30/admincount_attribute/">Link 1</a></p>
+                                <p><a href="https://specopssoft.com/support/en/password-reset/understanding-privileged-accounts-and-adminsdholder.htm">Link 2</a></p>
                             </td>
                         </tr>
                     </tbody>
@@ -76,7 +76,7 @@ function Generate-RBAChtml {
                             <td>
                                 <div class="attack-container">
                                     <div class="attack-text">
-                                        <p>1. Any low-privileged user can enumerate users with the adminCount property set to 1.</p>
+                                        <p>1. Any low-privileged user can enumerate users with the adminCount property set to 1, which gives a list of privileged accounts with ACLs controlled via the AdminSDHolder. Any account not a member of default privileged groups should be investigated.</p>
                                         <p class="code">nxc ldap dc.test.local -u test -p 'Password123!' --admin-count</p>
                                     </div>
                                     <span class="image-cell">
@@ -94,7 +94,7 @@ function Generate-RBAChtml {
                         </tr>
                         <tr>
                             <td>
-                                <p>Remove adminCount</p>
+                                <p>Remove adminCount from unprivileged users</p>
                                 <p>run command 1</p>
                                 <p>run command 2</p>
                             </td>
@@ -124,7 +124,7 @@ function Generate-RBAChtml {
                                         <th>Score</th>
                                     </tr>
                                     <tr>
-                                        <td>Guest account is enabled allowing unauthenticated access to domain resources.</td>
+                                        <td>The guest account is enabled allowing unauthenticated access to domain resources.</td>
                                         <td>T-15940</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
@@ -138,15 +138,15 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td class="relevantinfo"><table>
-                                            <tr><td class="grey">Users</td><td>$($finding.Name -replace "`r?`n", "<br>")</td></tr>
-                                            <tr><td class="grey">adminCount</td><td>$($finding.adminCount)</td></tr>
+                                            <tr><td class="grey">Account</td><td>$($finding.account)</td></tr>
+                                            <tr><td class="grey">Enabled</td><td>True</td></tr>
                                         </table></td>
                                         <td class="explanation">
-                                            <p>.</p>
+                                            <p>The Guest account is a default local account that has limited access to the computer and is disabled by default but will facilitate anonymous acces to domain resources if enabled. By default, the Guest account password is left blank which allows the Guest account to be accessed without requiring the user to enter a password. Attackers can then access file shares and remotely enumerate the domain from an unauthenticated standpoint.</p>
                                             <p>$($finding.Issue).</p> 
                                             <p class="links"><b>Further information:</b></p>
-                                            <p><a href="">Link 1</a></p>
-                                            <p><a href="">Link 2</a></p>
+                                            <p><a href="https://www.trustedsec.com/blog/new-tool-release-rpc_enum-rid-cycling-attack">Link 1</a></p>
+                                            <p><a href="https://www.whiteoaksecurity.com/blog/active-directory-security/">Link 2</a></p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -160,7 +160,7 @@ function Generate-RBAChtml {
                                         <td>
                                             <div class="attack-container">
                                                 <div class="attack-text">
-                                                    <p>1. .</p>
+                                                    <p>1. An unauthenticated attacker can enumerate file shares on systems if the guest account is active, allowing them to crawl through company documeents for sensitive information.</p>
                                                     <p class="code">nxc smb dc.test.local -u anonymous -p '' --shares</p>
                                                 </div>
                                                 <span class="image-cell">
@@ -170,7 +170,7 @@ function Generate-RBAChtml {
                                             <hr>
                                             <div class="attack-container">
                                                 <div class="attack-text">
-                                                    <p>2. .</p>
+                                                    <p>2. RID Cycling is a method that allows attackers to enumerate domain objects by bruteforcing or guessing RIDs and SIDs, based on the fact that RIDs are sequential. If the guest account is enabled facilitating read access to the IPC$ share on a domain controller, an unauthenticated attacker can enumerate all users and groups within the domain.</p>
                                                     <p class="code">nxc smb dc.test.local -u anonymous -p '' --rid-brute</p>
                                                 </div>
                                                 <span class="image-cell">
@@ -232,15 +232,31 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td class="relevantinfo"><table>
-                                            <tr><td class="grey">Users</td><td>$($finding.Name -replace "`r?`n", "<br>")</td></tr>
-                                            <tr><td class="grey">adminCount</td><td>$($finding.adminCount)</td></tr>
+"@
+                                if($finding.Technique -match "privileged") {
+                                    $html+= @"
+                                    <tr><td class="grey">Total privileged & inactive</td><td>$($finding.totalinactive)</td></tr>
+                                    <tr><td class="grey">Users</td><td>$($finding.Users -replace "`r?`n", "<br>")</td></tr>
+                                    <tr><td class="grey">Member of</td><td>$($finding.MemberOf -replace "`r?`n", "<br>")</td></tr>
+                                    <tr><td class="grey">Enabled</td><td>$($finding.Enabled)</td></tr>
+                                    <tr><td class="grey">Inactivity period</td><td>$($finding.Inactivityperiod)</td></tr>
+"@
+                                } else{
+                                    $html+= @"
+                                    <tr><td class="grey">Total inactive users</td><td>$($finding.totalinactive)</td></tr>
+                                    <tr><td class="grey">Users</td><td>$($finding.StaleUsers -join "<br>")</td></tr>
+                                    <tr><td class="grey">Enabled</td><td>$($finding.Enabled)</td></tr>
+                                    <tr><td class="grey">Inactivity period</td><td>$($finding.Inactivityperiod)</td></tr>
+"@
+                                }
+                                $html += @"
                                         </table></td>
                                         <td class="explanation">
-                                            <p>.</p>
-                                            <p>$($finding.Issue).</p> 
+                                            <p>Stale user accounts are a significant security issue, as former employees and external attackers could use those accounts to attack the organization. Good cyber security practice guides us to follow the principal of least privilege: if an account is not used, the account should be disabled or removed from privileged groups if it not required.</p>
+                                            <p>$($finding.Issue).</p>
                                             <p class="links"><b>Further information:</b></p>
-                                            <p><a href="">Link 1</a></p>
-                                            <p><a href="">Link 2</a></p>
+                                            <p><a href="https://learn.microsoft.com/en-us/services-hub/unified/health/remediation-steps-ad/regularly-check-for-and-remove-inactive-user-accounts-in-active-directory">Link 1</a></p>
+                                            <p><a href="https://www.lepide.com/blog/how-ad-inactive-accounts-harm-security/">Link 2</a></p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -254,7 +270,7 @@ function Generate-RBAChtml {
                                         <td>
                                             <div class="attack-container">
                                                 <div class="attack-text">
-                                                    <p>1. .</p>
+                                                    <p>1. Each user in Active Directory has a lastlogon attribute which can be used to identify stale and unused accounts.</p>
                                                 </div>
                                                 <span class="image-cell">
                                                     <img src="/Private/Report/Images/RBAC/inactive.png" alt="Inactive accounts">
@@ -315,14 +331,13 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td class="relevantinfo"><table>
-                                            <tr><td class="grey">Users</td><td>$($finding.Name -replace "`r?`n", "<br>")</td></tr>
-                                            <tr><td class="grey">adminCount</td><td>$($finding.adminCount)</td></tr>
+                                            <tr><td class="grey">Member count</td><td>$($finding.MemberCount)</td></tr>
+                                            <tr><td class="grey">Members</td><td>$($finding.Members -replace ",", "<br>")</td></tr>
                                         </table></td>
                                         <td class="explanation">
                                             <p>Administrators are given administrative privileges on the domain controllers, and by default contain the default ‘Administrator’ account, enterprise admins and domain administrators. Reducing the number of domain and enterprise admins will thereby reduce the number of Administrators.</p>
-                                            <p>$($finding.Issue).</p> 
                                             <p class="links"><b>Further information:</b></p>
-                                            <p><a href="">Link 1</a></p>
+                                            <p><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-groups#administrators">Link 1</a></p>
                                             <p><a href="">Link 2</a></p>
                                         </td>
                                     </tr>
@@ -399,14 +414,13 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td class="relevantinfo"><table>
-                                            <tr><td class="grey">Users</td><td>$($finding.Name -replace "`r?`n", "<br>")</td></tr>
-                                            <tr><td class="grey">adminCount</td><td>$($finding.adminCount)</td></tr>
+                                            <tr><td class="grey">Member count</td><td>$($finding.MemberCount)</td></tr>
+                                            <tr><td class="grey">Members</td><td>$($finding.Members -replace ",", "<br>")</td></tr>
                                         </table></td>
                                         <td class="explanation">
                                             <p>Domain Admins provide full administrative privilege within the domain, offering the highest level of privilege. Therefore, this should be given to only a select few named administrators and reviewed frequently.</p>
-                                            <p>$($finding.Issue).</p> 
                                             <p class="links"><b>Further information:</b></p>
-                                            <p><a href="">Link 1</a></p>
+                                            <p><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-groups#domain-admins">Link 1</a></p>
                                             <p><a href="">Link 2</a></p>
                                         </td>
                                     </tr>
@@ -483,14 +497,13 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td class="relevantinfo"><table>
-                                            <tr><td class="grey">Users</td><td>$($finding.Name -replace "`r?`n", "<br>")</td></tr>
-                                            <tr><td class="grey">adminCount</td><td>$($finding.adminCount)</td></tr>
+                                            <tr><td class="grey">Member count</td><td>$($finding.MemberCount)</td></tr>
+                                            <tr><td class="grey">Members</td><td>$($finding.Members -replace ",", "<br>")</td></tr>
                                         </table></td>
                                         <td class="explanation">
                                             <p>The Enterprise Admins group gives full administrative privileges to all domains within a forest, offering a higher level of prvilege to domain admins. If the Active Directory consists of only one domain, this group is uneeded. Each domain should have seperate domain admin accounts and the enterprise admin group should not be used, to reduce the risk of lateral movement opportunities across domains.</p>
-                                            <p>$($finding.Issue).</p> 
                                             <p class="links"><b>Further information:</b></p>
-                                            <p><a href="">Link 1</a></p>
+                                            <p><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-groups#enterprise-admins">Link 1</a></p>
                                             <p><a href="">Link 2</a></p>
                                         </td>
                                     </tr>
@@ -572,7 +585,6 @@ function Generate-RBAChtml {
                                         </table></td>
                                         <td class="explanation">
                                             <p>The DNS Admins group should be empty. Members of DNS Admins are permitted insert a DLL into the DNS service. When the DNS service is hosted on the Domain Controllers it runs as SYSTEM context therefore any maliciously inserted DLL could be used to take control of the domain. It should be noted that this technique was assigned CVE-2021-40469 and will not work if the October 2021 patches are applied to all domain controllers.</p>
-                                            <p>$($finding.Issue).</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://www.ired.team/offensive-security-experiments/active-directory-kerberos-abuse/from-dnsadmins-to-system-to-domain-compromise">Link 1</a></p>
                                             <p><a href="https://medium.com/r3d-buck3t/escalating-privileges-with-dnsadmins-group-active-directory-6f7adbc7005b">Link 2</a></p>
@@ -687,7 +699,6 @@ function Generate-RBAChtml {
                                         </table></td>
                                         <td class="explanation">
                                             <p>The Backup Operators group can backup and restore files and directories that are located on each domain controller in the domain. Users can therefore login and modify all files on a domain controller including credential information from the SAM and SYSTEM hives stored on domain controllers, giving effective domain admin privileges. Best practice is to keep the group empty in favour of a custom role-based group giving only the privileges required.</p>
-                                            <p>$($finding.Issue).</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://www.bordergate.co.uk/backup-operator-privilege-escalation/">Link 1</a></p>
                                             <p><a href="https://pentestlab.blog/2024/01/22/domain-escalation-backup-operator/">Link 2</a></p>
@@ -791,7 +802,6 @@ function Generate-RBAChtml {
                                         </table></td>
                                         <td class="explanation">
                                             <p>The Server Operators group should be empty as they can administer domain controllers. Server Operators can take indirect control of the domain because they have write access to critical domain resources having permission to stop, replace and start system services on domain controllers. An attacker could login to a domain controller, replace a service with a malicious binary and restart the service to executive the binary in SYSTEM context, fully compromising the domain. Best practice is to keep the group empty in favour of a custom role-based group giving only the privileges required.</p>
-                                            <p>$($finding.Issue).</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://www.hackingarticles.in/windows-privilege-escalation-server-operator-group/">Link 1</a></p>
                                             <p><a href="https://pentestlab.blog/2024/01/22/domain-escalation-backup-operator/">Link 2</a></p>
@@ -897,7 +907,6 @@ function Generate-RBAChtml {
                                         </table></td>
                                         <td class="explanation">
                                             <p>The Account Operators group should be empty as they can login locally to domain controllers. Account Operators are one privilege escalation vulnerability away from fully compromising the domain. Further, account operators have permission to delete all domain admin accounts except the default RID 500 "Administrator" account. Best practice is to keep the group empty in favour of a custom role-based group giving only the privileges required.</p>
-                                            <p>$($finding.Issue).</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://www.hackingarticles.in/windows-privilege-escalation-server-operator-group/">Link 1</a></p>
                                             <p><a href="https://pentestlab.blog/2024/01/22/domain-escalation-backup-operator/">Link 2</a></p>
@@ -971,7 +980,7 @@ function Generate-RBAChtml {
                                         <th>Score</th>
                                     </tr>
                                     <tr>
-                                        <td>Members of the Print Operators group can log onto domain controllers and load malicious drivers to escalate privieges.</td>
+                                        <td>Members of the Print Operators group can log onto domain controllers and load malicious drivers to escalate privileges.</td>
                                         <td>T.134533</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
@@ -990,7 +999,6 @@ function Generate-RBAChtml {
                                         </table></td>
                                         <td class="explanation">
                                             <p>The Print Operators group should be empty. Members can manage, create, share, and delete printers that are connected to domain controllers in the domain. Members of this group can logon locally and load and unload device drivers on all domain controllers in the domain as members are given the "SeLoadDriverPrivilege". An attacker could use these privileges to load a malicious driver on a domain controller and escalate privileges to fully compromise the domain.</p>
-                                            <p>$($finding.Issue).</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://www.tarlogic.com/blog/seloaddriverprivilege-privilege-escalation/">Link 1</a></p>
                                             <p><a href="https://cybernetgen.com/abusing-seloaddriverprivilege-for-privilege-escalation/">Link 2</a></p>
@@ -1093,7 +1101,6 @@ function Generate-RBAChtml {
                                         </table></td>
                                         <td class="explanation">
                                             <p>The builtin Remote Desktop Users group permits members to connect remotely to domain controllers within the domain. The Remote Desktop Users group should be empty as by default domain admins can RDP into a domain controller so do not need to be added. Access to domain controllers should be restricted to domain admins only.</p>
-                                            <p>$($finding.Issue).</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-groups#remote-desktop-users">Link 1</a></p>
                                             <p><a href="https://4sysops.com/archives/allow-non-admins-to-access-remote-desktop/">Link 2</a></p>
@@ -1186,7 +1193,6 @@ function Generate-RBAChtml {
                                         </table></td>
                                         <td class="explanation">
                                             <p>The builtin Remote Management Users group permits members to connect remotely to domain controllers within the domain via WMI reousrves over WSMan protocols. By default domain admins can connect via WinRM to a domain controller, so do not need to be added. Access to domain controllers should be restricted to domain admins only.</p>
-                                            <p>$($finding.Issue).</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-groups#remote-management-users">Link 1</a></p>
                                             <p><a href="https://learn.microsoft.com/en-us/windows-server/administration/server-manager/configure-remote-management-in-server-manager">Link 2</a></p>
@@ -1378,7 +1384,7 @@ function Generate-RBAChtml {
                                             <li>Prevents any type of Kerberos delegation.</li>
                                             <p>All privileged accounts (domain admins & administrators) should be protected from attackers as much as possible and adding them to the protected users group is an effective way to secure them.</p> 
                                             <p class="links"><b>Further information:</b></p>
-                                            <p><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-groups#protected-users ">Link 1</a></p>
+                                            <p><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-groups#protected-users">Link 1</a></p>
                                             <p><a href="https://blog.netwrix.com/2015/02/20/add-sensitive-user-accounts-to-active-directory-protected-users-group/">Link 2</a></p>
                                         </td>
                                     </tr>
@@ -1443,7 +1449,85 @@ function Generate-RBAChtml {
             elseif ($finding.Technique -match "Account is sensitive") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
-"@
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>All privileged accounts should be protected from impersonation from attackers.</td>
+                                        <td>T.134533</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Users</td><td>$($finding.Users -replace "`r?`n", "<br>")</td></tr>
+                                            <tr><td class="grey">Account cannot be delegated</td><td>$($finding.AccountNotDelegated)</td></tr>
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>Privileged accounts are defined as users that have admin privileges, for example domain admins / administrators.</p>
+                                            <p>$($finding.Issue)</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/how-to-configure-protected-accounts">Link 1</a></p>
+                                            <p><a href="https://www.sans.org/blog/protecting-privileged-domain-accounts-safeguarding-access-tokens/">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. All privileged accounts should have the account is sensitive and cannot be delegated flag set within Active Directory. This will mean that when impersonating privileged for example in constrained delegation, the attack will simply fail showing how important this is to implement.</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/RBAC/sensitiveaccount-1.png" alt="Checking for sensitive accounts">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Add all privilged users</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@  
             }
         }
         $html += "</tbody></table></div>"
