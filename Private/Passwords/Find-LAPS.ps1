@@ -86,6 +86,24 @@ function Find-LAPS {
       $domaincomputerLAPS = (Find-AdmPwdExtendedRights -Identity $domainComputers).ExtendedRightHolders
     }
     catch {}
+    
+    #Initialise object
+    $LAPSDCIssue = [pscustomobject]@{
+      Risk              = (to_red "CRITICAL")
+      Technique         = ""
+      Score             = 50
+      IdentityReference = ""
+      LAPScomputer      = ""
+      Issue             = ""
+    }
+    $LAPScomputerIssue = [pscustomobject]@{
+      Risk              = (to_red "CRITICAL")
+      Technique         = ""
+      Score             = 35
+      IdentityReference = ""
+      LAPScomputer      = ""
+      Issue             = ""
+    }
     #Check for low privileged accounts can read LAPS
     foreach ($user in $domaincontrollerLAPS) {
       $Principal = New-Object System.Security.Principal.NTAccount($user)
@@ -105,15 +123,16 @@ function Find-LAPS {
       }
       #check for LAPS read
       if ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch) {
-        $Issue = [pscustomobject]@{
-          Risk              = (to_red "CRITICAL")
-          Technique         = "Low privileged principal can read LAPS password on domain controllers"
-          Score             = 50
-          IdentityReference = $user
-          LAPScomputer      = $domainControllers
-          Issue             = "$user has read LAPS password rights on $domainControllers meaning low privileged users are domain admins"
+        $LAPSDCIssue.Technique = "Low privileged principal can read LAPS password on domain controllers"
+        $LAPSDCIssue.LAPSComputer = $domainControllers
+        if ($LAPSDCIssue.IdentityReference -eq '') {
+          $LAPSDCIssue.IdentityReference = $user
+          $LAPSDCIssue.Issue = "$user has read LAPS password rights on $domainControllers meaning low privileged users are domain admins"
         }
-        $Issue
+        else {
+          $LAPSDCIssue.IdentityReference += "`r`n$user"
+          $LAPSDCIssue.Issue += "`r`n$user has read LAPS password rights on $domainControllers meaning low privileged users are domain admins"
+        }
       }
     }
     foreach ($user in $domaincomputerLAPS) {
@@ -134,16 +153,24 @@ function Find-LAPS {
       }
       #check for LAPS read
       if ($SID -notmatch $PrivilegedACLUsers -and !$privilegedGroupMatch) {
-        $Issue = [pscustomobject]@{
-          Risk              = (to_red "HIGH")
-          Technique         = "Low privileged principal can read LAPS password on domain computers"
-          Score             = 35
-          IdentityReference = $user
-          LAPScomputer      = $domainComputers
-          Issue             = "$user has read LAPS password rights on $domainComputers, meaning low privileged users are local admins"
+        $LAPScomputerIssue.Technique = "Low privileged principal can read LAPS password on domain computers"
+        $LAPScomputerIssue.LAPSComputer = $domainComputers
+        if ($LAPScomputerIssue.IdentityReference -eq '') {
+          $LAPScomputerIssue.IdentityReference = $user
+          $LAPScomputerIssue.Issue = "$user has read LAPS password rights on $domainComputers, meaning low privileged users are local admins"
         }
-        $Issue
+        else {
+          $LAPScomputerIssue.IdentityReference += "`r`n$user"
+          $LAPScomputerIssue.Issue += "`r`n$user has read LAPS password rights on $domainComputers, meaning low privileged users are local admins"
+        }
       }
     }
+  }
+  #Output issues
+  if ($LAPSDCIssue.IdentityReference -ne '') {
+    $LAPSDCIssue
+  }
+  if ($LAPScomputerIssue.IdentityReference -ne '') {
+    $LAPScomputerIssue
   }
 }

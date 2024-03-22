@@ -593,7 +593,7 @@ function Generate-ACLshtml {
                                             <hr>
                                             <div class="attack-container">
                                                 <div class="attack-text">
-                                                    <p>2. An adversary can then simply read the plaintext LAPS password from the target computers ms-Mcs-AdmPwd property.</p>
+                                                    <p>2. An adversary can then simply read the plaintext LAPS password from the target computers ms-Mcs-AdmPwd property and escalate their privilege to local admins.</p>
                                                     <p class="code">nxc ldap dc.test.local -u test -p 'Password123!' -M laps</p>     
                                                 </div>
                                                 <span class="image-cell">
