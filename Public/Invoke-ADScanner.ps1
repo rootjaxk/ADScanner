@@ -60,7 +60,7 @@ function Invoke-ADScanner {
 
     # Display help menu if ran incorrectly
     if (-not $Domain -or $Help) {
-        Write-Host "Example Usage:  Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\temp\
+        Write-Host -ForegroundColor Yellow "Example Usage:  Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\temp\
             -Domain     The domain to scan. If don't know scanner will automatically use the current domain the system is joined to (Get-ADDomain)
             -Scans      The scan type to choose (Info, Kerberos, PKI, RBAC, ACLs, Passwords, MISC, Legacy (Default: All))
             -Format     The report format (console/html)
@@ -73,17 +73,16 @@ function Invoke-ADScanner {
     #Logo made with https://patorjk.com/software/taag/#p=display&f=Big&t=ADScanner
     $Logo = @"
 
-    /\   |  __ \ / ____|                                
+     /\   |  __ \ / ____|                                
     /  \  | |  | | (___   ___ __ _ _ __  _ __   ___ _ __ 
    / /\ \ | |  | |\___ \ / __/ _` | '_ \| '_ \ / _ \ '__|
   / ____ \| |__| |____) | (_| (_| | | | | | | |  __/ |   
  /_/    \_\_____/|_____/ \___\__,_|_| |_|_| |_|\___|_|   
 
- [+] Version: 1.0.0 - 15/03/2024
+ [+] Version: 1.0.0 - 23/03/2024
  [+] Jack G (@rootjack) https://github.com/rootjaxk/ADScanner
                                                    
 "@
-
     Write-Host $Logo -ForegroundColor Yellow
 
     #Colours for console output
@@ -158,7 +157,6 @@ function Invoke-ADScanner {
     }   
 
     #TO-DO - add functionality to do individual scans (for prioritised remediation)
-
     #TD-DO - add functionality to exclude GPT (if executing in environment where outbound access is not permitted / privacy concerns)
 
     
@@ -180,51 +178,10 @@ function Invoke-ADScanner {
     if ($Scans -eq "Info" -or $Scans -eq "All") {
         $DomainInfo += Find-DomainInfo -Domain $Domain
     }
-    #Generate report
-    $htmlreportheader = @"
-    <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>$Domain Vulnerability Report</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/x-icon" href="/Private/Report/Images/favicon-32x32.png">
-</head>
-
-<body>
-    <div class="banner">
-        <img src="./Images/kerberos-text2.png" alt="ADScanner logo" class="banner-img">
-    </div>
-    <div class="main-header">Domain vulnerability report for $Domain</div>
-"@
-
-    $CertificateTemplates = $domaininfo.CertificateTemplates -join ', '
-    $CertificateAuthority = $domaininfo.CertificateAuthority -join ', '
-
-    $DomainInfohtml = @"
-<!-- Technical section -->
-<div class="main-header">Technical section</div>
-<div class="finding-header">Domain info</div>
-<div class="domain-info">
-<p>This section provides a general overview of the Active Directory domain, which can be taken as an indication of the size and complexity of the domain. Before appreciating any risks it is important to understand which assets within the domain require protecting.</p>
-<table>
-<th>Category</th>
-<th>Value</th>
-<tr><td class="grey">Domain:</td><td>$($domaininfo.Domain)</td></tr>
-<tr><td class="grey">FunctionalLevel:</td><td>$($domaininfo.FunctionalLevel)</td></tr>
-<tr><td class="grey">DomainControllers:</td><td>$($domaininfo.DomainControllers)</td></tr>
-<tr><td class="grey">Users:</td><td>$($domaininfo.Users)</td></tr>
-<tr><td class="grey">Groups:</td><td>$($domaininfo.Groups)</td></tr>
-<tr><td class="grey">Computers:</td><td>$($domaininfo.Computers)</td></tr>
-<tr><td class="grey">Trusts:</td><td>$($domaininfo.Trusts)</td></tr>
-<tr><td class="grey">OUs:</td><td>$($domaininfo.OUs)</td></tr>
-<tr><td class="grey">GPOs:</td><td>$($domaininfo.GPOs)</td></tr>
-<tr><td class="grey">CertificateAuthority:</td><td>$CertificateAuthority</td></tr>
-<tr><td class="grey">CAtemplates:</td><td>$($domaininfo.CAtemplates)</td></tr>
-<tr><td class="grey">CertificateTemplates:</td><td>$CertificateTemplates</td></tr>
-</table>
-</div>
-"@
+    $DomainInfohtml = Generate-DomainInfohtml -DomainInfo $DomainInfo
+    
+    #Generate report header
+    $htmlreportheader = Generate-HTMLReportHeader -Domain $Domain
 
     # PKI - ADCS
     if ($Scans -eq "ADCS" -or $Scans -eq "All") {
@@ -238,9 +195,7 @@ function Invoke-ADScanner {
         $PKI += Find-ESC8 -Domain $Domain
         $PKI = $PKI | Sort-Object -Property Score -Descending
     }
-    $PKIhtml = Generate-PKIhtml -PKI $PKI
-
-
+    
     # Kerberos
     if ($Scans -eq "Kerberos" -or $Scans -eq "All") {
         $Kerberos += Find-Kerberoast -Domain $Domain
@@ -248,17 +203,13 @@ function Invoke-ADScanner {
         $Kerberos += Find-Delegations -Domain $Domain
         $Kerberos += Find-GoldenTicket -Domain $Domain
         $Kerberos = $Kerberos | Sort-Object -Property Score -Descending
-    }
-    $Kerberoshtml = Generate-Kerberoshtml -Kerberos $Kerberos    
-
+    }   
 
     # ACLs
     if ($Scans -eq "ACLs" -or $Scans -eq "All") {
         $ACLs += Find-ACLs -Domain $Domain
         $ACLs = $ACLs | Sort-Object -Property Score -Descending
     }
-    $ACLshtml = Generate-ACLshtml -ACLs $ACLs
-    
     
     # RBAC
     if ($Scans -eq "RBAC" -or $Scans -eq "All") {
@@ -269,8 +220,6 @@ function Invoke-ADScanner {
         $RBAC += Find-SensitiveAccounts -Domain $Domain
         $RBAC = $RBAC | Sort-Object -Property Score -Descending
     }
-    $RBAChtml = Generate-RBAChtml -RBAC $RBAC
-
 
     # Passwords
     if ($Scans -eq "PwdPolicy" -or $Scans -eq "All" ) {
@@ -281,9 +230,7 @@ function Invoke-ADScanner {
         #$Passwords += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
         $Passwords = $Passwords | Sort-Object -Property Score -Descending
     }
-    $Passwordshtml = Generate-Passwordshtml -Passwords $Passwords
     
-
     # MISC
     if ($Scans -eq "MISC" -or $Scans -eq "All") {
         $MISC += Find-MAQ -Domain $Domain
@@ -295,8 +242,6 @@ function Invoke-ADScanner {
         $MISC += Find-EfficiencyImprovements -Domain $Domain
         $MISC = $MISC | Sort-Object -Property Score -Descending
     }
-    $MISChtml = Generate-MISChtml -MISC $MISC
-
 
     # Legacy
     if ($Scans -eq "Legacy" -or $Scans -eq "All") {
@@ -304,10 +249,9 @@ function Invoke-ADScanner {
         $Legacy += Find-UnsupportedOS -Domain $Domain
         $Legacy = $Legacy | Sort-Object -Property Score -Descending
     }
-    $Legacyhtml = Generate-Legacyhtml -Legacy $Legacy
 
    
-    #Generate report
+    #Generate console report
     Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Generating report..." -ForegroundColor Yellow
     if ($Scans -eq "All") {
         
@@ -393,59 +337,8 @@ function Invoke-ADScanner {
         $Domainrisk | Format-Table
 
         #Dynamically resolve risk image based on score
-        $riskOverallHTML = @"
-        <!-- Risk overall section -->
-        <div class="risk-overall">
-        <div class="left-image"> 
-"@
-        if ($TotalDomainRiskScore -ge 100) {
-            $riskOverallHTML += @"  
-            <img src="./Images/Risk-scores/Critical.png" alt="Overall risk score">
-            </div>
-"@
-        }
-        elseif ($TotalDomainRiskScore -ge 75) {
-            $riskOverallHTML += @"
-            <img src="./Images/Risk-scores/High.png" alt="Overall risk score">
-            </div>
-"@
-        }
-        elseif ($TotalDomainRiskScore -ge 50) {
-            $riskOverallHTML += @"
-            <img src="./Images/Risk-scores/Medium.png" alt="Overall risk score">
-            </div>
-"@ 
-        }
-        elseif ($TotalDomainRiskScore -ge 25) {
-            $riskOverallHTML += @"
-            <img src="./Images/Risk-scores/Low.png" alt="Overall risk score">
-            </div>
-"@   
-        }
-        elseif ($TotalDomainRiskScore -eq 1) {
-            $riskOverallHTML += @"
-            <img src="./Images/Risk-scores/Very-low.png" alt="Overall risk score">
-            </div> 
-"@
-        }
-        elseif ($TotalDomainRiskScore -eq 0) {
-            $riskOverallHTML += @"
-            <img src="./Images/Risk-scores/Perfect.png" alt="Overall risk score">
-            </div> 
-"@   
-        }
-        #Risk level commentry
-        $riskOverallHTML += @"
-        <div class="risk-overall-text">
-            <h1>Domain risk level: $TotalDomainRiskScore / 100</h1>
-             <p>The maximum score is 100, anything above this presents a significant risk to ransomware.</p>
-             <p>Attackers will always exploit the path of least resistance (higher scores) - low hanging fruit.</p>
-             <a href="#category-summary">See score breakdown table</a>
-        </div>
-    </div>
-"@
-
-
+        $riskOverallHTML = Generate-Riskoverallhtml -TotalDomainRiskScore $totaldomainriskscore
+    
         #Category risk scores
         Write-Host "`r`n[*] Category Risk scores:"
         $categoryRisks = @()
@@ -459,66 +352,7 @@ function Invoke-ADScanner {
         #Order category by score
         $categoryRisks = $categoryRisks | Sort-Object -Property Score -Descending
         $categoryRisks
-
-        $categoryRisksHTML = @"
-        <div class="table-container">
-                <table class="summary-table" id="category-summary">
-                    <thead>
-                        <tr>
-                            <th>Category</th>
-                            <th>Risk Score</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-"@
-        foreach ($item in $categoryRisks) {
-            if ($item.score -ge 100) {
-                $categoryRisksHTML += @"
-                <tr>
-                    <td>$($item.Category)</td>
-                    <td class="category-riskcritical">$($item.score)</td>
-                </tr>
-"@
-            }
-            elseif ($item.score -ge 75) {
-                $categoryRisksHTML += @"
-                <tr>
-                    <td>$($item.Category)</td>
-                    <td class="category-riskhigh">$($item.score)</td>
-                </tr>
-"@
-            }
-            elseif ($item.score -ge 50) {
-                $categoryRisksHTML += @"
-                <tr>
-                    <td>$($item.Category)</td>
-                    <td class="category-riskmedium">$($item.score)</td>
-                </tr>
-"@
-            }
-            elseif ($item.score -ge 1) {
-                $categoryRisksHTML += @"
-                <tr>
-                    <td>$($item.Category)</td>
-                    <td class="category-risklow">$($item.score)</td>
-                </tr>
-"@          
-            }
-            elseif ($item.score -eq 0) {
-                $categoryRisksHTML += @"
-                <tr>
-                    <td>$($item.Category)</td>
-                    <td class="category-riskinformational">$($item.score)</td>
-                </tr>       
-"@
-            }
-        }
-        $categoryRisksHTML += @"
-                    </tbody>
-                </table>
-            </div>
-        </div>
-"@
+        $categoryRisksHTML = Generate-CategoryRisksHTML -CategoryRisks $categoryRisks
 
 
         #Ordered summary of risks
@@ -559,27 +393,8 @@ function Invoke-ADScanner {
 
 
         #Define top of table
-        $RisksummaryHTMLoutput = @"
-        <!-- Risk prioritisation section -->
-        <div class="risk-summary-container">
-        <div class="risk-summary-heading">
-            <h2>Risk Prioritisation Summary</h2>
-            <p>The table below summarizes the number and severity of findings in order of decreasing risk. Full
-                details can be found by clicking on each vulnerability which will take you to the relevant technical
-                section.</p>
-        </div>
-        <table class="risk-prioritisation-summary">
-            <thead>
-                <tr>
-                    <th class="risk-column">Risk</th>
-                    <th class="technique-column">Issue</a></th>
-                    <th class="category-column">Category</th>
-                    <th class="score-column">Score</th>
-                </tr>
-            </thead>
-            <tbody>
-"@
-
+        $RisksummaryHTMLoutput = Generate-RisksummaryHTMLoutput
+        
         #Dynamically add rows to table based on risk
         foreach ($row in $AllissuesHTML) {
             $nospace = $row.Technique.Replace(" ", "-")
@@ -641,7 +456,7 @@ function Invoke-ADScanner {
 
     
         
-    # Output all findings in separate sections
+    # Output console report
     if ($Scans -eq "Info" -or $Scans -eq "All") {
         
         Write-Host @"
@@ -716,14 +531,7 @@ function Invoke-ADScanner {
         $Legacy | Sort-Object -Property Score -Descending | Format-List
     }
 
-
-    #wont output to screen in order as different ones take different amount of time, but when testing this is ok. real will save to variable for use in report
-
-    #Attribute risk score - maybe have own file - attribute it here or elsewhere?
-  
-    # Caclulate-risk-score
-
-    #Get generative AI input
+    #Get generative AI input - put in own function
     $executiveSummaryHTML = @"
     <!-- Right section for the executive summary -->
         <div class="executive-summary">
@@ -740,28 +548,24 @@ function Invoke-ADScanner {
     </div>
 "@
 
-    #Produce report
-    #Generate-Report
+    #HTML Findings
+    $PKIhtml = Generate-PKIhtml -PKI $PKI
+    $Kerberoshtml = Generate-Kerberoshtml -Kerberos $Kerberos 
+    $ACLshtml = Generate-ACLshtml -ACLs $ACLs
+    $RBAChtml = Generate-RBAChtml -RBAC $
+    $Passwordshtml = Generate-Passwordshtml -Passwords $Passwords
+    $MISChtml = Generate-MISChtml -MISC $MISC
+    $Legacyhtml = Generate-Legacyhtml -Legacy $Legacy
 
+    #Add JS to make report interactive
+    $JSend = Generate-javascripthtml
 
-    $htmlreportheader # banner and top heading
-    $riskOverallHTML # domain risk level
-    $runinfoHTML   # details when ran
-    $categoryRisksHTML # category risk scores
-    $executiveSummaryHTML # executive summary with GPT
-    $RisksummaryHTMLoutput # risk prioritisation summary
-    $DomainInfohtml # first bit of technical section
+    #Generate Web Report
+    $FinalHTML = $htmlreportheader + $riskOverallHTML + $runinfoHTML + $categoryRisksHTML + $executiveSummaryHTML + $RisksummaryHTMLoutput + $DomainInfohtml + $PKIhtml + $Kerberoshtml + $ACLshtml + $RBAChtml + $Passwordshtml + $MISChtml + $Legacyhtml + $JSend
 
-    #Technical sections
-    #$PKIhtml
-    #$Kerberoshtml
-    #$ACLshtml
-    #$RBAChtml
-    #$Passwordshtml
-    #$MISChtml
-    #$Legacyhtml
-
-    #output to a file
-    #$DomainInfohtml | Out-File -FilePath "report.html"
+    #Output HTML report
+    $FinalHTML | Out-File -FilePath "report.html"
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Report outputted to report.html" -ForegroundColor Yellow
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Done!" -ForegroundColor Yellow
     
 }

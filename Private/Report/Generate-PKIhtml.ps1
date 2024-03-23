@@ -24,12 +24,24 @@ function Generate-PKIhtml {
             <tbody>
 "@
         foreach ($finding in $PKI) {
+             #replace console colours 
+             if($finding.Risk -match "critical"){
+                $finding.Risk = "CRITICAL"
+            } elseif ($finding.Risk -match "high"){
+                $finding.Risk = "HIGH"
+            } elseif ($finding.Risk -match "medium"){
+                $finding.Risk = "MEDIUM"
+            } elseif ($finding.Risk -match "low"){
+                $finding.Risk = "LOW"
+            } elseif ($finding.Risk -match "informational"){
+                $finding.Risk = "INFORMATIONAL"
+            }
             if ($finding.Technique -eq "ESC1") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
                 <tr>
                     <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
-                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
                 </tr>
                 <tr class="finding">
                     <td colspan="3">
@@ -131,7 +143,7 @@ function Generate-PKIhtml {
                 $html += @"
                 <tr>
                     <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
-                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
                 </tr>
                 <tr class="finding">
                     <td colspan="3">
@@ -234,7 +246,7 @@ function Generate-PKIhtml {
                 $html += @"
                 <tr>
                     <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
-                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
                 </tr>
                 <tr class="finding">
                     <td colspan="3">
@@ -338,7 +350,7 @@ function Generate-PKIhtml {
                 $html += @"
                 <tr>
                     <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
-                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
                 </tr>
                 <tr class="finding">
                     <td colspan="3">
@@ -460,7 +472,7 @@ function Generate-PKIhtml {
                 $html += @"
                 <tr>
                     <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
-                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
                 </tr>
                 <tr class="finding">
                     <td colspan="3">
@@ -613,7 +625,7 @@ function Generate-PKIhtml {
                 $html += @"
                 <tr>
                     <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
-                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
                 </tr>
                 <tr class="finding">
                     <td colspan="3">
@@ -712,7 +724,7 @@ function Generate-PKIhtml {
                 $html += @"
                 <tr>
                     <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
-                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
                 </tr>
                 <tr class="finding">
                     <td colspan="3">
@@ -826,7 +838,7 @@ function Generate-PKIhtml {
                 $html += @"
                 <tr>
                     <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
-                    <td class="finding-riskcritical">$($finding.Risk)</td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
                 </tr>
                 <tr class="finding">
                     <td colspan="3">

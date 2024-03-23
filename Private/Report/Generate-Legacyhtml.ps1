@@ -23,6 +23,18 @@ function Generate-Legacyhtml {
             <tbody>
 "@
         foreach ($finding in $Legacy) {
+             #replace console colours 
+             if($finding.Risk -match "critical"){
+                $finding.Risk = "CRITICAL"
+            } elseif ($finding.Risk -match "high"){
+                $finding.Risk = "HIGH"
+            } elseif ($finding.Risk -match "medium"){
+                $finding.Risk = "MEDIUM"
+            } elseif ($finding.Risk -match "low"){
+                $finding.Risk = "LOW"
+            } elseif ($finding.Risk -match "informational"){
+                $finding.Risk = "INFORMATIONAL"
+            }
             if ($finding.Technique -eq "LLMNR is not disabled") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"

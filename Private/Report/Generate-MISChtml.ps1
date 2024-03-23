@@ -23,6 +23,18 @@ function Generate-MISChtml {
 "@
 
         foreach ($finding in $MISC) {
+            #replace console colours 
+            if($finding.Risk -match "critical"){
+                $finding.Risk = "CRITICAL"
+            } elseif ($finding.Risk -match "high"){
+                $finding.Risk = "HIGH"
+            } elseif ($finding.Risk -match "medium"){
+                $finding.Risk = "MEDIUM"
+            } elseif ($finding.Risk -match "low"){
+                $finding.Risk = "LOW"
+            } elseif ($finding.Risk -match "informational"){
+                $finding.Risk = "INFORMATIONAL"
+            }
             if ($finding.Technique -match "add computers to the domain") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
@@ -560,7 +572,7 @@ function Generate-MISChtml {
                                             <p class="code">sudo responder -I eth0</p>
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/MISC/Spooler-3.png" alt="Retrieving the computer hash">
+                                            <img src="/Private/Report/Images/MISC/Spooler-2.png" alt="Retrieving the computer hash">
                                         </span>
                                     </div>
                                 </td>
