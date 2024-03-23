@@ -79,7 +79,7 @@ function Find-PasswordPolicy {
       Technique         = "Password complexity requirement is not enabled"
       Score             = 20
       ComplexityEnabled = $Complexity
-      Issue             = "The password complexity requirement not being enforced allows passwords without a capital letter, number, special character or can contain the user's username"
+      Issue             = "The password complexity requirement not being enforced allows passwords without a capital letter, number, special character or can contain the user's username."
     }
   }
   if ($LengthIssue -eq $true) {
@@ -88,16 +88,16 @@ function Find-PasswordPolicy {
       Technique = "Password length requirement is less than 12 characters"
       Score     = 25
       Length    = $PwdPolicy.MinPasswordLength
-      Issue     = "Passwords with lengths less than 14 characters can easily be bruteforced, and if hash is obtained, easily cracked. NCSC recommends 12 characters as a minimum length for a password"
+      Issue     = "Passwords with lengths less than 14 characters can easily be bruteforced, and if hash is obtained, easily cracked. NCSC recommends 12 characters as a minimum length for a password."
     }
   }
   if ($LockoutIssue -eq $true) {
     $PWDIssues += [pscustomobject]@{
       Risk             = (to_red "HIGH")
-      Technique        = "Account lockout threshold is greator than 10"
+      Technique        = "Account lockout threshold is greater than 10"
       Score            = 20
       LockoutThreshold = $PwdPolicy.LockoutThreshold
-      Issue            = "If the account lockout threshold is too large or not set, attackers get a large number of attempts to guess or brute force a users password. This makes it much easier for accounts to be compromised"
+      Issue            = "If the account lockout threshold is too large or not set, attackers get a large number of attempts to guess or brute force a users password. This makes it much easier for accounts to be compromised."
     }
   }
   if ($MinPwdAgeIssue -eq $true) {
@@ -124,7 +124,7 @@ function Find-PasswordPolicy {
       Technique            = "The password history count is less than 24" 
       Score                = 9
       PasswordHistoryCount = $PwdPolicy.PasswordHistoryCount
-      Issue                = "Enforce password history setting prevents the easy reuse of old passwords, preventing users from changing their password to any of their last X number. This prevents password reuse"
+      Issue                = "Enforce password history setting prevents the easy reuse of old passwords, preventing users from changing their password to any of their last X number. This prevents password reuse."
     }
   }
   if ($LockoutDurationIssue -eq $true) {
@@ -142,7 +142,7 @@ function Find-PasswordPolicy {
       Technique         = "Reversible encryption is enabled"  # encrypted passwords stored can be decrypted
       Score             = 20
       ReverseEncryption = $PwdPolicy.ReversibleEncryptionEnabled
-      Issue             = "Passwords stored with reversible encryption is the same as storing them in plaintext, meaning they can be extracted from memory in plaintext."
+      Issue             = "Passwords stored with reversible encryption is the same as storing them in plaintext, meaning an attacker extract them from memory in plaintext."
     }
   }
   #Output findings

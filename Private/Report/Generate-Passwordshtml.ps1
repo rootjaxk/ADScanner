@@ -4,13 +4,13 @@ function Generate-Passwordshtml {
     )
     if (!$Passwords) {
         $html = @"
-        <div class="finding-header">RBAC</div>
+        <div class="finding-header">Passwords</div>
         <h2 class="novuln">No vulnerabilities found!</h2>
 "@
     }
     else {
         $html = @"
-        <div class="finding-header">RBAC</div>
+        <div class="finding-header">Passwords</div>
         <div class="finding-container">
         <table>
             <thead>
@@ -154,7 +154,7 @@ function Generate-Passwordshtml {
                                     <p class="code">nxc ldap dc.test.local -u test -p 'Password123!' -M laps</p>
                                 </div>
                                 <span class="image-cell">
-                                    <img src="/Private/Report/Images/Passwords/LAPS-2" alt="Reading the LAPS password">
+                                    <img src="/Private/Report/Images/Passwords/LAPS-2.png" alt="Reading the LAPS password">
                                 </span>
                             </div>
                             </td>
@@ -184,47 +184,766 @@ function Generate-Passwordshtml {
             elseif ($finding.Technique -eq "Password complexity requirement is not enabled") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
-"@
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Weak passwords are permitted by the password policy.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">ComplexityEnabled</td><td>$($finding.ComplexityEnabled)</td></tr>
+                                        
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>A weak domain password policy allow users to set weak passwords that can be easily guessed by attackers to compromise their accounts.</p>
+                                            <p>$($finding.issue)</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://www.netwrix.com/password-policy-best-practices.html">Link 1</a></p>
+                                            <p><a href="https://learn.microsoft.com/en-GB/entra/identity/authentication/concept-password-ban-bad-on-premises">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. Low-privileged users can enumerate the password policy for the domain. If complexity is not enforced, attackers can passwordspray common passwords to gain access to user accounts.</p>
+                                                    <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Improve the password policy</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@  
             }
             elseif ($finding.Technique -eq "Password length requirement is less than 12 characters") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
-"@
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Weak passwords are permitted by the password policy.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Minimum password length</td><td>$($finding.Length)</td></tr>
+                                        
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>A weak domain password policy allow users to set weak passwords that can be easily guessed by attackers to compromise their accounts.</p>
+                                            <p>$($finding.issue)</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://www.netwrix.com/password-policy-best-practices.html">Link 1</a></p>
+                                            <p><a href="https://learn.microsoft.com/en-GB/entra/identity/authentication/concept-password-ban-bad-on-premises">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. Low-privileged users can enumerate the password policy for the domain. If the password length is short, attackers can passwordspray common weak passwords to gain access to user accounts.</p>
+                                                    <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Improve the password policy</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@  
             }
-            elseif ($finding.Technique -eq "Account lockout threshold is greator than 10") {
+            elseif ($finding.Technique -eq "Account lockout threshold is greater than 10") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
-"@
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Account passwords can be bruteforced due to a large lockout threshold.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Account lockout threshold</td><td>$($finding.LockoutThreshold)</td></tr>
+                                        
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>A weak domain password policy allow users to set weak passwords that can be easily guessed by attackers to compromise their accounts.</p>
+                                            <p>$($finding.issue)</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://www.netwrix.com/password-policy-best-practices.html">Link 1</a></p>
+                                            <p><a href="https://learn.microsoft.com/en-GB/entra/identity/authentication/concept-password-ban-bad-on-premises">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. Low-privileged users can enumerate the password policy for the domain. If a lockout threshold is too large, attackers can bruteforce an unlimited number (e.g. millions) of passwords against an account to guess the password.</p>
+                                                    <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Improve the password policy</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@  
             }
             elseif ($finding.Technique -eq "The minimum password age is less than 1 day") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
-"@
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Weak password policy permits user to set an old password.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Minimum password age</td><td>$($finding.MinPasswordAge)</td></tr>
+                                        
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>A weak domain password policy allow users to set weak passwords that can be easily guessed by attackers to compromise their accounts.</p>
+                                            <p>$($finding.issue)</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://www.netwrix.com/password-policy-best-practices.html">Link 1</a></p>
+                                            <p><a href="https://learn.microsoft.com/en-GB/entra/identity/authentication/concept-password-ban-bad-on-premises">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. Low-privileged users can enumerate the password policy for the domain. If a minimum password age is not set, a user can reset their password multiple times cycling through the passwordhistory and set an older password, which may be reused across other systems and is more likely to be compromised.</p>
+                                                    <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Improve the password policy</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@  
             }
             elseif ($finding.Technique -eq "The maximum password age is less than 365 days") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
-"@
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Weak password policy forces users to reset their passwords too often.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Maximum password age</td><td>$($finding.MaxPasswordAge)</td></tr>
+                                        
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>A weak domain password policy allow users to set weak passwords that can be easily guessed by attackers to compromise their accounts.</p>
+                                            <p>$($finding.issue)</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://www.netwrix.com/password-policy-best-practices.html">Link 1</a></p>
+                                            <p><a href="https://learn.microsoft.com/en-GB/entra/identity/authentication/concept-password-ban-bad-on-premises">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. Low-privileged users can enumerate the password policy for the domain. If the minimum password age is too short users are more likely to set easy to remember, weak passwords, that are thereby easier for an attacker to guess.</p>
+                                                    <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Improve the password policy</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@  
             }
             elseif ($finding.Technique -eq "The password history count is less than 24") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
-"@
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Weak password policy permits user to set an old password.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">PasswordHistoryCount</td><td>$($finding.PasswordHistoryCount)</td></tr>
+                                        
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>A weak domain password policy allow users to set weak passwords that can be easily guessed by attackers to compromise their accounts.</p>
+                                            <p>$($finding.issue)</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://www.netwrix.com/password-policy-best-practices.html">Link 1</a></p>
+                                            <p><a href="https://learn.microsoft.com/en-GB/entra/identity/authentication/concept-password-ban-bad-on-premises">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. Low-privileged users can enumerate the password policy for the domain. If a low password history is not set, a user can reset their password multiple times cycling through the passwordhistory and set an older password, which may be reused across other systems and is more likely to be compromised.</p>
+                                                    <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Improve the password policy</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@  
             }
             elseif ($finding.Technique -eq "The account lockout duration is less than 15 minutes") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
-"@
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Account passwords can be bruteforced due to a short account lockout duration.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Account lockout duration</td><td>$($finding.LockoutDuration)</td></tr>
+                                        
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>A weak domain password policy allow users to set weak passwords that can be easily guessed by attackers to compromise their accounts.</p>
+                                            <p>$($finding.issue)</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://www.netwrix.com/password-policy-best-practices.html">Link 1</a></p>
+                                            <p><a href="https://learn.microsoft.com/en-GB/entra/identity/authentication/concept-password-ban-bad-on-premises">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. Low-privileged users can enumerate the password policy for the domain. If a lockout duration is too short, attackers can try a number of password attempts for an account, wait the short period for the lockout duration to expire, then try another set of password attempts whichc an be automated by a determined attacker.</p>
+                                                    <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Improve the password policy</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@  
             }
             elseif ($finding.Technique -eq "Reversible encryption is enabled") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
-"@
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>Passwords are stored in memory in plaintext.</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                            <tr><td class="grey">Reverse encryption enabled</td><td>$($finding.ReverseEncryption)</td></tr>
+                                        
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>A weak domain password policy allow users to set weak passwords that can be easily found by attackers to compromise their accounts.</p>
+                                            <p>$($finding.issue)</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://www.netwrix.com/password-policy-best-practices.html">Link 1</a></p>
+                                            <p><a href="https://learn.microsoft.com/en-GB/entra/identity/authentication/concept-password-ban-bad-on-premises">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. Low-privileged users can enumerate the password policy for the domain. If passwords are stored with reversible encryption they can be extracted from a computer's system memory by an attacker.</p>
+                                                    <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Improve the password policy</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@  
             }
             elseif ($finding.Technique -match "does not require a password") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
+                <tr>
+                    <td class="toggle" id="$nospaceid"><u>$($finding.Technique)</u></td>
+                    <td class="finding-risk$($finding.Risk)">$($finding.Risk)</td>
+                </tr>
+                <tr class="finding">
+                    <td colspan="3">
+                        <div class="finding-info">
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Issue</th>
+                                        <th>MITRE ATT&CK ref</th>
+                                        <th>Score</th>
+                                    </tr>
+                                    <tr>
+                                        <td>User account may have a blank password set (PASSWD_NOTREQD).</td>
+                                        <td>T-15940</td>
+                                        <td>+$($finding.Score)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Relevant info</th>
+                                        <th>Issue explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td class="relevantinfo"><table>
+                                        <tr><td class="grey">Users</td><td>$($finding.Users -replace "`r?`n", "<br>")</td></tr>
 "@
+                if ($finding.Technique -match "Highly privileged"){
+                    $html += @"
+                    <tr><td class="grey">MemberOf</td><td>$($finding.MemberOf -replace "`r?`n", "<br>")</td></tr>
+"@
+                }
+                $html += @"
+                    <tr><td class="grey">PASSWD_NOTREQD</td><td>True</td></tr>
+                    <tr><td class="grey">Enabled</td><td>$($finding.Enabled)</td></tr>
+                                        </table></td>
+                                        <td class="explanation">
+                                            <p>Users with the PASSWD_NOTREQD attribute set in Active Directory may have a blank password set This means simply knowing the account username will be enough to login and authenticte as that user, providing an attacker unauthenticatd access to the domain.</p>
+                                            <p>$($finding.issue)</p> 
+                                            <p class="links"><b>Further information:</b></p>
+                                            <p><a href="https://specopssoft.com/blog/find-ad-accounts-using-password-not-required-blank-password/">Link 1</a></p>
+                                            <p><a href="https://activedirectorypro.com/find-accounts-with-password-not-required-blank-password/">Link 2</a></p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Attack explanation</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="attack-container">
+                                                <div class="attack-text">
+                                                    <p>1. An unauthenticated attacker can spray empty passwords against users in the hopes that some have blank passwords set. This allows an unauthorised attacker access to the same domain resources as an authenticated user, giivng a foothold to escalate within the domain.</p>
+                                                    <p class="code">nxc smb dc.test.local -u emptypasswd -p '' --shares</p>
+                                                </div>
+                                                <span class="image-cell">
+                                                    <img src="/Private/Report/Images/Passwords/pwdnotrequired.png" alt="Finding users without a password required">
+                                                </span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Remediation (GPT to contextualize)</th>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <p>Remove PASSWD_NOTREQD attribute from all users</p>
+                                            <p>run command 1</p>
+                                            <p>run command 2</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+"@  
             }
             elseif ($finding.Technique -eq "Plaintext credentials found readable by low privileged user") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
