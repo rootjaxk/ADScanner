@@ -11,6 +11,9 @@ function Generate-MISChtml {
     else {
         $html = @"
         <div class="finding-header">MISC</div>
+        <div class="domain-info">
+            <p>This section contains technical vulnerability details relating to general domain misconfigurations.</p>
+        </div>
         <div class="finding-container">
         <table>
             <thead>

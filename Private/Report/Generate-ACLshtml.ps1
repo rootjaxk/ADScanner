@@ -11,6 +11,9 @@ function Generate-ACLshtml {
     else {
         $html = @"
         <div class="finding-header">ACLs</div>
+        <div class="domain-info">
+            <p>This section contains technical vulnerability details relating to access control issues.</p>
+        </div>
         <div class="finding-container">
         <table>
             <thead>

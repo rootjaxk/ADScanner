@@ -13,6 +13,9 @@ function Generate-PKIhtml {
     else {
         $html = @"
         <div class="finding-header">PKI</div>
+        <div class="domain-info">
+        <p>This section contains technical details relating to vulnerabilities found within the Active Directory Certificate Services implementation.</p>
+        </div>
         <div class="finding-container">
         <table>
             <thead>

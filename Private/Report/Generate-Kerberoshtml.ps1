@@ -12,6 +12,9 @@ function Generate-Kerberoshtml {
     else {
         $html = @"
         <div class="finding-header">Kerberos</div>
+        <div class="domain-info">
+            <p>This section contains technical details relating to vulnerabilities found within the Kerberos implementation.</p>
+        </div>
         <div class="finding-container">
         <table>
             <thead>

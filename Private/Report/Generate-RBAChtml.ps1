@@ -11,6 +11,9 @@ function Generate-RBAChtml {
     else {
         $html = @"
         <div class="finding-header">RBAC</div>
+        <div class="domain-info">
+            <p>This section contains technical vulnerability details relating to the Role-Based Access Control implementation.</p>
+        </div>
         <div class="finding-container">
         <table>
             <thead>

@@ -11,6 +11,9 @@ function Generate-Passwordshtml {
     else {
         $html = @"
         <div class="finding-header">Passwords</div>
+        <div class="domain-info">
+            <p>This section contains technical vulnerability details relating to password issues.</p>
+        </div>
         <div class="finding-container">
         <table>
             <thead>

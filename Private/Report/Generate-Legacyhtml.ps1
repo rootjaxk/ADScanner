@@ -12,6 +12,9 @@ function Generate-Legacyhtml {
     else {
         $html = @"
         <div class="finding-header">Legacy</div>
+        <div class="domain-info">
+            <p>This section contains technical vulnerability details relating to outdated protocols and systems running in the domain.</p>
+        </div>
         <div class="finding-container">
         <table>
             <thead>

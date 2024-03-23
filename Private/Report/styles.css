@@ -248,6 +248,8 @@ table{
     max-width: 80%;
     margin: 0 auto;
     padding: 20px;
+    padding-top:0px;
+    padding-bottom: 40px;
 }
 
 .table-header {
