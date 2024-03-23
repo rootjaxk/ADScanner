@@ -552,7 +552,7 @@ function Invoke-ADScanner {
     $PKIhtml = Generate-PKIhtml -PKI $PKI
     $Kerberoshtml = Generate-Kerberoshtml -Kerberos $Kerberos 
     $ACLshtml = Generate-ACLshtml -ACLs $ACLs
-    $RBAChtml = Generate-RBAChtml -RBAC $
+    $RBAChtml = Generate-RBAChtml -RBAC $RBAC
     $Passwordshtml = Generate-Passwordshtml -Passwords $Passwords
     $MISChtml = Generate-MISChtml -MISC $MISC
     $Legacyhtml = Generate-Legacyhtml -Legacy $Legacy
