@@ -390,71 +390,8 @@ function Invoke-ADScanner {
         $Risksummaries
         $AllissuesHTML = $Allissues | Where-Object { $null -ne $_.Score } | Select-Object Risk, Technique, Category, Score | Sort-Object -Property Score -Descending
         $AllissuesHTML | Format-Table
-
-
-        #Define top of table
-        $RisksummaryHTMLoutput = Generate-RisksummaryHTMLoutput
-        
-        #Dynamically add rows to table based on risk
-        foreach ($row in $AllissuesHTML) {
-            $nospace = $row.Technique.Replace(" ", "-")
-            if ($row.risk -match "CRITICAL") {
-                #replace whitespace with - as HTML id's cannot have whitespace
-                $RisksummaryHTMLoutput += @"
-                <tr class="critical">
-                    <td>Critical</td>
-                    <td><a href="#$nospace">$($row.technique)</a></td>
-                    <td>$($row.category)</td>
-                    <td>$($row.score)</td>
-                </tr>
-"@
-            }
-            elseif ($row.risk -match "HIGH") {
-                $RisksummaryHTMLoutput += @"
-                <tr class="high">
-                    <td>High</td>
-                    <td><a href="#$nospace">$($row.technique)</a></td>
-                    <td>$($row.category)</td>
-                    <td>$($row.score)</td>
-                </tr>
-"@
-            }
-            elseif ($row.risk -match "MEDIUM") {
-                $RisksummaryHTMLoutput += @"
-                <tr class="medium">
-                    <td>Medium</td>
-                    <td><a href="#$nospace">$($row.technique)</a></td>
-                    <td>$($row.category)</td>
-                    <td>$($row.score)</td>
-                </tr>
-"@
-            }
-            elseif ($row.risk -match "LOW") {
-                $RisksummaryHTMLoutput += @"
-                <tr class="low">
-                    <td>Low</td>
-                    <td><a href="#$nospace">$($row.technique)</a></td>
-                    <td>$($row.category)</td>
-                    <td>$($row.score)</td>
-                </tr>
-"@
-            }
-            elseif ($row.risk -match "INFO") {
-                $RisksummaryHTMLoutput += @"
-                <tr class="information">
-                    <td>Informational</td>
-                    <td><a href="#$nospace">$($row.technique)</a></td>
-                    <td>$($row.category)</td>
-                    <td>$($row.score)</td>
-                </tr>
-"@
-            }
-        }
-        #end the table
-        $RisksummaryHTMLoutput += "</tbody></table></div>"
+        $RisksummaryHTMLoutput = Generate-RisksummaryHTMLoutput -AllissuesHTML $AllissuesHTML  
     }
-
-    
         
     # Output console report
     if ($Scans -eq "Info" -or $Scans -eq "All") {
@@ -474,7 +411,7 @@ function Invoke-ADScanner {
 #                                       PKI                                         #
 #####################################################################################
 "@
-        $PKI | Format-List      #all 50 points and already in order
+        $PKI | Format-List
     }
 
     if ($Scans -eq "Kerberos" -or $Scans -eq "All") {
@@ -556,12 +493,11 @@ function Invoke-ADScanner {
     $Passwordshtml = Generate-Passwordshtml -Passwords $Passwords
     $MISChtml = Generate-MISChtml -MISC $MISC
     $Legacyhtml = Generate-Legacyhtml -Legacy $Legacy
-
-    #Add JS to make report interactive
+    $Reportfooter = Generate-ReportFooter
     $JSend = Generate-javascripthtml
 
     #Generate Web Report
-    $FinalHTML = $htmlreportheader + $riskOverallHTML + $runinfoHTML + $categoryRisksHTML + $executiveSummaryHTML + $RisksummaryHTMLoutput + $DomainInfohtml + $PKIhtml + $Kerberoshtml + $ACLshtml + $RBAChtml + $Passwordshtml + $MISChtml + $Legacyhtml + $JSend
+    $FinalHTML = $htmlreportheader + $riskOverallHTML + $runinfoHTML + $categoryRisksHTML + $executiveSummaryHTML + $RisksummaryHTMLoutput + $DomainInfohtml + $PKIhtml + $Kerberoshtml + $ACLshtml + $RBAChtml + $Passwordshtml + $MISChtml + $Legacyhtml + $Reportfooter + $JSend
 
     #Output HTML report
     $FinalHTML | Out-File -FilePath "report.html"

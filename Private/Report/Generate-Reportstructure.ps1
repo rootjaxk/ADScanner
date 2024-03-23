@@ -176,7 +176,10 @@ function Generate-CategoryRisksHTML {
 }
 
 function Generate-RisksummaryHTMLoutput {
-    $html = @"
+    param (
+        [array]$AllissuesHTML
+    )
+    $RisksummaryHTMLoutput = @"
     <!-- Risk prioritisation section -->
     <div class="risk-summary-container">
     <div class="risk-summary-heading">
@@ -196,7 +199,64 @@ function Generate-RisksummaryHTMLoutput {
         </thead>
         <tbody>
 "@
-    return $html
+#Dynamically add rows to table based on risk
+foreach ($row in $AllissuesHTML) {
+    $nospace = $row.Technique.Replace(" ", "-")
+    if ($row.risk -match "CRITICAL") {
+        #replace whitespace with - as HTML id's cannot have whitespace
+        $RisksummaryHTMLoutput += @"
+        <tr class="critical">
+            <td>Critical</td>
+            <td><a href="#$nospace">$($row.technique)</a></td>
+            <td>$($row.category)</td>
+            <td>$($row.score)</td>
+        </tr>
+"@
+    }
+    elseif ($row.risk -match "HIGH") {
+        $RisksummaryHTMLoutput += @"
+        <tr class="high">
+            <td>High</td>
+            <td><a href="#$nospace">$($row.technique)</a></td>
+            <td>$($row.category)</td>
+            <td>$($row.score)</td>
+        </tr>
+"@
+    }
+    elseif ($row.risk -match "MEDIUM") {
+        $RisksummaryHTMLoutput += @"
+        <tr class="medium">
+            <td>Medium</td>
+            <td><a href="#$nospace">$($row.technique)</a></td>
+            <td>$($row.category)</td>
+            <td>$($row.score)</td>
+        </tr>
+"@
+    }
+    elseif ($row.risk -match "LOW") {
+        $RisksummaryHTMLoutput += @"
+        <tr class="low">
+            <td>Low</td>
+            <td><a href="#$nospace">$($row.technique)</a></td>
+            <td>$($row.category)</td>
+            <td>$($row.score)</td>
+        </tr>
+"@
+    }
+    elseif ($row.risk -match "INFO") {
+        $RisksummaryHTMLoutput += @"
+        <tr class="information">
+            <td>Informational</td>
+            <td><a href="#$nospace">$($row.technique)</a></td>
+            <td>$($row.category)</td>
+            <td>$($row.score)</td>
+        </tr>
+"@
+    }
+}
+    #end the table
+    $RisksummaryHTMLoutput += "</tbody></table></div>"
+    return $RisksummaryHTMLoutput
 }
 
 function Generate-javascripthtml{
@@ -217,6 +277,21 @@ function Generate-javascripthtml{
     </script>
 </body>
 </html>
+"@
+    return $html
+}
+
+function Generate-ReportFooter {
+    $html = @"
+    <!-- Footer -->
+    <div class="main-header">Disclosure and next steps</div>
+    <div class="domain-info">
+    <p>ADScanner is intended for use on authorised systems only. Users must obtain explicit consent from system owners
+        before using the tool on any network or actions could lead to serious legal repercussions.
+        The creator is not responsible for any resulting damages or losses.</p>
+    <p>Once you have read through the report follow the remediation steps, then rerun the scanner on a periodic basis to see the
+        risks score decrease!</p>
+        </div>
 "@
     return $html
 }
