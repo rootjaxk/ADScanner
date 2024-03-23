@@ -97,7 +97,7 @@ function Find-LAPS {
       Issue             = ""
     }
     $LAPScomputerIssue = [pscustomobject]@{
-      Risk              = (to_red "CRITICAL")
+      Risk              = (to_red "HIGH")
       Technique         = ""
       Score             = 35
       IdentityReference = ""
