@@ -6,7 +6,6 @@ function Connect-ChatGPT {
   
     .PARAMETER APIKey
     The API key to connect to the ChatGPT API to avoid hardcoding the secret in the script
-    #
 
     .PARAMETER Prompt
     The prompt to provide the GPT to generate a response
@@ -24,7 +23,11 @@ function Connect-ChatGPT {
 
     [Parameter(Mandatory = $true)]
     [String]
-    $Prompt
+    $Prompt,
+
+    [Parameter(Mandatory = $true)]
+    [int]
+    $Temperature
   )
 
   # Set the API endpoint
@@ -53,10 +56,11 @@ function Connect-ChatGPT {
     "model"       = "gpt-3.5-turbo-0125"    #up to 16385 context windows
     "messages"    = $messages
     "max_tokens"  = 500 # Max amount of tokens the AI will respond with
-    "temperature" = 0.3 # Lower is more coherent and conservative, higher is more creative and diverse.
+    "temperature" = $Temperature # Lower is more coherent and conservative, higher is more creative and diverse.
   }
 
   # Send the request
+  Write-Host "Sending request to ChatGPT API..." -ForegroundColor Yellow
   $response = Invoke-RestMethod -Method POST -Uri $ApiEndpoint -Headers $headers -Body (ConvertTo-Json $requestBody)
 
   # Return the message content
