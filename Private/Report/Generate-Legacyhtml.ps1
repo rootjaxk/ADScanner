@@ -57,7 +57,7 @@ function Generate-Legacyhtml {
                             </tr>
                             <tr>
                                 <td>An unauthenticated attacker can steal password hashes as LLMNR is vulnerable to layer 2 poisoning attacks.</td>
-                                <td>T-15940</td>
+                                <td>TA0040, TA0002</td>
                                 <td>+$($finding.Score)</td>
                             </tr>
                         </tbody>
@@ -160,7 +160,7 @@ function Generate-Legacyhtml {
                                     </tr>
                                     <tr>
                                         <td>An unauthenticated attacker can steal password hashes as NBT-NS is vulnerable to layer 2 poisoning attacks.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0040, TA0002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -263,7 +263,7 @@ function Generate-Legacyhtml {
                                     </tr>
                                     <tr>
                                         <td>An unauthenticated attacker can steal password hashes as mDNS is vulnerable to layer 2 poisoning attacks.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0040, TA0002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -366,7 +366,7 @@ function Generate-Legacyhtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged users can impersonate the identity of a domain controller via an NTLMv1 authentication.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0009, TA0004</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -479,7 +479,7 @@ function Generate-Legacyhtml {
                                     </tr>
                                     <tr>
                                         <td>An unauthenticated attacker can remotely take control of a computer via SMBv1.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0040, TA0002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -584,7 +584,7 @@ function Generate-Legacyhtml {
                                     </tr>
                                     <tr>
                                         <td>An unauthenticated attacker can remotely compromise a computer via outdated operating systems.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0040, TA0002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>

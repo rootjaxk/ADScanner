@@ -60,21 +60,25 @@ function Generate-Kerberoshtml {
                 # Different issue headings        
                 if ($finding.Technique -eq "Highly privileged ASREP-roastable user with a weak password") {
                     $html += "<td>Password hash of a highly privileged account can be obtained and cracked.</td>"
+                    $html += "<td>T1558.004, TA0004</td>"
                 }
                 elseif ($finding.Technique -eq "Highly privileged ASREP-roastable user with a strong password") {
                     $html += "<td>Password hash of a highly privileged account can be obtained.</td>"
+                    $html += "<td>T1558.004, TA0004</td>"
                 }
                 elseif ($finding.Technique -eq "Low privileged ASREP-roastable user with a weak password") {
                     $html += "<td>Password hash of a low privileged account can be obtained and cracked.</td>"
+                    $html += "<td>T1558.004</td>"
                 }
                 elseif ($finding.Technique -eq "Low privileged ASREP-roastable user with a strong password") {
                     $html += "<td>Password hash of a low privileged account can be obtained.</td>"
+                    $html += "<td>T1558.004</td>"
                 }
                 elseif ($finding.Technique -eq "Disabled ASREP-roastable user") {
                     $html += "<td>Password hash of a disabled account can be obtained and cracked.</td>"
+                    $html += "<td>T1558.004</td>"
                 }
                 $html += @"
-                                        <td>T-15940</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -191,18 +195,23 @@ function Generate-Kerberoshtml {
                 # Different issue headings        
                 if ($finding.Technique -eq "Highly privileged Kerberoastable user with a weak password") {
                     $html += "<td>Password hash of a highly privileged account can be obtained and cracked.</td>"
+                    $html += "<td>T1558.003, TA0004</td>"
                 }
                 elseif ($finding.Technique -eq "Highly privileged Kerberoastable user with a strong password") {
                     $html += "<td>Password hash of a highly privileged account can be obtained.</td>"
+                    $html += "<td>T1558.003, TA0004</td>"
                 }
                 elseif ($finding.Technique -eq "Low privileged Kerberoastable user with a weak password") {
                     $html += "<td>Password hash of a low privileged account can be obtained and cracked.</td>"
+                    $html += "<td>T1558.003</td>"
                 }
                 elseif ($finding.Technique -eq "Low privileged Kerberoastable user with a strong password") {
                     $html += "<td>Password hash of a low privileged account can be obtained.</td>"
+                    $html += "<td>T1558.003</td>"
                 }
                 elseif ($finding.Technique -eq "Disabled Kerberoastable account") {
                     $html += "<td>Password hash of a disabled account can be obtained and cracked.</td>"
+                    $html += "<td>T1558.003</td>"
                 }
                 $html += @"
                                         <td>T1558.003</td>
@@ -320,7 +329,7 @@ function Generate-Kerberoshtml {
                                     </tr>
                                     <tr>
                                         <td>A server that is set for unconstrained delegation can compromise the entire domain.</td>
-                                        <td>T1558.001</td>
+                                        <td>T1558, TA0008</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -451,7 +460,7 @@ function Generate-Kerberoshtml {
                                     </tr>
                                     <tr>
                                         <td>A server has full control of another server by being allowed to delegate to it (msDS-AllowedToDelegateTo).</td>
-                                        <td>T1558.001</td>
+                                        <td>T1558, TA0008</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -549,7 +558,7 @@ function Generate-Kerberoshtml {
                                     </tr>
                                     <tr>
                                         <td>A server has full control of another server by being allowed to act on behalf of it (msDS-AllowedToActOnBehalfOfOtherIdentity).</td>
-                                        <td>T1558.001</td>
+                                        <td>T1558, TA0008</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>

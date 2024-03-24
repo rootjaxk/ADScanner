@@ -64,7 +64,7 @@ function Generate-MISChtml {
                     $html += "<td>Non-admin users can add computers to the domain.</td>"
                 }                
                 $html += @"
-                                <td>T-15940</td>
+                                <td>TA0003, TA0004</td>
                                 <td>+$($finding.Score)</td>
                             </tr>
                         </tbody>
@@ -179,7 +179,7 @@ function Generate-MISChtml {
                     $html += "<td>Access to malicious sites is not blocked.</td>"
                 }               
                 $html += @"
-                                <td>T-15940</td>
+                                <td>TA0010</td>
                                 <td>+$($finding.Score)</td>
                             </tr>
                         </tbody>
@@ -281,7 +281,7 @@ function Generate-MISChtml {
                             </tr>
                             <tr>
                                 <td>An unauthenticated attacker can take control of a system through relaying SMB authentication.</td>
-                                <td>T-15940</td>
+                                <td>TA0008, TA0009</td>
                                 <td>+$($finding.Score)</td>
                             </tr>
                         </tbody>
@@ -394,7 +394,7 @@ function Generate-MISChtml {
                                     </tr>
                                     <tr>
                                         <td>Absence of LDAP signing on domain controllers allows devices to be fully compromised through relay attacks.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004, TA0008, TA0009</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -516,7 +516,7 @@ function Generate-MISChtml {
                             </tr>
                             <tr>
                                 <td>An low-privileged user can coerce authentication from systems via printerbug.</td>
-                                <td>T-15940</td>
+                                <td>TA0008, TA0009</td>
                                 <td>+$($finding.Score)</td>
                             </tr>
                         </tbody>
@@ -626,7 +626,7 @@ function Generate-MISChtml {
                     $html += "<td>The WebClient service is running on a device however LDAP signing mitigates attacks scope.</td>"
                 }
                 $html+=@"
-                                        <td>T-15940</td>
+                                        <td>TA0004, TA0008, TA0009</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -748,7 +748,7 @@ function Generate-MISChtml {
                                     </tr>
                                     <tr>
                                         <td>Empty OUs are unused and add unnecessary complexity to the management of the domain.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0040</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -832,7 +832,7 @@ function Generate-MISChtml {
                                     </tr>
                                     <tr>
                                         <td>Unlinked GPOs are unused and add unnecessary complexity to the management of the domain.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0040</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>

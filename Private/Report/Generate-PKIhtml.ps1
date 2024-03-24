@@ -58,7 +58,7 @@ function Generate-PKIhtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged users can impersonate a domain administrator by enrolling in a vulnerable certificate template and supplying a SAN.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004, TA0003</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -160,7 +160,7 @@ function Generate-PKIhtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged users can impersonate a domain administrator by enrolling in a vulnerable certificate template used for any purpose.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004, TA0003</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -263,7 +263,7 @@ function Generate-PKIhtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged users can impersonate a domain administrator by enrolling in a vulnerable certificate template on behalf of another user.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004, TA0003</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -367,7 +367,7 @@ function Generate-PKIhtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged users have unsafe permissions over a certificate template allowing impersonation of a domain administrator.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004, TA0003</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -489,7 +489,7 @@ function Generate-PKIhtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged users can take control of a certificate authority and craft certificates for a domain administrator.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004, TA0003</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -642,7 +642,7 @@ function Generate-PKIhtml {
                                     </tr>
                                     <tr>
                                         <td>Certificate Authority has the EDITF_ATTRIBUTESUBJECTALTNAME2 flag set allowing low-privileged users to impersonate a domain admin.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004, TA0003</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -741,7 +741,7 @@ function Generate-PKIhtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged user has Manage CA or Manage Certificate rights allowing impersonation of a domain admin.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004, TA0003</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -855,7 +855,7 @@ function Generate-PKIhtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged users can impersonate the identity of a domain controller via a 'NTLM relay' attack.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004, TA0008, T1003.006</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>

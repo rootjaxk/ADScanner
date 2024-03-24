@@ -56,7 +56,7 @@ function Generate-ACLshtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged user has indirect control of the entire domain.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004, T1003.006</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -153,7 +153,7 @@ function Generate-ACLshtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged user has indirect control of the entire domain.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004, T1003.006</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -250,7 +250,7 @@ function Generate-ACLshtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged user can take full control of a server.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -363,7 +363,7 @@ function Generate-ACLshtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged user can take control of another principal and inherit their rights.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -461,7 +461,7 @@ function Generate-ACLshtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged user can take control of a Group Policy Object (GPO).</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -561,7 +561,7 @@ function Generate-ACLshtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged user can read the local administrator password on a computer.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0004, T1552</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -658,7 +658,7 @@ function Generate-ACLshtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged user can edit / replace a NETLOGON script with malicious code.</td>
-                                        <td>T-15940</td>
+                                        <td>T1037.001</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>

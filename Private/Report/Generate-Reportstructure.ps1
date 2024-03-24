@@ -290,7 +290,7 @@ function Generate-ReportFooter {
         before using the tool on any network or actions could lead to serious legal repercussions.
         The creator is not responsible for any resulting damages or losses.</p>
     <p>Once you have read through the report follow the remediation steps, then rerun the scanner on a periodic basis to see the
-        risks score decrease!</p>
+        risks score decrease! Be careful as GPT may get things wrong.</p>
         </div>
 "@
     return $html

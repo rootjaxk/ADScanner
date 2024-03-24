@@ -56,7 +56,7 @@ function Generate-RBAChtml {
                         </tr>
                         <tr>
                             <td>User has the adminCount attribute set to 1 but is not a member of privileged groups.</td>
-                            <td>T-15940</td>
+                            <td>TA0003</td>
                             <td>+$($finding.Score)</td>
                         </tr>
                     </tbody>
@@ -140,7 +140,7 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td>The guest account is enabled allowing unauthenticated access to domain resources.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0001</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -234,7 +234,7 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td>Accounts that have not logged on in the last 90 days are not disabled.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0003</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -333,7 +333,7 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td>Too many users have full administrative control of the domain.</td>
-                                        <td>T-15940</td>
+                                        <td>T1078.002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -416,7 +416,7 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td>Too many users have full administrative control of the domain.</td>
-                                        <td>T-15940</td>
+                                        <td>T1078.002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -499,7 +499,7 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td>Too many users have full administrative control of the domain.</td>
-                                        <td>T-15940</td>
+                                        <td>T1078.002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -581,8 +581,8 @@ function Generate-RBAChtml {
                                         <th>Score</th>
                                     </tr>
                                     <tr>
-                                        <td>Members of the DnsAdmins can exploit the DNS service on domain controllers to escalate to domain admin privileges.</td>
-                                        <td>CVE-2021-40469</td>
+                                        <td>Members of the DnsAdmins can exploit the DNS service on domain controllers to escalate to domain admin privileges (CVE-2021-40469).</td>
+                                        <td>T1078.002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -696,7 +696,7 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td>Members of the Backup Operators group can extract all credential information from domain controllers.</td>
-                                        <td>T.134533</td>
+                                        <td>T1078.002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -799,7 +799,7 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td>Members of the Server Operators group can indirectly compromise the domain by administering domain controllers.</td>
-                                        <td>T.134533</td>
+                                        <td>T1078.002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -904,7 +904,7 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td>Members of the Account Operators group are overly permissive and can log into domain controllers.</td>
-                                        <td>T.134533</td>
+                                        <td>T1078.002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -996,7 +996,7 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td>Members of the Print Operators group can log onto domain controllers and load malicious drivers to escalate privileges.</td>
-                                        <td>T.134533</td>
+                                        <td>T1078.002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -1098,7 +1098,7 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td>Members of the Remote Desktop Users group can remotely log into domain controllers.</td>
-                                        <td>T.134533</td>
+                                        <td>T1078.002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -1190,7 +1190,7 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td>Members of the Remote Management Users group can remotely log into domain controllers.</td>
-                                        <td>T.134533</td>
+                                        <td>T1078.002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -1282,7 +1282,7 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td>Members of the Schema Admins group can add a backdoor or break the domain.</td>
-                                        <td>T.134533</td>
+                                        <td>T1078.002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -1374,7 +1374,7 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td>All privileged accounts should be added to the Protected Users group.</td>
-                                        <td>T.134533</td>
+                                        <td>T1078.002, T1003</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -1480,7 +1480,7 @@ function Generate-RBAChtml {
                                     </tr>
                                     <tr>
                                         <td>All privileged accounts should be protected from impersonation from attackers.</td>
-                                        <td>T.134533</td>
+                                        <td>TA0008</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>

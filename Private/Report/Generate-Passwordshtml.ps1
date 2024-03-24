@@ -58,12 +58,13 @@ function Generate-Passwordshtml {
 "@
                 if ($finding.Technique -eq "LAPS is not utilized on all computers.") {
                     $html += "<td>LAPS is not installed meaning local admin password reuse is probable.</td>"
+                    $html += "<td>TA0006, TA0008</td>"
                 }
                 else {
-                    $html += "<td>A low-privileged user can escalate to local admin priviliges by readint the LAPS password.</td>"
+                    $html += "<td>A low-privileged user can escalate to local admin priviliges by reading the LAPS password.</td>"
+                    $html += "<td>TA0006, TA0008, T1552</td>"
                 }
                 $html += @"
-                            <td>T-15940</td>
                             <td>+$($finding.Score)</td>
                         </tr>
                     </tbody>
@@ -215,7 +216,7 @@ function Generate-Passwordshtml {
                                     </tr>
                                     <tr>
                                         <td>Weak passwords are permitted by the password policy.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0001, TA0006</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -299,7 +300,7 @@ function Generate-Passwordshtml {
                                     </tr>
                                     <tr>
                                         <td>Weak passwords are permitted by the password policy.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0001, TA0006</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -383,7 +384,7 @@ function Generate-Passwordshtml {
                                     </tr>
                                     <tr>
                                         <td>Account passwords can be bruteforced due to a large lockout threshold.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0001, TA0006</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -467,7 +468,7 @@ function Generate-Passwordshtml {
                                     </tr>
                                     <tr>
                                         <td>Weak password policy permits user to set an old password.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0006</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -551,7 +552,7 @@ function Generate-Passwordshtml {
                                     </tr>
                                     <tr>
                                         <td>Weak password policy forces users to reset their passwords too often.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0006</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -635,7 +636,7 @@ function Generate-Passwordshtml {
                                     </tr>
                                     <tr>
                                         <td>Weak password policy permits user to set an old password.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0006</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -719,7 +720,7 @@ function Generate-Passwordshtml {
                                     </tr>
                                     <tr>
                                         <td>Account passwords can be bruteforced due to a short account lockout duration.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0001, TA0006</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -803,7 +804,7 @@ function Generate-Passwordshtml {
                                     </tr>
                                     <tr>
                                         <td>Passwords are stored in memory in plaintext.</td>
-                                        <td>T-15940</td>
+                                        <td>T1556.005, TA0006</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -887,7 +888,7 @@ function Generate-Passwordshtml {
                                     </tr>
                                     <tr>
                                         <td>User account may have a blank password set (PASSWD_NOTREQD).</td>
-                                        <td>T-15940</td>
+                                        <td>TA0001, TA0006</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -979,7 +980,7 @@ function Generate-Passwordshtml {
                                     </tr>
                                     <tr>
                                         <td>Files within SYSVOL can be read by any low-privileged user.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0006, T1552</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -1062,7 +1063,7 @@ function Generate-Passwordshtml {
                                     </tr>
                                     <tr>
                                         <td>Active Directory description fields are readable by any low-privileged user in the domain.</td>
-                                        <td>T-15940</td>
+                                        <td>TA0006, T1552</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
