@@ -75,7 +75,7 @@ function Find-LDAPSigning {
                 Technique        = "LDAP signing or channel binding is not enforced"
                 Score            = 19
                 DomainController = $dc
-                Issue            = "LDAP bind without SSL was not rejected by $dc"
+                Issue            = "An LDAP bind without SSL was not rejected by $dc meaningn LDAP signing of channel binding is not enforced"
             }
             $Issue
             return $true

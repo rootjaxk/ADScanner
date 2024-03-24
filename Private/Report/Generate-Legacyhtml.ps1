@@ -366,7 +366,7 @@ function Generate-Legacyhtml {
                                     </tr>
                                     <tr>
                                         <td>Low-privileged users can impersonate the identity of a domain controller via an NTLMv1 authentication.</td>
-                                        <td>TA0009, TA0004</td>
+                                        <td>TA0009, TA0004, T1003.006</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>
@@ -604,7 +604,7 @@ function Generate-Legacyhtml {
                                         </table></td>
                                         <td class="explanation">
                                             <p>Legacy systems often run business-critical software that cannot be upgraded, however contain critical CVEs facilitating remote code execution and denial of service largely due to vulnerabilities in SMBv1.</p>
-                                            <p>There are $($finding.Count) legacy unsupported operating systems within the domain. All of these computers can be remotely taken over by attackers exploiting criticl severity CVEs. If as a mitigating control the legacy OS is disabled in AD the risk is lower as although the system can be compromised, it cannot be used for lateral movement.</p> 
+                                            <p>There are $($finding.Count) legacy unsupported operating systems within the domain. All of these computers can be remotely taken over by attackers exploiting critical severity CVEs. If as a mitigating control the legacy OS is disabled in AD the risk is lower as although the system can be compromised, it cannot be used for lateral movement.</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://blog.netwrix.com/2021/11/30/what-is-smbv1-and-why-you-should-disable-it/">Link 1</a></p>
                                             <p><a href="https://www.rapid7.com/db/vulnerabilities/msft-cve-2017-0148/">Link 2</a></p>

@@ -93,7 +93,7 @@ function Generate-Passwordshtml {
                 $html += @"      
                             </table></td>
                             <td class="explanation">
-                                <p>The Local Administrator Password Solution (LAPS) is Microsoft’s solution for managing the credentials of a local administrator account on every machine, either the default RID 500 or a custom account. It ensures that the password for each account is different, random, and automatically changed on a defined schedule (default – 30 days). It periodically changes the local administrator's password when it expires. Permission to request and reset the credentials can be delegated, which is also auditable.
+                                <p>The Local Administrator Password Solution (LAPS) is Microsoft's solution for managing the credentials of a local administrator account on every machine, either the default RID 500 or a custom account. It ensures that the password for each account is different, random, and automatically changed on a defined schedule (default - 30 days). It periodically changes the local administrator's password when it expires. Permission to request and reset the credentials can be delegated, which is also auditable.
                                 Installing LAPS requires an update to the schema, where the ms-Mcs-AdmPwd and ms-Mcs-AdmPwdExpirationTime attributes will be added containing the respective LAPS account password and expiration time for accounts. Only groups with delegated permission can read the LAPS password, e.g. Domain Admins, which is random and different across every local admin. Reading the password and then logging into systems via the LAPS local admin accounts also prevents the need to log into systems with other privileged accounts, e.g. domain admins, and avoids caching these credentials in memory on the system, further reducing the attack surface.</p>
                                 <p>$($finding.Issue).</p> 
                                 <p class="links"><b>Further information:</b></p>
@@ -913,7 +913,7 @@ function Generate-Passwordshtml {
                     <tr><td class="grey">Enabled</td><td>$($finding.Enabled)</td></tr>
                                         </table></td>
                                         <td class="explanation">
-                                            <p>Users with the PASSWD_NOTREQD attribute set in Active Directory may have a blank password set This means simply knowing the account username will be enough to login and authenticte as that user, providing an attacker unauthenticatd access to the domain.</p>
+                                            <p>Users with the PASSWD_NOTREQD attribute set in Active Directory may have a blank password set This means simply knowing the account username will be enough to login and authenticate as that user, providing an attacker unauthenticated access to the domain.</p>
                                             <p>$($finding.issue)</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://specopssoft.com/blog/find-ad-accounts-using-password-not-required-blank-password/">Link 1</a></p>

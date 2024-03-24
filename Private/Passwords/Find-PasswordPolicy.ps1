@@ -124,7 +124,7 @@ function Find-PasswordPolicy {
       Technique            = "The password history count is less than 24" 
       Score                = 9
       PasswordHistoryCount = $PwdPolicy.PasswordHistoryCount
-      Issue                = "Enforce password history setting prevents the easy reuse of old passwords, preventing users from changing their password to any of their last X number. This prevents password reuse."
+      Issue                = "Enforce password history setting prevents the easy reuse of old passwords, preventing users from changing their password to any of their last $($PwdPolicy.PasswordHistoryCount) passwords. This prevents password reuse."
     }
   }
   if ($LockoutDurationIssue -eq $true) {

@@ -581,7 +581,7 @@ function Generate-RBAChtml {
                                         <th>Score</th>
                                     </tr>
                                     <tr>
-                                        <td>Members of the DnsAdmins can exploit the DNS service on domain controllers to escalate to domain admin privileges (CVE-2021-40469).</td>
+                                        <td>Members of the DnsAdmins can exploit the DNS service on domain controllers to escalate to domain admin privileges.</td>
                                         <td>T1078.002</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
@@ -1115,7 +1115,7 @@ function Generate-RBAChtml {
                                             <tr><td class="grey">Members</td><td>$($finding.Members -replace ",", "<br>")</td></tr>
                                         </table></td>
                                         <td class="explanation">
-                                            <p>The builtin Remote Desktop Users group permits members to connect remotely to domain controllers within the domain. The Remote Desktop Users group should be empty as by default domain admins can RDP into a domain controller so do not need to be added. Access to domain controllers should be restricted to domain admins only.</p>
+                                            <p>The BUILTIN Remote Desktop Users group permits members to connect remotely to domain controllers within the domain. The Remote Desktop Users group should be empty as by default domain admins can RDP into a domain controller so do not need to be added. Access to domain controllers should be restricted to domain admins only.</p>
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-groups#remote-desktop-users">Link 1</a></p>
                                             <p><a href="https://4sysops.com/archives/allow-non-admins-to-access-remote-desktop/">Link 2</a></p>
@@ -1207,7 +1207,7 @@ function Generate-RBAChtml {
                                             <tr><td class="grey">Members</td><td>$($finding.Members -replace ",", "<br>")</td></tr>
                                         </table></td>
                                         <td class="explanation">
-                                            <p>The builtin Remote Management Users group permits members to connect remotely to domain controllers within the domain via WMI reousrves over WSMan protocols. By default domain admins can connect via WinRM to a domain controller, so do not need to be added. Access to domain controllers should be restricted to domain admins only.</p>
+                                            <p>The BUILTIN Remote Management Users group permits members to connect remotely to domain controllers within the domain via WMI reousrves over WSMan protocols. By default domain admins can connect via WinRM to a domain controller, so do not need to be added. Access to domain controllers should be restricted to domain admins only.</p>
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-groups#remote-management-users">Link 1</a></p>
                                             <p><a href="https://learn.microsoft.com/en-us/windows-server/administration/server-manager/configure-remote-management-in-server-manager">Link 2</a></p>
