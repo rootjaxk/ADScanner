@@ -19,8 +19,8 @@ function Generate-Legacyhtml {
         <table>
             <thead>
                 <tr>
-                    <th class="table-header">Issue</th>
-                    <th class="table-header">Risk</th>
+                    <th class="table-header-left">Issue</th>
+                    <th class="table-header-right">Risk</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,15 +28,15 @@ function Generate-Legacyhtml {
         foreach ($finding in $Legacy) {
              #replace console colours 
              if($finding.Risk -match "critical"){
-                $finding.Risk = "CRITICAL"
+                $finding.Risk = "Critical"
             } elseif ($finding.Risk -match "high"){
-                $finding.Risk = "HIGH"
+                $finding.Risk = "High"
             } elseif ($finding.Risk -match "medium"){
-                $finding.Risk = "MEDIUM"
+                $finding.Risk = "Medium"
             } elseif ($finding.Risk -match "low"){
-                $finding.Risk = "LOW"
+                $finding.Risk = "Low"
             } elseif ($finding.Risk -match "informational"){
-                $finding.Risk = "INFORMATIONAL"
+                $finding.Risk = "Informational"
             }
             if ($finding.Technique -eq "LLMNR is not disabled") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")

@@ -5,10 +5,10 @@ function Generate-DomainInfohtml {
     $html = @"
     <!-- Technical section -->
     <div class="main-header">Technical section</div>
-    <div class="finding-header">Domain info</div>
+    <div class="finding-header">Domain information</div>
     <div class="domain-info">
     <p>This section provides a general overview of the Active Directory domain, which can be taken as an indication of the size and complexity of the domain. Before appreciating any risks it is important to understand which assets within the domain require protecting.</p>
-    <table>
+    <table class="domain-info-table">
     <th>Category</th>
     <th>Value</th>
     <tr><td class="grey">Domain:</td><td>$($domaininfo.Domain)</td></tr>
@@ -118,8 +118,8 @@ function Generate-CategoryRisksHTML {
                 <table class="summary-table" id="category-summary">
                     <thead>
                         <tr>
-                            <th>Category</th>
-                            <th>Risk Score</th>
+                            <th class="summary-left">Category</th>
+                            <th class="summary-right">Risk Score</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -256,6 +256,48 @@ foreach ($row in $AllissuesHTML) {
 }
     #end the table
     $RisksummaryHTMLoutput += "</tbody></table></div>"
+    $RisksummaryHTMLoutput += @"
+    <div class="risk-summary-description">
+            <h2>What do the risks mean?</h2>
+            <p>The table below explains the risk severity classifications and how they were attributed.</p>
+            <table class="risk-description-summary">
+                <thead>
+                    <tr>
+                        <th class="risk-column-description">Risk</th>
+                        <th class="score-column-description">Score</th>
+                        <th class="description">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="critical">
+                        <td>Critical</td>
+                        <td>40-50</td>
+                        <td class="description-font">A critical risk permits a low-skilled attacker to take direct control of all infrastructure and data within the domain in just one exploit step.</td>
+                    </tr>
+                    <tr class="high">
+                        <td>High</td>
+                        <td>20-39</td>
+                        <td class="description-font">A serious risk permits an attacker direct control of specific infrastructure that would aid lateral movement or full compromise of the domain in multiple exploit steps.</td>
+                    </tr>
+                    <tr class="medium">
+                        <td>Medium</td>
+                        <td>10-19</td>
+                        <td class="description-font">A moderate risk is present that an attacker can chain together with other vulnerabilities to escalate privileges and take control of specific infrastructure within the domain.</td>
+                    </tr>
+                    <tr class="low">
+                        <td>Low</td>
+                        <td>5-9</td>
+                        <td class="description-font">A minimal risk that would have low impact, yet could aid an attacker to perform further attacks against the domain.</td>
+                    </tr>
+                    <tr class="information">
+                        <td>Informational</td>
+                        <td>1-4</td>
+                        <td class="description-font">No direct security risk to the domain, but best practice security recommendations could be adhered to.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+"@
     return $RisksummaryHTMLoutput
 }
 
@@ -289,6 +331,7 @@ function Generate-ReportFooter {
     <p>ADScanner is intended for use on authorised systems only. Users must obtain explicit consent from system owners
         before using the tool on any network or actions could lead to serious legal repercussions.
         The creator is not responsible for any resulting damages or losses.</p>
+        <p>In a dynamic and ever chaning Active Directory, new risks from new configurations can be discovered daily. This report shows the risk level at a snapshot in time and shoud be run periodically to check the risk status of the domain.</p>
     <p>Once you have read through the report follow the remediation steps, then rerun the scanner on a periodic basis to see the
         risks score decrease! Be careful as GPT may get things wrong.</p>
         </div>

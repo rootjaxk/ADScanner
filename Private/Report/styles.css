@@ -70,6 +70,12 @@ body{
     font-weight:500;
     font-size: 14px;
     margin: auto;
+    overflow: hidden;
+}
+.summary-table-header{
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border:none;
 }
 .summary-table th {
     background-color: #263143;
@@ -78,6 +84,14 @@ body{
 }
 .summary-table td {
     width: 50%;
+}
+.summary-left{
+    border-top-left-radius: 10px;
+    border:none;
+}
+.summary-right{
+    border-top-right-radius: 10px;
+    border:none;
 }
 .left-section {
     flex: 1;
@@ -116,8 +130,10 @@ body{
 /* Risk prioritisaion summary*/
 .risk-summary-container {
     margin: 0 auto;
+    max-width: 80%;
     padding: 0px;
-    margin-bottom: 50px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #333333;
 }
 
 .risk-summary-heading {
@@ -128,7 +144,7 @@ body{
 }
 
 .risk-prioritisation-summary {
-    width: 65%;
+    width: 78%;
     margin: 0 auto;
     border-collapse: collapse;
     margin-bottom: 20px;
@@ -139,6 +155,8 @@ body{
     width:10%;
     background-color: #263143;
     color: #fff;
+    border-top-left-radius: 10px;
+    border:none;
 }
 
 .technique-column {
@@ -153,6 +171,50 @@ body{
     background-color: #263143;
     color: #fff;
 }
+.score-column{
+    border-top-right-radius: 10px;
+    border:none;
+}
+
+/* risk descriptions */
+.risk-summary-description{
+    text-align: center;
+    margin: 0 auto;
+    padding: 10px;
+}
+.risk-description-summary {
+    width: 60%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-weight:500;
+}
+.risk-column-description{
+    background-color: #263143;
+    color: #fff;
+    border-top-left-radius: 10px;
+    border:none;
+    width:10%;
+
+}
+.score-column-description{
+    background-color: #263143;
+    color: #fff;
+    width:8%;
+}
+.description-font{
+    font-weight:400;
+}
+
+.description{
+    background-color: #263143;
+    color: #fff;
+    border-top-right-radius: 10px;
+    border:none;
+}
+
+
+
 
 
 h2 {
@@ -193,10 +255,24 @@ table{
 
 /*domain-info*/
 .domain-info{
-    max-width: 80%;
+    max-width: 70%;
     margin: auto;
     margin-bottom: 20px;
 }
+.info-left{
+    background-color: #263143;
+    color: #fff;
+    border-top-left-radius: 10px;
+    border:none;
+}
+.info-right{
+    background-color: #263143;
+    color: #fff;
+    border-top-right-radius: 10px;
+    border:none;
+}
+
+
 .domain-info p{
     margin: auto;
     margin-top: 15px;
@@ -204,9 +280,10 @@ table{
     text-align:center;
     max-width: 80%;
 }
-.domain-info table{
+.domain-info-table{
     margin: auto;
-    max-width: 80%;
+    max-width: 85%;
+    margin-bottom: 40px;
 }
 .relevantinfo{
     vertical-align: top;
@@ -252,10 +329,20 @@ table{
     padding-bottom: 40px;
 }
 
-.table-header {
+
+.table-header-left {
     background-color: #263143;
     color: #fff;
+    border-top-left-radius: 10px;
+    border:none;
 }
+.table-header-right {
+    background-color: #263143;
+    color: #fff;
+    border-top-right-radius: 10px;
+    border:none;
+}
+
 
 th,td {
     border: 1px solid #263143;
@@ -266,6 +353,7 @@ th,td {
 .toggle {
     background-color: #abb9c0;
     font-weight:500;
+    padding:10px;
 }
 .finding {
     display:none;
