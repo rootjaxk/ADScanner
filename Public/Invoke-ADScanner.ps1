@@ -280,7 +280,7 @@ function Invoke-ADScanner {
                 <table class="summary-table">
                     <thead>
                         <tr>
-                            <th colspan="2">Details when ran</th>
+                            <th class="summary-table-header" colspan="2">Details when ran</th>
                         </tr>
                         <tr>
                             <td>Domain Assessed</td>
