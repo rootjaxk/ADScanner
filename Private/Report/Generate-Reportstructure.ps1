@@ -9,8 +9,8 @@ function Generate-DomainInfohtml {
     <div class="domain-info">
     <p>This section provides a general overview of the Active Directory domain, which can be taken as an indication of the size and complexity of the domain. Before appreciating any risks it is important to understand which assets within the domain require protecting.</p>
     <table class="domain-info-table">
-    <th>Category</th>
-    <th>Value</th>
+    <th class="info-left">Category</th>
+    <th class="info-right">Value</th>
     <tr><td class="grey">Domain:</td><td>$($domaininfo.Domain)</td></tr>
     <tr><td class="grey">FunctionalLevel:</td><td>$($domaininfo.FunctionalLevel)</td></tr>
     <tr><td class="grey">DomainControllers:</td><td>$($domaininfo.DomainControllers)</td></tr>
