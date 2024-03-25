@@ -1,7 +1,14 @@
 function Generate-RBAChtml {  
     param (
-        [array]$RBAC
+        [Parameter()]
+        [array]$RBAC,
+
+        [Parameter()]
+        [string]$APIkey
     )
+    #gen AI prompt for remediation
+    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
+
     if (!$RBAC) {
         $html = @"
         <div class="finding-header">RBAC</div>
@@ -37,6 +44,7 @@ function Generate-RBAChtml {
             } elseif ($finding.Risk -match "informational"){
                 $finding.Risk = "Informational"
             }
+            $remediation = Connect-ChatGPT -APIkey $APIkey -Prompt $finding -Temperature 0.1 -AiSystemMessage $AiSystemMessage
             if ($finding.Technique -eq "Suspicious / legacy admin account") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
@@ -105,13 +113,11 @@ function Generate-RBAChtml {
                 <table>
                     <tbody>
                         <tr>
-                            <th>Remediation (GPT to contextualize)</th>
+                            <th>Remediation</th>
                         </tr>
                         <tr>
                             <td>
-                                <p>Remove adminCount from unprivileged users</p>
-                                <p>run command 1</p>
-                                <p>run command 2</p>
+                                <p>$remediation</p>
                             </td>
                         </tr>
                     </tbody>
@@ -199,13 +205,11 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove guest access</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -298,13 +302,11 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>JML process to disable inactive accounts</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -381,13 +383,11 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove uncessecary users from group</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -464,13 +464,11 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove uncessecary users from group</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -547,13 +545,11 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove uncessecary users from group</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -661,13 +657,11 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove uncessecary users from group</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -764,13 +758,11 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove uncessecary users from group</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -869,13 +861,11 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove uncessecary users from group</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -961,13 +951,11 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove uncessecary users from group</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -1063,13 +1051,11 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove uncessecary users from group</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -1155,13 +1141,11 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove uncessecary users from group</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -1247,13 +1231,11 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove uncessecary users from group</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -1339,13 +1321,11 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove uncessecary users from group</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -1445,13 +1425,12 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
                                             <p>Add all privilged users</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -1528,13 +1507,11 @@ function Generate-RBAChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Add all privilged users</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>

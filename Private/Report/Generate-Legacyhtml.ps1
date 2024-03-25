@@ -1,8 +1,14 @@
 function Generate-Legacyhtml {  
     param (
-        [array]$Legacy
-    )
+        [Parameter()]
+        [array]$Legacy,
 
+        [Parameter()]
+        [string]$APIkey
+    )
+    #gen AI prompt for remediation
+    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
+    
     if (!$Legacy) {
         $html = @"
         <div class="finding-header">Legacy</div>
@@ -38,6 +44,7 @@ function Generate-Legacyhtml {
             } elseif ($finding.Risk -match "informational"){
                 $finding.Risk = "Informational"
             }
+            $remediation = Connect-ChatGPT -APIkey $APIkey -Prompt $finding -Temperature 0.1 -AiSystemMessage $AiSystemMessage
             if ($finding.Technique -eq "LLMNR is not disabled") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
@@ -125,13 +132,11 @@ function Generate-Legacyhtml {
                     <table>
                         <tbody>
                             <tr>
-                                <th>Remediation (GPT to contextualize)</th>
+                                <th>Remediation</th>
                             </tr>
                             <tr>
                                 <td>
-                                    <p>Disable LLMNR</p>
-                                    <p>run command 1</p>
-                                    <p>run command 2</p>
+                                    <p>$remediation</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -228,13 +233,11 @@ function Generate-Legacyhtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Disable NBT-NS</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -331,13 +334,11 @@ function Generate-Legacyhtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Disable mDNS</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -444,13 +445,11 @@ function Generate-Legacyhtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Disable NTLMv1</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -549,13 +548,11 @@ function Generate-Legacyhtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Disable SMBv1</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -656,13 +653,11 @@ function Generate-Legacyhtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Disable SMBv1</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>

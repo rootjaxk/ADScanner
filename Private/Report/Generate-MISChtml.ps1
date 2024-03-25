@@ -1,7 +1,14 @@
 function Generate-MISChtml {  
     param (
-        [array]$MISC
+        [Parameter()]
+        [array]$MISC,
+
+        [Parameter()]
+        [string]$APIkey
     )
+    #gen AI prompt for remediation
+    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
+
     if (!$MISC) {
         $html = @"
         <div class="finding-header">MISC</div>
@@ -38,6 +45,7 @@ function Generate-MISChtml {
             } elseif ($finding.Risk -match "informational"){
                 $finding.Risk = "Informational"
             }
+            $remediation = Connect-ChatGPT -APIkey $APIkey -Prompt $finding -Temperature 0.1 -AiSystemMessage $AiSystemMessage
             if ($finding.Technique -match "add computers to the domain") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
@@ -134,13 +142,11 @@ function Generate-MISChtml {
                     <table>
                         <tbody>
                             <tr>
-                                <th>Remediation (GPT to contextualize)</th>
+                                <th>Remediation</th>
                             </tr>
                             <tr>
                                 <td>
-                                    <p>Change the MAQ to 0</p>
-                                    <p>run command 1</p>
-                                    <p>run command 2</p>
+                                    <p>$remediation</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -246,13 +252,11 @@ function Generate-MISChtml {
                     <table>
                         <tbody>
                             <tr>
-                                <th>Remediation (GPT to contextualize)</th>
+                                <th>Remediation</th>
                             </tr>
                             <tr>
                                 <td>
-                                    <p>Restrict or deny outbound access</p>
-                                    <p>run command 1</p>
-                                    <p>run command 2</p>
+                                    <p>$remediation</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -359,13 +363,11 @@ function Generate-MISChtml {
                     <table>
                         <tbody>
                             <tr>
-                                <th>Remediation (GPT to contextualize)</th>
+                                <th>Remediation</th>
                             </tr>
                             <tr>
                                 <td>
-                                    <p>Enforce SMB signing</p>
-                                    <p>run command 1</p>
-                                    <p>run command 2</p>
+                                    <p>$remediation</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -481,13 +483,11 @@ function Generate-MISChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Enforce LDAP Signing & channel binding</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -585,13 +585,11 @@ function Generate-MISChtml {
                     <table>
                         <tbody>
                             <tr>
-                                <th>Remediation (GPT to contextualize)</th>
+                                <th>Remediation</th>
                             </tr>
                             <tr>
                                 <td>
-                                    <p>Disable print spooler on systems where it is not required for printing</p>
-                                    <p>run command 1</p>
-                                    <p>run command 2</p>
+                                    <p>$remediation</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -713,13 +711,11 @@ function Generate-MISChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Enforce LDAP Signing & channel binding</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -797,13 +793,11 @@ function Generate-MISChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove empty OUs</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -881,13 +875,11 @@ function Generate-MISChtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove unlinked GPOs</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>

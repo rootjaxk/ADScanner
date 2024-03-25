@@ -227,7 +227,7 @@ function Invoke-ADScanner {
         $Passwords += Find-PwdNotRequired -Domain $Domain
         $Passwords += Find-LAPS -Domain $Domain
         $Passwords += Find-SensitiveInfo -Domain $Domain
-        #$Passwords += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
+        $Passwords += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
         $Passwords = $Passwords | Sort-Object -Property Score -Descending
     }
     
@@ -468,31 +468,44 @@ function Invoke-ADScanner {
         $Legacy | Sort-Object -Property Score -Descending | Format-List
     }
 
-    #Get generative AI input - put in own function
+
+    #Executive summary from GPT
+    if ($riskOverallHTML -match "Critical.png") {
+        $overallRisksummary = "Critical"
+    } elseif($riskOverallHTML -match "High.png"){
+        $overallRisksummary = "High"
+    } elseif($riskOverallHTML -match "Medium.png"){
+        $overallRisksummary = "Medium"
+    } elseif($riskOverallHTML -match "Low.png"){
+        $overallRisksummary = "Low"
+    } elseif($riskOverallHTML -match "Very-low.png"){
+        $overallRisksummary = "Very Low"
+    } elseif($riskOverallHTML -match "Perfect.png"){
+        $overallRisksummary = "Perfect"
+    }
+    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a summary of a vulnerability scan and I want you to respond with an executive summary that can be used at the top of a vulnerability report that explains the ultimate risk to ransomware to the Active Directory from determined attackers. This will be a maximum of 600 words. Start by saying ADscanner was commissioned to perform a vulnerability assessment against the $domain Active Directory
+    domain to ensure correct security configuration and operation of the directory. The overall risk attributed to the domain is demeed as $overallRisksummary. Now finish the rest summarising the risks using language like 'a number of security misconfiguratioons significantly increases the attack surface of the active directory'."
+    
+    $executivesummary = Connect-ChatGPT -APIkey $APIkey -Prompt $AllissuesHTML -Temperature 0.1 -AiSystemMessage $AiSystemMessage
     $executiveSummaryHTML = @"
     <!-- Right section for the executive summary -->
         <div class="executive-summary">
-            <h2>Executive Summary (GPT to contextualize)</h2>
-            <p>ADscanner was commissioned to perform a vulnerability assessment against the test.local Active Directory
-                domain to ensure correct security configuration and operation of the Directory.
-                The audit indicates that the security of the Active Directory is reduced by the X, Y & Z. a number of
-                misconfigurations significantly increases the attack surface of Active Directory, and therefore the
-                network could be exploited by a determined attacker deploying ransomware and malware.</p>
-            <p>ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...</p>
-            <p>ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...</p>
-            <p>ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...ChatGPT will fill the rest of this in...</p>
+            <h2>Executive Summary</h2>
+            <p>$executivesummary</p>
         </div>
     </div>
 "@
 
     #HTML Findings
-    $PKIhtml = Generate-PKIhtml -PKI $PKI
-    $Kerberoshtml = Generate-Kerberoshtml -Kerberos $Kerberos 
-    $ACLshtml = Generate-ACLshtml -ACLs $ACLs
-    $RBAChtml = Generate-RBAChtml -RBAC $RBAC
-    $Passwordshtml = Generate-Passwordshtml -Passwords $Passwords
-    $MISChtml = Generate-MISChtml -MISC $MISC
-    $Legacyhtml = Generate-Legacyhtml -Legacy $Legacy
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Generating HTML report..." -ForegroundColor Yellow
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Producing contextualized remediation..." -ForegroundColor Yellow
+    $PKIhtml = Generate-PKIhtml -PKI $PKI -APIKey $APIkey
+    $Kerberoshtml = Generate-Kerberoshtml -Kerberos $Kerberos -APIKey $APIkey
+    $ACLshtml = Generate-ACLshtml -ACLs $ACLs -APIKey $APIkey
+    $RBAChtml = Generate-RBAChtml -RBAC $RBAC -APIKey $APIkey
+    $Passwordshtml = Generate-Passwordshtml -Passwords $Passwords -APIKey $APIkey
+    $MISChtml = Generate-MISChtml -MISC $MISC -APIKey $APIkey
+    $Legacyhtml = Generate-Legacyhtml -Legacy $Legacy -APIKey $APIkey
     $Reportfooter = Generate-ReportFooter
     $JSend = Generate-javascripthtml
 

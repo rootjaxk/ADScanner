@@ -1,8 +1,14 @@
 function Generate-Kerberoshtml {  
     param (
-        [array]$Kerberos
-    )
+        [Parameter()]
+        [array]$Kerberos,
 
+        [Parameter()]
+        [string]$APIkey
+    )
+    #gen AI prompt for remediation
+    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
+    
     if (!$Kerberos) {
         $html = @"
         <div class="finding-header">Kerberos</div>
@@ -38,6 +44,7 @@ function Generate-Kerberoshtml {
             } elseif ($finding.Risk -match "informational"){
                 $finding.Risk = "Informational"
             }
+            $remediation = Connect-ChatGPT -APIkey $APIkey -Prompt $finding -Temperature 0.1 -AiSystemMessage $AiSystemMessage
             if ($finding.Technique -match "ASREP-roastable") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
@@ -157,13 +164,11 @@ function Generate-Kerberoshtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove the do not require pre auth flag for X,Y,Z users - there is no use case for this.</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -293,13 +298,11 @@ function Generate-Kerberoshtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove the SPN / move to low privileged account / gMSA.</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -424,13 +427,11 @@ function Generate-Kerberoshtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Unconstrained remediation</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -522,13 +523,11 @@ function Generate-Kerberoshtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Constrained remediation</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -619,13 +618,11 @@ function Generate-Kerberoshtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>RBCD remediation</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -719,13 +716,11 @@ function Generate-Kerberoshtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Reset krbtgt twice!</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>

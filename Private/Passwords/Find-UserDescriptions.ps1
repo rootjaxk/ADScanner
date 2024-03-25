@@ -44,11 +44,12 @@ function Find-UserDescriptions {
   $userswithdescription = Get-ADObject -SearchBase $searchBase -LDAPFilter '(&(|(objectClass=user)(objectClass=computer))(description=*))' -properties *
   $descriptions = $userswithdescription.description
 
-  #Send to generative AI for analysis
+  #Define how want AI to respond cleanly & send to Generate AI
+  $AiSystemMessage = "You are a cyber security assistant. I will provide you with some information I want you to respond with the interesting data I determine in a clean and concise way. I want no other information returned."
   $prompt = "which of these descriptions contain password information which should not be readable by all users? I want all information that looks like it would contain a password `r`n" + ($descriptions -join "`r`n") + " If no passwords are found return only 'No passwords found'" #chatgpt stuff
 
   #Send all descriptions to API
-  $userdescriptionresponse = Connect-ChatGPT -APIkey $APIkey -Prompt $prompt -Temperature 0.1
+  $userdescriptionresponse = Connect-ChatGPT -APIkey $APIkey -Prompt $prompt -Temperature 0.1 -AiSystemMessage $AiSystemMessage
 
   #define privileged groups
   $privilegedgroups = @("Administrators", "Enterprise Admins", "Domain Admins", "DnsAdmins", "Backup Operators",

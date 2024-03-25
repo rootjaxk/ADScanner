@@ -1,7 +1,14 @@
 function Generate-ACLshtml {  
     param (
-        [array]$ACLs
+        [Parameter()]
+        [array]$ACLs,
+
+        [Parameter()]
+        [string]$APIkey
     )
+    #gen AI prompt for remediation
+    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
+    
     if (!$ACLs) {
         $html = @"
         <div class="finding-header">ACLs</div>
@@ -37,6 +44,7 @@ function Generate-ACLshtml {
             } elseif ($finding.Risk -match "informational"){
                 $finding.Risk = "Informational"
             }
+            $remediation = Connect-ChatGPT -APIkey $APIkey -Prompt $finding -Temperature 0.1 -AiSystemMessage $AiSystemMessage
             if ($finding.Technique -eq "Low privileged principal has dangerous rights over the entire domain") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
@@ -118,13 +126,11 @@ function Generate-ACLshtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove rogue ACL</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -215,13 +221,11 @@ function Generate-ACLshtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove rogue ACL</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -328,13 +332,11 @@ function Generate-ACLshtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove rogue ACL</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -426,13 +428,11 @@ function Generate-ACLshtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove rogue ACL</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -526,13 +526,11 @@ function Generate-ACLshtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove rogue ACL over GPO</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -623,13 +621,11 @@ function Generate-ACLshtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove rogue ACL</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -730,13 +726,11 @@ function Generate-ACLshtml {
                             <table>
                                 <tbody>
                                     <tr>
-                                        <th>Remediation (GPT to contextualize)</th>
+                                        <th>Remediation</th>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove rogue ACL on logon script</p>
-                                            <p>run command 1</p>
-                                            <p>run command 2</p>
+                                            <p>$remediation</p>
                                         </td>
                                     </tr>
                                 </tbody>
