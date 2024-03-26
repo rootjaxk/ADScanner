@@ -27,14 +27,15 @@ function Connect-ChatGPT {
 
     [Parameter(Mandatory = $true)]
     [int]
-    $Temperature
+    $Temperature,
+
+    [Parameter(Mandatory = $true)]
+    [String]
+    $AiSystemMessage
   )
 
   # Set the API endpoint
   $ApiEndpoint = "https://api.openai.com/v1/chat/completions"
-
-  #Define how want AI to respond cleanly
-  $AiSystemMessage = "You are a cyber security assistant. I will provide you with some information I want you to respond with the interesting data I determine in a clean and concise way. I want no other information returned."
 
   # List of Hashtables that will hold the system message and user message.
   [System.Collections.Generic.List[Hashtable]]$messages = @()
