@@ -94,7 +94,7 @@ function Find-UnsupportedOS {
         $Outdated_EnabledIssue
     }
     if ($Outdated_DisabledIssue.OperatingSystems -ne "") {
-        $Outdated_DisabledIssue.Issues += "`r`nAll of these operating systems have critical CVEs, but as they are disabled, although they can be trivially compromised they cannot be used to authenticate to the domain"
+        $Outdated_DisabledIssue.Issues += "`r`nAll of these operating systems have critical CVEs, but as they are disabled, although they can be trivially compromised they cannot be used to authenticate to the domain. These should remain disabled, and are likely left over objects in active directory from a decommission."
         $Outdated_DisabledIssue.Count = $UnsupportedisabledOScount
         $Outdated_DisabledIssue
     }

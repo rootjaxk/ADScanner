@@ -127,11 +127,11 @@ function Find-LAPS {
         $LAPSDCIssue.LAPSComputer = $domainControllers
         if ($LAPSDCIssue.IdentityReference -eq '') {
           $LAPSDCIssue.IdentityReference = $user
-          $LAPSDCIssue.Issue = "$user has read LAPS password rights on $domainControllers meaning low privileged users are domain admins"
+          $LAPSDCIssue.Issue = "$user has read LAPS password rights on $domainControllers meaning low privileged users low privileged users can read the local administrator password on domain controllers (effective domain admin). Permission to read the LAPS password should be delegated to administators only."
         }
         else {
           $LAPSDCIssue.IdentityReference += "`r`n$user"
-          $LAPSDCIssue.Issue += "`r`n$user has read LAPS password rights on $domainControllers meaning low privileged users are domain admins"
+          $LAPSDCIssue.Issue += "`r`n$user has read LAPS password rights on $domainControllers meaning low privileged users low privileged users can read the local administrator password on domain controllers (effective domain admin). Permission to read the LAPS password should be delegated to administators only."
         }
       }
     }
@@ -157,11 +157,11 @@ function Find-LAPS {
         $LAPScomputerIssue.LAPSComputer = $domainComputers
         if ($LAPScomputerIssue.IdentityReference -eq '') {
           $LAPScomputerIssue.IdentityReference = $user
-          $LAPScomputerIssue.Issue = "$user has read LAPS password rights on $domainComputers, meaning low privileged users are local admins"
+          $LAPScomputerIssue.Issue = "$user has read LAPS password rights on $domainComputers, meaning low privileged users can read the local administrator password on all of these computers within this OU. Permission to read the LAPS password should be delegated to administators only."
         }
         else {
           $LAPScomputerIssue.IdentityReference += "`r`n$user"
-          $LAPScomputerIssue.Issue += "`r`n$user has read LAPS password rights on $domainComputers, meaning low privileged users are local admins"
+          $LAPScomputerIssue.Issue += "`r`n$user has read LAPS password rights on $domainComputers, meaning low privileged users can read the local administrator password on all of these computers within this OU. Permission to read the LAPS password should be delegated to administators only."
         }
       }
     }

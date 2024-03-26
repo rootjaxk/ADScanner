@@ -79,7 +79,7 @@ function Find-ESC1 {
           DistinguishedName     = $_.DistinguishedName
           IdentityReference     = $entry.IdentityReference
           ActiveDirectoryRights = $entry.ActiveDirectoryRights
-          Issue                 = "$($entry.IdentityReference) can enroll in this Client Authentication template using a SAN without Manager Approval"
+          Issue                 = "$($entry.IdentityReference) can enroll in this Client Authentication template using a Subject Alternate Name (SAN) without Manager Approval. The option for users to supply an arbitrary Subject Alternate Name should be removed (by building the template information from AD info instead) or enrollment should be restricted to privileged users only."
         }
         $Issue
       }

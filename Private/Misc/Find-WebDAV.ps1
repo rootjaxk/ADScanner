@@ -82,7 +82,7 @@ function Find-WebDAV {
       $WebDAVIssue.Risk= (to_red "HIGH")
       $WebDAVIssue.Score = 35
       $WebDAVIssue.Technique = "Admin compromise of computer is possible via WebDAV to LDAP to RBCD authentication relay"
-      $WebDAVIssue.Issue = "WebDAV is enabled on $WebDAVcount computers and LDAP signing is not required. Each computer actively running the WebClient service can be remotely be fully compromised via a WebDAV HTTP to LDAP to RBCD authentication relay."
+      $WebDAVIssue.Issue = "WebDAV is enabled on $WebDAVcount computers and LDAP signing is not required. Each computer actively running the WebClient service can be remotely be fully compromised via a WebDAV HTTP to LDAP on a domain controller to RBCD authentication relay, unless LDAP signing and channel binding if encorced on all domain controllers."
     }
     else {
       $WebDAVIssue.Risk= (to_green "LOW")

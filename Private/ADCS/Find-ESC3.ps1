@@ -77,7 +77,7 @@ function Find-ESC3 {
           DistinguishedName     = $_.DistinguishedName
           IdentityReference     = $entry.IdentityReference
           ActiveDirectoryRights = $entry.ActiveDirectoryRights
-          Issue                 = "$($entry.IdentityReference) can enroll in this template on behalf of another user"
+          Issue                 = "$($entry.IdentityReference) can enroll in this template on behalf of another user via the 'Certificate Request Agent EKU'. The ability for the template to be enrolled in on behalf of another user should be removed by removing the 'Certificate Request Agent EKU' in favour of more specific EKUs."
         }
         $adcsIssue
       }

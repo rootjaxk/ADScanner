@@ -111,15 +111,15 @@ function Find-PwdNotRequired {
   }
   #If issues, in order of severity
   if ($PWDprivileged.Users -ne "") {
-    $PWDprivileged.Issue = "$PWDprivilegedcount users do not require a password and are a member of a privileged group"
+    $PWDprivileged.Issue = "$PWDprivilegedcount users do not require a password and are a member of a privileged group. The PASSWD_NOTREQD attribute on each of their accounts should be removed."
     $PWDprivileged
   }
   if ($PWDstandard.Users -ne "") {
-    $PWDstandard.Issue = "$PWDstandardcount users do not require a password and are not a member of a privileged group"
+    $PWDstandard.Issue = "$PWDstandardcount users do not require a password and are not a member of a privileged group. The PASSWD_NOTREQD attribute on each of their accounts should be removed."
     $PWDstandard
   }
   if ($PWDdisabled.Users -ne "") {
-    $PWDdisabled.Issue = "$PWDdisabledcount users do not require a password but are disabled"
+    $PWDdisabled.Issue = "$PWDdisabledcount users do not require a password but are disabled. These accounts should stay disabled (do not enable the accounts) as this is currently mitigating the no password risk and then remove the PASSWD_NOTREQD attribute should be removed."
     $PWDdisabled
   }
 }

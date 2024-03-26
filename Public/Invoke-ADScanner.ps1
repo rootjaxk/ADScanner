@@ -59,13 +59,15 @@ function Invoke-ADScanner {
 
 
     # Display help menu if ran incorrectly
-    if (-not $Domain -or $Help) {
-        Write-Host -ForegroundColor Yellow "Example Usage:  Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\temp\
+    if ((-not $Domain -or -not $apikey) -or $Help) {
+        Write-Host -ForegroundColor Yellow "
             -Domain     The domain to scan. If don't know scanner will automatically use the current domain the system is joined to (Get-ADDomain)
             -Scans      The scan type to choose (Info, Kerberos, PKI, RBAC, ACLs, Passwords, MISC, Legacy (Default: All))
             -Format     The report format (console/html)
             -OutputPath The location to save the report
             -APIkey     The API key for ChatGPT to generate a summary of the report
+
+            Example Usage:  Invoke-ADScanner -Domain test.local -APIKey <API key> -Scans All -Format html -OutputPath c:\temp\
     " 
         return
     }
@@ -469,6 +471,9 @@ function Invoke-ADScanner {
     }
 
 
+    #HTML Findings
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Generating HTML report..." -ForegroundColor Yellow
+    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Producing contextualized remediation..." -ForegroundColor Yellow
     #Executive summary from GPT
     if ($riskOverallHTML -match "Critical.png") {
         $overallRisksummary = "Critical"
@@ -483,10 +488,10 @@ function Invoke-ADScanner {
     } elseif($riskOverallHTML -match "Perfect.png"){
         $overallRisksummary = "Perfect"
     }
-    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a summary of a vulnerability scan and I want you to respond with an executive summary that can be used at the top of a vulnerability report that explains the ultimate risk to ransomware to the Active Directory from determined attackers. This will be a maximum of 600 words. Start by saying ADscanner was commissioned to perform a vulnerability assessment against the $domain Active Directory
-    domain to ensure correct security configuration and operation of the directory. The overall risk attributed to the domain is demeed as $overallRisksummary. Now finish the rest summarising the risks using language like 'a number of security misconfiguratioons significantly increases the attack surface of the active directory'."
-    
-    $executivesummary = Connect-ChatGPT -APIkey $APIkey -Prompt $AllissuesHTML -Temperature 0.1 -AiSystemMessage $AiSystemMessage
+    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some HTML information relating to a summary of a vulnerability scan and I want you to respond with an executive summary that can be used at the top of a vulnerability report that explains the ultimate risk to ransomware to the Active Directory from determined attackers. This will be a minimum of 300 words and maximum of 600 words. Start by saying ADscanner was commissioned to perform a vulnerability assessment against the $domain Active Directory
+    domain to ensure correct security configuration and operation of the directory. The overall risk attributed to the domain is demeed as $overallRisksummary. Now finish the rest summarising the risks such as number of critical, high, medium, low and what these vulnerabilities mean using language like 'a number of security misconfiguratioons significantly increases the attack surface of the active directory'. Return this as paragraphs of text that I will take and then put between <p> tags."
+    #high temperature to increase creativity
+    $executivesummary = Connect-ChatGPT -APIkey $APIkey -Prompt $RisksummaryHTMLoutput -Temperature 1 -AiSystemMessage $AiSystemMessage
     $executiveSummaryHTML = @"
     <!-- Right section for the executive summary -->
         <div class="executive-summary">
@@ -496,9 +501,6 @@ function Invoke-ADScanner {
     </div>
 "@
 
-    #HTML Findings
-    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Generating HTML report..." -ForegroundColor Yellow
-    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Producing contextualized remediation..." -ForegroundColor Yellow
     $PKIhtml = Generate-PKIhtml -PKI $PKI -APIKey $APIkey
     $Kerberoshtml = Generate-Kerberoshtml -Kerberos $Kerberos -APIKey $APIkey
     $ACLshtml = Generate-ACLshtml -ACLs $ACLs -APIKey $APIkey

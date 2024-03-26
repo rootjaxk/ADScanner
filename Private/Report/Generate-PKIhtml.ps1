@@ -7,8 +7,8 @@ function Generate-PKIhtml {
         [string]$APIkey
     )
 
-     #gen AI prompt for remediation
-     $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
+    #gen AI prompt for remediation
+    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I don't want generic remediation, I want specific steps someone can take and follow step, by step. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
 
     if (!$PKI) {
         $html = @"
@@ -45,7 +45,7 @@ function Generate-PKIhtml {
             } elseif ($finding.Risk -match "informational"){
                 $finding.Risk = "Informational"
             }
-            $remediation = Connect-ChatGPT -APIkey $APIkey -Prompt $finding -Temperature 0.1 -AiSystemMessage $AiSystemMessage
+            $remediation = Connect-ChatGPT -APIkey $APIkey -Prompt $finding -Temperature 0.7 -AiSystemMessage $AiSystemMessage
             if ($finding.Technique -eq "ESC1") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
@@ -136,7 +136,6 @@ function Generate-PKIhtml {
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Remove ability to supply SAN or restrict who can enroll in cert (to prviileged users only)</p>
                                             <p>$remediation</p>
                                         </td>
                                     </tr>
@@ -287,7 +286,7 @@ function Generate-PKIhtml {
                                             <tr><td class="grey">ActiveDirectoryRights</td><td>$($finding.ActiveDirectoryRights)</td></tr>
                                         </table></td>
                                         <td class="explanation">
-                                            <p>ESC3 is a vulnerability where a certificate template allows a low-privileged user to enroll for a certificate on behalf of another user by specifying the Certificate Request Agent EKU. This vulnerability is present when two certificate templates can be enrolled in by low privileged user, where, one allows the Certificate Request Agent EKU (to requesst certificate on behalf of other user) and another allows client authentication.</p>
+                                            <p>ESC3 is a vulnerability where a certificate template allows a low-privileged user to enroll for a certificate on behalf of another user by specifying the Certificate Request Agent EKU. This vulnerability is present when two certificate templates can be enrolled in by low privileged user, where, one allows the Certificate Request Agent EKU (to request certificate on behalf of other user) and another allows client authentication.</p>
                                             <p>This allows a low-privileged user to enroll in $($finding.Name), then use the certificate obtained to request an additional certificate (co-sign a Certificate Signing Request (CSR)) on behalf of a domain admin in another template used for client authentication to impersonate them.</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://posts.specterops.io/certified-pre-owned-d95910965cd2>">Link 1</a></p>
@@ -943,7 +942,6 @@ function Generate-PKIhtml {
                                     </tr>
                                     <tr>
                                         <td>
-                                            <p>Enforce HTTPS & EPA, disable Kerberos or disable the endpoint</p>
                                             <p>$remediation</p>
                                         </td>
                                     </tr>

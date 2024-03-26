@@ -191,7 +191,7 @@ function Find-ASREProast {
   }
   if ($ASREPDisabled.Users) {
     $ASREPDisabled.NumUsers = $ASREPDisabledcount
-    $ASREPdisabled.Issue = "$ASREPdisabledcount users do not require Kerberos pre-authentication but are disabled"
+    $ASREPdisabled.Issue = "$ASREPdisabledcount users do not require Kerberos pre-authentication but are disabled which reduces the risk. These accounts should remain disabled and the option to not require kerberos pre-authentication removed."
     $ASREPDisabled
   }
 }

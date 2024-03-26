@@ -7,7 +7,7 @@ function Generate-Legacyhtml {
         [string]$APIkey
     )
     #gen AI prompt for remediation
-    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
+    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I don't want generic remediation, I want specific steps someone can take and follow step, by step. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
     
     if (!$Legacy) {
         $html = @"
@@ -44,7 +44,8 @@ function Generate-Legacyhtml {
             } elseif ($finding.Risk -match "informational"){
                 $finding.Risk = "Informational"
             }
-            $remediation = Connect-ChatGPT -APIkey $APIkey -Prompt $finding -Temperature 0.1 -AiSystemMessage $AiSystemMessage
+
+            $remediation = Connect-ChatGPT -APIkey $APIkey -Prompt $finding -Temperature 0.7 -AiSystemMessage $AiSystemMessage
             if ($finding.Technique -eq "LLMNR is not disabled") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"

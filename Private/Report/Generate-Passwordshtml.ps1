@@ -7,7 +7,7 @@ function Generate-Passwordshtml {
         [string]$APIkey
     )
     #gen AI prompt for remediation
-    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
+    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I don't want generic remediation, I want specific steps someone can take and follow step, by step. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
 
     if (!$Passwords) {
         $html = @"
@@ -44,7 +44,7 @@ function Generate-Passwordshtml {
             } elseif ($finding.Risk -match "informational"){
                 $finding.Risk = "Informational"
             }
-            $remediation = Connect-ChatGPT -APIkey $APIkey -Prompt $finding -Temperature 0.1 -AiSystemMessage $AiSystemMessage
+            $remediation = Connect-ChatGPT -APIkey $APIkey -Prompt $finding -Temperature 0.7 -AiSystemMessage $AiSystemMessage
             if ($finding.Technique -match "LAPS") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
@@ -94,7 +94,7 @@ function Generate-Passwordshtml {
                 }
                 else {
                     $html += @"
-                    <tr><td class="grey">IdentityReference</td><td>$($finding.IdentityReference)</td></tr>
+                    <tr><td class="grey">IdentityReference</td><td>$($finding.IdentityReference -replace "`r?`n", "<br>")</td></tr>
                     <tr><td class="grey">LAPS computers</td><td>$($finding.LAPScomputer -replace "`r?`n", "<br>")</td></tr>
 "@
                 }
@@ -103,7 +103,7 @@ function Generate-Passwordshtml {
                             <td class="explanation">
                                 <p>The Local Administrator Password Solution (LAPS) is Microsoft's solution for managing the credentials of a local administrator account on every machine, either the default RID 500 or a custom account. It ensures that the password for each account is different, random, and automatically changed on a defined schedule (default - 30 days). It periodically changes the local administrator's password when it expires. Permission to request and reset the credentials can be delegated, which is also auditable.
                                 Installing LAPS requires an update to the schema, where the ms-Mcs-AdmPwd and ms-Mcs-AdmPwdExpirationTime attributes will be added containing the respective LAPS account password and expiration time for accounts. Only groups with delegated permission can read the LAPS password, e.g. Domain Admins, which is random and different across every local admin. Reading the password and then logging into systems via the LAPS local admin accounts also prevents the need to log into systems with other privileged accounts, e.g. domain admins, and avoids caching these credentials in memory on the system, further reducing the attack surface.</p>
-                                <p>$($finding.Issue).</p> 
+                                <p>$($finding.Issue)</p> 
                                 <p class="links"><b>Further information:</b></p>
                                 <p><a href="https://learn.microsoft.com/en-us/windows-server/identity/laps/laps-overview">Link 1</a></p>
                                 <p><a href="https://www.hackingarticles.in/credential-dumpinglaps/">Link 2</a></p>

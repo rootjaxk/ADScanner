@@ -69,7 +69,7 @@ function Find-ESC2 {
           DistinguishedName     = $_.DistinguishedName
           IdentityReference     = $entry.IdentityReference
           ActiveDirectoryRights = $entry.ActiveDirectoryRights
-          Issue                 = "$($entry.IdentityReference) can enroll in this template and use it for any purpose, e.g. request certificate template on behalf of another prinicpal (ESC3)"
+          Issue                 = "$($entry.IdentityReference) can enroll in this template and use it for any purpose via the Any Purpose EKU, e.g. request certificate template on behalf of another prinicpal (ESC3). The ability for the template to be used for any purpose should be removed in favour of more specific EKUs."
         }
         $adcsIssue
       }

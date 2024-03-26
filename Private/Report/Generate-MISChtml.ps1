@@ -7,7 +7,7 @@ function Generate-MISChtml {
         [string]$APIkey
     )
     #gen AI prompt for remediation
-    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
+    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I don't want generic remediation, I want specific steps someone can take and follow step, by step. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
 
     if (!$MISC) {
         $html = @"
@@ -45,7 +45,7 @@ function Generate-MISChtml {
             } elseif ($finding.Risk -match "informational"){
                 $finding.Risk = "Informational"
             }
-            $remediation = Connect-ChatGPT -APIkey $APIkey -Prompt $finding -Temperature 0.1 -AiSystemMessage $AiSystemMessage
+            $remediation = Connect-ChatGPT -APIkey $APIkey -Prompt $finding -Temperature 0.7 -AiSystemMessage $AiSystemMessage
             if ($finding.Technique -match "add computers to the domain") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
@@ -90,7 +90,7 @@ function Generate-MISChtml {
                                 </table></td>
                                 <td class="explanation">
                                     <p>By default, in Active Directory any authenticated domain user can add a total of 10 computers (machine accounts) to the domain. The number of computers is controlled by the 'ms-DS-MachineAccountQuota' property of the domain, and permission for who can add computers is controlled within the 'Default Domain Controllers Policy' GPO. Computers accounts added by users can be used in attacks such as RBCD or relaying attacks where the computer account can be configured in a way that gives an attacker administrative control by permitting delegation to other critical servers, allowing low-privileged users to escalate their privileges. This default configuration represents a security issue as basic users shouldn't be able to create such accounts and this task should be handled by administrators.</p>
-                                    <p>$($finding.Issue).</p> 
+                                    <p>$($finding.Issue)</p> 
                                     <p class="links"><b>Further information:</b></p>
                                     <p><a href="https://www.thehacker.recipes/a-d/movement/domain-settings/machineaccountquota">Link 1</a></p>
                                     <p><a href="https://sid-500.com/2017/09/09/securing-active-directory-who-can-add-computers-to-the-domain-only-the-domain-admin-are-you-sure/">Link 2</a></p>
@@ -414,7 +414,7 @@ function Generate-MISChtml {
                                         </table></td>
                                         <td class="explanation">    
                                             <p>LDAP is the protocol that users, applications and devices use to query and commnunicate with the Active Directory. The security of LDAP can be increased significant by requiring LDAP channel binding else machines running the WebClient service can be compromised by relaying authentication to LDAP (if signing requirements are not enforced) and perform any action that machine has permission to perfrom. Machine accounts have permission to update their own 'msDS-AllowedToActOnBehalfOfOtherIdentity' property meaning that authentication can be coerced, relayed to ldap, then set resource-based constrained delegation on themselves to give a low privileged attacker full control over any machine running the WebClient service.</p>
-                                            <p>$($finding.Issue).</p> 
+                                            <p>$($finding.Issue)</p> 
                                             <p class="links"><b>Further information:</b></p>
                                             <p><a href="https://www.hackingarticles.in/lateral-movement-webclient-workstation-takeover/">Link 1</a></p>
                                             <p><a href="https://support.microsoft.com/en-gb/topic/2020-2023-and-2024-ldap-channel-binding-and-ldap-signing-requirements-for-windows-kb4520412-ef185fb8-00f7-167d-744c-f299a66fc00a">Link 2</a></p>

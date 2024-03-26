@@ -204,7 +204,7 @@ function Find-Kerberoast {
   }
   if ($KerberoastDisabled.Users) {
     $KerberoastDisabled.NumUsers = $KerberoastDisabledcount
-    $KerberoastDisabled.Issue = "$KerberoastDisabledcount users have an SPN set but are disabled"
+    $KerberoastDisabled.Issue = "$KerberoastDisabledcount users have an SPN set but are disabled. These accounts should remain disabled and the SPN reviewed if it is needed or not. Removing the SPN will make the account not kerberoastable anymore."
     $KerberoastDisabled
   }
 }

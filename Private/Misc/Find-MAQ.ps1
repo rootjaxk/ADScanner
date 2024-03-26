@@ -47,7 +47,7 @@ function Find-MAQ {
       Score                       = 19
       MachineAccountQuota         = $MAQ
       PermissiontoAddWorkstations = $additionprivileges
-      Issue                       = "$additionprivileges can add $MAQ machines to $domain"
+      Issue                       = "$additionprivileges can add $MAQ machines to $domain. The ms-DS-MachineAccountQuota attribute should be set to 0 or the permission to add workstations to the domain from the Authenticated Users group in the default domain controller group policy should be removed / changed to a privileged group."
     } 
     $Issue
   }
@@ -59,7 +59,7 @@ function Find-MAQ {
       Score                       = 5
       MachineAccountQuota         = $MAQ
       PermissiontoAddWorkstations = $additionprivileges
-      Issue                       = "$additionprivileges can add $MAQ machines to $domain - ensure this group is restricted to administrative users only" #[TODO] - check this group is restricted to tier 0 only
+      Issue                       = "$additionprivileges can add $MAQ machines to $domain. The ms-DS-MachineAccountQuota attribute should be set to 0 or the permission to add workstations to the domain in the default domain controller group policy should be given to a privileged group only."
     }
     $Issue
   }

@@ -88,7 +88,7 @@ function Find-ESC8 {
         Score     = 50
         "CA Name"      = $CAname
         "CA Endpoint"  = $httpurl
-        Issue     = "$httpurl is vulnerable to NTLM relay attacks"
+        Issue     = "$httpurl is vulnerable to NTLM relay attacks as NTLM is permitted on the HTTP endpoint and Extended Protection for Authentication (EPA) is not enforced. If the endpoint is not used it should be disabled."
       }
       $Issue
     }
@@ -110,7 +110,7 @@ function Find-ESC8 {
         Score     = 50
         "CA Name"      = $CAname
         "CA Endpoint"  = $httpsurl
-        Issue     = "$httpsurl is possibly vulnerable to NTLM relay attacks if Extended Protection for Authentication (EPA) is not enforced"
+        Issue     = "$httpsurl is possibly vulnerable to NTLM relay attacks if Extended Protection for Authentication (EPA) is not enforced. If the endpoint is not used it should be disabled."
       }
       $Issue
     }

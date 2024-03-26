@@ -52,7 +52,7 @@ function Find-ESC7 {
         Name                  = $CAname
         IdentityReference     = $ace.IdentityReference
         ActiveDirectoryRights = $ace.Rights
-        Issue                 = "$($ace.IdentityReference) has $($ace.Rights) rights over this CA object"
+        Issue                 = "$($ace.IdentityReference) has $($ace.Rights) rights over this CA object. MangeCA or ManageCertificates rights should only be assigned to administrators."
       }
       $Issue
     }
