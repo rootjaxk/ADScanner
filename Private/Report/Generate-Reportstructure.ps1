@@ -39,12 +39,12 @@ function Generate-HTMLReportHeader {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>$Domain Vulnerability Report</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/styles.css">
     <link rel="icon" type="image/x-icon" href="/Private/Report/Images/favicon-32x32.png">
 </head>
 <body>
     <div class="banner">
-        <img src="./Images/kerberos-text2.png" alt="ADScanner logo" class="banner-img">
+        <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/kerberos-text2.png" alt="ADScanner logo" class="banner-img">
     </div>
     <div class="main-header">Domain vulnerability report for $Domain</div>
 "@
@@ -62,37 +62,37 @@ function Generate-Riskoverallhtml{
 "@
     if ($TotalDomainRiskScore -ge 100) {
         $riskOverallHTML += @"  
-        <img src="./Images/Risk-scores/Critical.png" alt="Overall risk score">
+        <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Risk-scores/Critical.png" alt="Overall risk score">
         </div>
 "@
     }
     elseif ($TotalDomainRiskScore -ge 75) {
         $riskOverallHTML += @"
-        <img src="./Images/Risk-scores/High.png" alt="Overall risk score">
+        <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Risk-scores/High.png" alt="Overall risk score">
         </div>
 "@
     }
     elseif ($TotalDomainRiskScore -ge 50) {
         $riskOverallHTML += @"
-        <img src="./Images/Risk-scores/Medium.png" alt="Overall risk score">
+        <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Risk-scores/Medium.png" alt="Overall risk score">
         </div>
 "@ 
     }
     elseif ($TotalDomainRiskScore -ge 25) {
         $riskOverallHTML += @"
-        <img src="./Images/Risk-scores/Low.png" alt="Overall risk score">
+        <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Risk-scores/Low.png" alt="Overall risk score">
         </div>
 "@   
     }
     elseif ($TotalDomainRiskScore -eq 1) {
         $riskOverallHTML += @"
-        <img src="./Images/Risk-scores/Very-low.png" alt="Overall risk score">
+        <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Risk-scores/Very-low.png" alt="Overall risk score">
         </div> 
 "@
     }
     elseif ($TotalDomainRiskScore -eq 0) {
         $riskOverallHTML += @"
-        <img src="./Images/Risk-scores/Perfect.png" alt="Overall risk score">
+        <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Risk-scores/Perfect.png" alt="Overall risk score">
         </div> 
 "@   
     }
@@ -329,7 +329,7 @@ function Generate-ReportFooter {
     <div class="remediation-methodology">
         <h2>Risk reduction methodology</h2>
         <p>ADScanner is designed to be repeatable to allow for validation of successful remediation and to track risk reduction over time.</p>
-        <img src="/Private/Report/Images/methodology.png" alt="Risk methodology">
+        <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/methodology.png" alt="Risk methodology">
         <p>In a dynamic and ever changing Active Directory environment, new risks from new configurations can be discovered daily.
             This report shows the risk level at a snapshot in time and shoud be run periodically to check the risk status of the domain. Once you have read through the report follow the remediation steps, prioritizing the risk mitigation efforts on addressing the critical vulnerabilities first. Then rerun the scanner on a periodic basis to verify if remediation was effective and if the risks score has decreased.</p>
     </div>
