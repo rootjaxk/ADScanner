@@ -391,3 +391,39 @@ function Generate-runinfo{
 "@ 
     return $runinfoHTML
 }
+
+function Generate-executivesummary{
+    param (
+        [string]$APIkey,
+        [string]$RisksummaryHTMLoutput,
+        [string]$riskOverallHTML,
+        [string]$domain
+    )
+    if ($riskOverallHTML -match "Critical.png") {
+        $overallRisksummary = "Critical"
+    } elseif($riskOverallHTML -match "High.png"){
+        $overallRisksummary = "High"
+    } elseif($riskOverallHTML -match "Medium.png"){
+        $overallRisksummary = "Medium"
+    } elseif($riskOverallHTML -match "Low.png"){
+        $overallRisksummary = "Low"
+    } elseif($riskOverallHTML -match "Very-low.png"){
+        $overallRisksummary = "Very Low"
+    } elseif($riskOverallHTML -match "Perfect.png"){
+        $overallRisksummary = "Perfect"
+    }
+    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some HTML information relating to a summary of a vulnerability scan and I want you to respond with an executive summary that can be used at the top of a vulnerability report that explains the ultimate risk to ransomware to the Active Directory from determined attackers. This will be a minimum of 400 words and maximum of 700 words. Start by saying ADscanner was commissioned to perform a vulnerability assessment against the $domain Active Directory
+    domain to ensure correct security configuration and operation of the directory. The overall risk attributed to the domain is demeed as $overallRisksummary. Now finish the rest summarising the risks such as number of critical, high, medium, low and what these vulnerabilities mean using language like 'a number of security misconfigurations significantly increases the attack surface of the active directory'. Return this as paragraphs of text between <p> tags. Afterwards saying all that end with a paragraph saying take the risk prioritiation summary in order and perform remediation actions in order of risk, focusing on the the risks assigned the highest score, then work down to reduce the main risks in the domain first."
+    
+    #high temperature to increase creativity
+    $executivesummary = Connect-ChatGPT -APIkey $APIkey -Prompt $RisksummaryHTMLoutput -Temperature 1 -AiSystemMessage $AiSystemMessage
+    $executiveSummaryHTML = @"
+    <!-- Right section for the executive summary -->
+        <div class="executive-summary">
+            <h2>Executive Summary</h2>
+            $executivesummary
+        </div>
+    </div>    
+"@
+return $executiveSummaryHTML
+}

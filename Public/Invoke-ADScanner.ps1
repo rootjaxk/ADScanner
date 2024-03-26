@@ -54,20 +54,25 @@ function Invoke-ADScanner {
 
         [Parameter()]
         [String]
+        $Format = "HTML",
+
+        [Parameter()]
+        [String]
         $APIkey
     )    
 
 
     # Display help menu if ran incorrectly
-    if ((-not $Domain -or -not $apikey) -or $Help) {
-        Write-Host -ForegroundColor Yellow "
+    if ((-not $Domain -or -not $apikey) -or $Help -or $Scans -notmatch "All|Info|Kerberos|PKI|RBAC|ACLs|Passwords|MISC|Legacy" -or ($format -notmatch "console" -and $scans -notmatch "all")) {
+        Write-Host -ForegroundColor Yellow "Invalid usage. Options:
             -Domain     The domain to scan. If don't know scanner will automatically use the current domain the system is joined to (Get-ADDomain)
-            -Scans      The scan type to choose (Info, Kerberos, PKI, RBAC, ACLs, Passwords, MISC, Legacy (Default: All))
-            -Format     The report format (console/html)
-            -OutputPath The location to save the report
-            -APIkey     The API key for ChatGPT to generate a summary of the report
+            -Scans      The scan type to choose - All, Info, Kerberos, PKI, RBAC, ACLs, Passwords, MISC, Legacy (Default: All)
+            -Format     The report format - HTML/Console (Default: HTML)
+            -OutputPath The location to save the report (Default: %pwd%)
+            -APIkey     The API key for ChatGPT to generate a summary of the report (only needed for HTML format)
 
-            Example Usage:  Invoke-ADScanner -Domain test.local -APIKey <API key> -Scans All -Format html -OutputPath c:\temp\
+            Default Usage: Invoke-ADScanner -domain test.local -APIKey <API key> -OutputPath c:\temp\
+            Console example: Invoke-ADScanner -Domain test.local -Scans PKI -Format Console
     " 
         return
     }
@@ -176,16 +181,9 @@ function Invoke-ADScanner {
     $startTime = Get-Date
     Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Starting scan of $domain..." -ForegroundColor Yellow
 
-    # Domain info
     if ($Scans -eq "Info" -or $Scans -eq "All") {
         $DomainInfo += Find-DomainInfo -Domain $Domain
     }
-    $DomainInfohtml = Generate-DomainInfohtml -DomainInfo $DomainInfo
-    
-    #Generate report header
-    $htmlreportheader = Generate-HTMLReportHeader -Domain $Domain
-
-    # PKI - ADCS
     if ($Scans -eq "ADCS" -or $Scans -eq "All") {
         $PKI += Find-ESC1 -Domain $Domain
         $PKI += Find-ESC2 -Domain $Domain 
@@ -197,8 +195,6 @@ function Invoke-ADScanner {
         $PKI += Find-ESC8 -Domain $Domain
         $PKI = $PKI | Sort-Object -Property Score -Descending
     }
-    
-    # Kerberos
     if ($Scans -eq "Kerberos" -or $Scans -eq "All") {
         $Kerberos += Find-Kerberoast -Domain $Domain
         $Kerberos += Find-ASREProast -Domain $Domain
@@ -206,14 +202,10 @@ function Invoke-ADScanner {
         $Kerberos += Find-GoldenTicket -Domain $Domain
         $Kerberos = $Kerberos | Sort-Object -Property Score -Descending
     }   
-
-    # ACLs
     if ($Scans -eq "ACLs" -or $Scans -eq "All") {
         $ACLs += Find-ACLs -Domain $Domain
         $ACLs = $ACLs | Sort-Object -Property Score -Descending
     }
-    
-    # RBAC
     if ($Scans -eq "RBAC" -or $Scans -eq "All") {
         $RBAC += Find-PrivilegedGroups -Domain $Domain
         $RBAC += Find-AdminSDHolder -Domain $Domain
@@ -222,8 +214,6 @@ function Invoke-ADScanner {
         $RBAC += Find-SensitiveAccounts -Domain $Domain
         $RBAC = $RBAC | Sort-Object -Property Score -Descending
     }
-
-    # Passwords
     if ($Scans -eq "PwdPolicy" -or $Scans -eq "All" ) {
         $Passwords += Find-PasswordPolicy -Domain $Domain
         $Passwords += Find-PwdNotRequired -Domain $Domain
@@ -232,8 +222,6 @@ function Invoke-ADScanner {
         $Passwords += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
         $Passwords = $Passwords | Sort-Object -Property Score -Descending
     }
-    
-    # MISC
     if ($Scans -eq "MISC" -or $Scans -eq "All") {
         $MISC += Find-MAQ -Domain $Domain
         $MISC += Find-OutboundAccess -Domain $Domain
@@ -244,19 +232,17 @@ function Invoke-ADScanner {
         $MISC += Find-EfficiencyImprovements -Domain $Domain
         $MISC = $MISC | Sort-Object -Property Score -Descending
     }
-
-    # Legacy
     if ($Scans -eq "Legacy" -or $Scans -eq "All") {
         $Legacy += Find-LegacyProtocols -Domain $Domain
         $Legacy += Find-UnsupportedOS -Domain $Domain
         $Legacy = $Legacy | Sort-Object -Property Score -Descending
     }
 
+  
    
     #Generate console report
-    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Generating report..." -ForegroundColor Yellow
     if ($Scans -eq "All") {
-        
+        Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Console report summary..." -ForegroundColor Yellow
         Write-Host @"
 #####################################################################################
 #                                   Run Info                                        #
@@ -272,9 +258,7 @@ function Invoke-ADScanner {
             "Time to Run"     = $($elapsedTime.TotalSeconds)
         }
         $Runinfo | Format-List
-        $runinfoHTML = Generate-runinfo -domain $domain -starttime $startTime -elapsedtime $elapsedTime
-        
-
+       
         Write-Host @"
 #####################################################################################
 #                          Risk Prioritisation Summary                              #
@@ -302,9 +286,6 @@ function Invoke-ADScanner {
         Write-Host "[*] Domain risk score:"
         $Domainrisk | Format-Table
 
-        #Dynamically resolve risk image based on score
-        $riskOverallHTML = Generate-Riskoverallhtml -TotalDomainRiskScore $totaldomainriskscore
-    
         #Category risk scores
         Write-Host "`r`n[*] Category Risk scores:"
         $categoryRisks = @()
@@ -318,9 +299,7 @@ function Invoke-ADScanner {
         #Order category by score
         $categoryRisks = $categoryRisks | Sort-Object -Property Score -Descending
         $categoryRisks
-        $categoryRisksHTML = Generate-CategoryRisksHTML -CategoryRisks $categoryRisks
-
-
+       
         #Ordered summary of risks
         $Risksummaries = "`r`n[*] Risk summaries:"
         $Allissues += $PKI + $Kerberos + $RBAC + $ACLs + $Passwords + $MISC + $Legacy
@@ -356,12 +335,10 @@ function Invoke-ADScanner {
         $Risksummaries
         $AllissuesHTML = $Allissues | Where-Object { $null -ne $_.Score } | Select-Object Risk, Technique, Category, Score | Sort-Object -Property Score -Descending
         $AllissuesHTML | Format-Table
-        $RisksummaryHTMLoutput = Generate-RisksummaryHTMLoutput -AllissuesHTML $AllissuesHTML  
     }
         
     # Output console report
-    if ($Scans -eq "Info" -or $Scans -eq "All") {
-        
+    if ($Format -eq "Console" -and ($Scans -eq "Info" -or $Scans -eq "All")) {
         Write-Host @"
 #####################################################################################
 #                                    Domain Info                                    #
@@ -370,8 +347,7 @@ function Invoke-ADScanner {
         $DomainInfo | Format-List
     }
 
-    if ($Scans -eq "ADCS" -or $Scans -eq "All") {
-
+    if ($Format -eq "Console" -and ($Scans -eq "ADCS" -or $Scans -eq "All")) {
         Write-Host @"
 #####################################################################################
 #                                       PKI                                         #
@@ -380,7 +356,7 @@ function Invoke-ADScanner {
         $PKI | Format-List
     }
 
-    if ($Scans -eq "Kerberos" -or $Scans -eq "All") {
+    if ($Format -eq "Console" -and ($Scans -eq "Kerberos" -or $Scans -eq "All")) {
         Write-Host @"
 #####################################################################################
 #                                    Kerberos                                       #
@@ -389,7 +365,7 @@ function Invoke-ADScanner {
         $Kerberos | Sort-Object -Property Score -Descending | Format-List
     }    
 
-    if ($Scans -eq "RBAC" -or $Scans -eq "All") {
+    if ($Format -eq "Console" -and ($Scans -eq "RBAC" -or $Scans -eq "All")) {
         Write-Host @"
 #####################################################################################
 #                                       RBAC                                        #
@@ -398,7 +374,7 @@ function Invoke-ADScanner {
         $RBAC | Sort-Object -Property Score -Descending | Format-List
     }
 
-    if ($Scans -eq "ACLs" -or $Scans -eq "All") {
+    if ($Format -eq "Console" -and ($Scans -eq "ACLs" -or $Scans -eq "All")) {
         Write-Host @"
 #####################################################################################
 #                                       ACLs                                        #
@@ -407,7 +383,7 @@ function Invoke-ADScanner {
         $ACLs | Sort-Object -Property Score -Descending | Format-List
     }
 
-    if ($Scans -eq "Passwords" -or $Scans -eq "All") {
+    if ($Format -eq "Console" -and ($Scans -eq "Passwords" -or $Scans -eq "All")) {
         Write-Host @"
 #####################################################################################
 #                                     Passwords                                     #
@@ -416,7 +392,7 @@ function Invoke-ADScanner {
         $Passwords | Sort-Object -Property Score -Descending | Format-List
     }
 
-    if ($Scans -eq "MISC" -or $Scans -eq "All") {
+    if ($Format -eq "Console" -and ($Scans -eq "MISC" -or $Scans -eq "All")) {
         Write-Host @"
 #####################################################################################
 #                                       MISC                                        #
@@ -425,7 +401,7 @@ function Invoke-ADScanner {
         $MISC | Sort-Object -Property Score -Descending | Format-List
     }
 
-    if ($Scans -eq "Legacy" -or $Scans -eq "All") {
+    if ($Format -eq "Console" -and ($Scans -eq "Legacy" -or $Scans -eq "All")) {
         Write-Host @"
 #####################################################################################
 #                                       LEGACY                                      #
@@ -436,52 +412,36 @@ function Invoke-ADScanner {
 
 
     #HTML Findings
-    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Generating HTML report..." -ForegroundColor Yellow
-    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Producing contextualized remediation..." -ForegroundColor Yellow
-   
-    #Executive summary from GPT
-    if ($riskOverallHTML -match "Critical.png") {
-        $overallRisksummary = "Critical"
-    } elseif($riskOverallHTML -match "High.png"){
-        $overallRisksummary = "High"
-    } elseif($riskOverallHTML -match "Medium.png"){
-        $overallRisksummary = "Medium"
-    } elseif($riskOverallHTML -match "Low.png"){
-        $overallRisksummary = "Low"
-    } elseif($riskOverallHTML -match "Very-low.png"){
-        $overallRisksummary = "Very Low"
-    } elseif($riskOverallHTML -match "Perfect.png"){
-        $overallRisksummary = "Perfect"
-    }
-    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some HTML information relating to a summary of a vulnerability scan and I want you to respond with an executive summary that can be used at the top of a vulnerability report that explains the ultimate risk to ransomware to the Active Directory from determined attackers. This will be a minimum of 400 words and maximum of 700 words. Start by saying ADscanner was commissioned to perform a vulnerability assessment against the $domain Active Directory
-    domain to ensure correct security configuration and operation of the directory. The overall risk attributed to the domain is demeed as $overallRisksummary. Now finish the rest summarising the risks such as number of critical, high, medium, low and what these vulnerabilities mean using language like 'a number of security misconfigurations significantly increases the attack surface of the active directory'. Return this as paragraphs of text between <p> tags. Afterwards saying all that end with a paragraph saying take the risk prioritiation summary in order and perform remediation actions in order of risk, focusing on the the risks assigned the highest score, then work down to reduce the main risks in the domain first."
-    #high temperature to increase creativity
-    $executivesummary = Connect-ChatGPT -APIkey $APIkey -Prompt $RisksummaryHTMLoutput -Temperature 1 -AiSystemMessage $AiSystemMessage
-    $executiveSummaryHTML = @"
-    <!-- Right section for the executive summary -->
-        <div class="executive-summary">
-            <h2>Executive Summary</h2>
-            $executivesummary
-        </div>
-    </div>
-"@
-    #Technical section
-    $PKIhtml = Generate-PKIhtml -PKI $PKI -APIKey $APIkey
-    $Kerberoshtml = Generate-Kerberoshtml -Kerberos $Kerberos -APIKey $APIkey
-    $ACLshtml = Generate-ACLshtml -ACLs $ACLs -APIKey $APIkey
-    $RBAChtml = Generate-RBAChtml -RBAC $RBAC -APIKey $APIkey
-    $Passwordshtml = Generate-Passwordshtml -Passwords $Passwords -APIKey $APIkey
-    $MISChtml = Generate-MISChtml -MISC $MISC -APIKey $APIkey
-    $Legacyhtml = Generate-Legacyhtml -Legacy $Legacy -APIKey $APIkey
-    $Reportfooter = Generate-ReportFooter
-    $JSend = Generate-javascripthtml
-
-    #Generate Web Report
-    $FinalHTML = $htmlreportheader + $riskOverallHTML + $runinfoHTML + $categoryRisksHTML + $executiveSummaryHTML + $RisksummaryHTMLoutput + $DomainInfohtml + $PKIhtml + $Kerberoshtml + $ACLshtml + $RBAChtml + $Passwordshtml + $MISChtml + $Legacyhtml + $Reportfooter + $JSend
-
-    #Output HTML report
-    $FinalHTML | Out-File -FilePath "report.html"
-    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Report outputted to report.html" -ForegroundColor Yellow
-    Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Done!" -ForegroundColor Yellow
+    if ($Format -eq "HTML") {
+        Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Generating HTML report..." -ForegroundColor Yellow
+        Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Producing contextualized remediation..." -ForegroundColor Yellow
     
+        #Executive section    
+        $htmlreportheader = Generate-HTMLReportHeader -Domain $Domain
+        $riskOverallHTML = Generate-Riskoverallhtml -TotalDomainRiskScore $totaldomainriskscore #Dynamically resolve risk image based on score
+        $runinfoHTML = Generate-runinfo -domain $domain -starttime $startTime -elapsedtime $elapsedTime
+        $categoryRisksHTML = Generate-CategoryRisksHTML -CategoryRisks $categoryRisks
+        $RisksummaryHTMLoutput = Generate-RisksummaryHTMLoutput -AllissuesHTML $AllissuesHTML 
+        $executiveSummaryHTML = Generate-ExecutiveSummary -APIKey $APIkey -RisksummaryHTMLoutput $RisksummaryHTMLoutput -RiskOverallHTML $riskOverallHTML -Domain $Domain
+
+        #Technical section
+        $DomainInfohtml = Generate-DomainInfohtml -DomainInfo $DomainInfo
+        $PKIhtml = Generate-PKIhtml -PKI $PKI -APIKey $APIkey
+        $Kerberoshtml = Generate-Kerberoshtml -Kerberos $Kerberos -APIKey $APIkey
+        $ACLshtml = Generate-ACLshtml -ACLs $ACLs -APIKey $APIkey
+        $RBAChtml = Generate-RBAChtml -RBAC $RBAC -APIKey $APIkey
+        $Passwordshtml = Generate-Passwordshtml -Passwords $Passwords -APIKey $APIkey
+        $MISChtml = Generate-MISChtml -MISC $MISC -APIKey $APIkey
+        $Legacyhtml = Generate-Legacyhtml -Legacy $Legacy -APIKey $APIkey
+        $Reportfooter = Generate-ReportFooter
+        $JSend = Generate-javascripthtml
+
+        #Generate Web Report
+        $FinalHTML = $htmlreportheader + $riskOverallHTML + $runinfoHTML + $categoryRisksHTML + $executiveSummaryHTML + $RisksummaryHTMLoutput + $DomainInfohtml + $PKIhtml + $Kerberoshtml + $ACLshtml + $RBAChtml + $Passwordshtml + $MISChtml + $Legacyhtml + $Reportfooter + $JSend
+
+        #Output HTML report
+        $FinalHTML | Out-File -FilePath "report.html"
+        Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Report outputted to report.html" -ForegroundColor Yellow
+        Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Done!" -ForegroundColor Yellow
+    }
 }
