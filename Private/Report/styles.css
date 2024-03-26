@@ -1,6 +1,7 @@
 body{
     font-family: 'Segoe UI', sans-serif;
 }
+
 /* Style for the banner */
 .banner {
     background-color: #f2f2f2;
@@ -32,7 +33,6 @@ body{
     max-width: 80%;
     margin: auto;
     margin-top: 10px;
-   
 }
 .left-image{
     max-width:33%;
@@ -120,6 +120,12 @@ body{
     flex: 2;
     text-align: justify;
 }
+.executive-summary p:first-of-type {
+    margin: 0px;
+}
+.executive-summary h2{
+    margin-bottom:12px;
+}
 .custom-hr{
     width: 50%;
 }
@@ -186,7 +192,7 @@ body{
     width: 60%;
     margin: 0 auto;
     border-collapse: collapse;
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     font-weight:500;
 }
 .risk-column-description{
@@ -418,4 +424,36 @@ th {
     height: auto;
     display: block;
     margin-bottom: 10px;
+}
+
+.remediation-methodology{
+    text-align:center;
+    margin: auto;
+    max-width: 80%;
+    margin-bottom:20px;
+}
+.remediation-methodology p:first-of-type{
+    margin-bottom: 0
+}
+
+.disclosure{
+    max-width:95%;
+    margin:auto;
+    text-align:center;
+    border: 2px solid #a91818;
+    border-radius: 10px;
+    max-width: 80%;
+    margin-top: 12px;
+    margin-bottom:20px;
+}
+.disclosure h3{
+    text-decoration: underline;
+    margin:10px;
+}
+.disclosure p{
+    margin-top:0;
+}
+.disclosure-info{
+    max-width:95%;
+    margin:auto;
 }

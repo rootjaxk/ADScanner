@@ -325,16 +325,69 @@ function Generate-javascripthtml{
 
 function Generate-ReportFooter {
     $html = @"
-    <!-- Footer -->
     <div class="main-header">Disclosure and next steps</div>
-    <div class="domain-info">
-    <p>ADScanner is intended for use on authorised systems only. Users must obtain explicit consent from system owners
-        before using the tool on any network or actions could lead to serious legal repercussions.
-        The creator is not responsible for any resulting damages or losses.</p>
-        <p>In a dynamic and ever chaning Active Directory, new risks from new configurations can be discovered daily. This report shows the risk level at a snapshot in time and shoud be run periodically to check the risk status of the domain.</p>
-    <p>Once you have read through the report follow the remediation steps, then rerun the scanner on a periodic basis to see the
-        risks score decrease! Be careful as GPT may get things wrong.</p>
+    <div class="remediation-methodology">
+        <h2>Risk reduction methodology</h2>
+        <p>ADScanner is designed to be repeatable to allow for validation of successful remediation and to track risk reduction over time.</p>
+        <img src="/Private/Report/Images/methodology.png" alt="Risk methodology">
+        <p>In a dynamic and ever changing Active Directory environment, new risks from new configurations can be discovered daily.
+            This report shows the risk level at a snapshot in time and shoud be run periodically to check the risk status of the domain. Once you have read through the report follow the remediation steps, prioritizing the risk mitigation efforts on addressing the critical vulnerabilities first. Then rerun the scanner on a periodic basis to verify if remediation was effective and if the risks score has decreased.</p>
+    </div>
+    <div class="disclosure">
+        <div class="disclosure-info">
+            <h3>Disclosure</h3>
+            <p>ADScanner is a tool designed to quickly assess the Active Directory security level based on risk. It is intended for use on authorised systems only. Users must obtain explicit consent from system owners
+                before using the tool on any 
+                network or actions could lead to serious legal repercussions. The creator is not responsible for any resulting damages or losses. GPT remediation has gone through testing and prompt engineering but steps produced are a best effort and should be verified before implementation.</p>
         </div>
+    </div>
 "@
     return $html
+}
+
+function Generate-runinfo{
+    param (
+        [string]$Domain,
+        [datetime]$startTime,
+        [timespan]$elapsedTime
+    )
+
+    $runinfoHTML = @"
+    <!-- Executive summary section -->
+    <div class="summary">
+    <!-- Left section for the tables -->
+    <div class="left-section">
+        <div class="table-container">
+            <table class="summary-table">
+                <thead>
+                    <tr>
+                        <th class="summary-table-header" colspan="2">Details when ran</th>
+                    </tr>
+                    <tr>
+                        <td>Domain Assessed</td>
+                        <td>$Domain</td>
+                    </tr>
+                    <tr>
+                        <td>Ran as User</td>
+                        <td>$env:USERDOMAIN\$env:USERNAME</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ran on Host</td>
+                        <td>$($(Get-ADComputer -Identity $env:COMPUTERNAME).dnshostname)</td>
+                    </tr>
+                    <tr>
+                        <td>Date and Time</td>
+                        <td>$startTime</td>
+                    </tr>
+                    <tr>
+                        <td>Time to Run</td>
+                        <td>$($elapsedTime.TotalSeconds)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+"@ 
+    return $runinfoHTML
 }

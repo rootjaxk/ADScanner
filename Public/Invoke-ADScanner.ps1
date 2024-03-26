@@ -272,44 +272,8 @@ function Invoke-ADScanner {
             "Time to Run"     = $($elapsedTime.TotalSeconds)
         }
         $Runinfo | Format-List
-
-        $runinfoHTML = @"
-        <!-- Executive summary section -->
-        <div class="summary">
-        <!-- Left section for the tables -->
-        <div class="left-section">
-            <div class="table-container">
-                <table class="summary-table">
-                    <thead>
-                        <tr>
-                            <th class="summary-table-header" colspan="2">Details when ran</th>
-                        </tr>
-                        <tr>
-                            <td>Domain Assessed</td>
-                            <td>$Domain</td>
-                        </tr>
-                        <tr>
-                            <td>Ran as User</td>
-                            <td>$env:USERDOMAIN\$env:USERNAME</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Ran on Host</td>
-                            <td>$($(Get-ADComputer -Identity $env:COMPUTERNAME).dnshostname)</td>
-                        </tr>
-                        <tr>
-                            <td>Date and Time</td>
-                            <td>$startTime</td>
-                        </tr>
-                        <tr>
-                            <td>Time to Run</td>
-                            <td>$($elapsedTime.TotalSeconds)</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-"@
+        $runinfoHTML = Generate-runinfo -domain $domain -starttime $startTime -elapsedtime $elapsedTime
+        
 
         Write-Host @"
 #####################################################################################
@@ -474,6 +438,7 @@ function Invoke-ADScanner {
     #HTML Findings
     Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Generating HTML report..." -ForegroundColor Yellow
     Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Producing contextualized remediation..." -ForegroundColor Yellow
+   
     #Executive summary from GPT
     if ($riskOverallHTML -match "Critical.png") {
         $overallRisksummary = "Critical"
@@ -488,19 +453,19 @@ function Invoke-ADScanner {
     } elseif($riskOverallHTML -match "Perfect.png"){
         $overallRisksummary = "Perfect"
     }
-    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some HTML information relating to a summary of a vulnerability scan and I want you to respond with an executive summary that can be used at the top of a vulnerability report that explains the ultimate risk to ransomware to the Active Directory from determined attackers. This will be a minimum of 300 words and maximum of 600 words. Start by saying ADscanner was commissioned to perform a vulnerability assessment against the $domain Active Directory
-    domain to ensure correct security configuration and operation of the directory. The overall risk attributed to the domain is demeed as $overallRisksummary. Now finish the rest summarising the risks such as number of critical, high, medium, low and what these vulnerabilities mean using language like 'a number of security misconfiguratioons significantly increases the attack surface of the active directory'. Return this as paragraphs of text that I will take and then put between <p> tags."
+    $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some HTML information relating to a summary of a vulnerability scan and I want you to respond with an executive summary that can be used at the top of a vulnerability report that explains the ultimate risk to ransomware to the Active Directory from determined attackers. This will be a minimum of 400 words and maximum of 700 words. Start by saying ADscanner was commissioned to perform a vulnerability assessment against the $domain Active Directory
+    domain to ensure correct security configuration and operation of the directory. The overall risk attributed to the domain is demeed as $overallRisksummary. Now finish the rest summarising the risks such as number of critical, high, medium, low and what these vulnerabilities mean using language like 'a number of security misconfigurations significantly increases the attack surface of the active directory'. Return this as paragraphs of text between <p> tags. Afterwards saying all that end with a paragraph saying take the risk prioritiation summary in order and perform remediation actions in order of risk, focusing on the the risks assigned the highest score, then work down to reduce the main risks in the domain first."
     #high temperature to increase creativity
     $executivesummary = Connect-ChatGPT -APIkey $APIkey -Prompt $RisksummaryHTMLoutput -Temperature 1 -AiSystemMessage $AiSystemMessage
     $executiveSummaryHTML = @"
     <!-- Right section for the executive summary -->
         <div class="executive-summary">
             <h2>Executive Summary</h2>
-            <p>$executivesummary</p>
+            $executivesummary
         </div>
     </div>
 "@
-
+    #Technical section
     $PKIhtml = Generate-PKIhtml -PKI $PKI -APIKey $APIkey
     $Kerberoshtml = Generate-Kerberoshtml -Kerberos $Kerberos -APIKey $APIkey
     $ACLshtml = Generate-ACLshtml -ACLs $ACLs -APIKey $APIkey
