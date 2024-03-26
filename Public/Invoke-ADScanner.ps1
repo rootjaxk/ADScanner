@@ -66,7 +66,7 @@ function Invoke-ADScanner {
     if ((-not $Domain -or -not $apikey) -or $Help -or $Scans -notmatch "All|Info|Kerberos|PKI|RBAC|ACLs|Passwords|MISC|Legacy" -or ($format -notmatch "console" -and $scans -notmatch "all")) {
         Write-Host -ForegroundColor Yellow "Invalid usage. Options:
             -Domain     The domain to scan. If don't know scanner will automatically use the current domain the system is joined to (Get-ADDomain)
-            -Scans      The scan type to choose - All, Info, Kerberos, PKI, RBAC, ACLs, Passwords, MISC, Legacy (Default: All)
+            -Scans      The scan type to choose - All, Info, PKI, Kerberos, RBAC, ACLs, Passwords, MISC, Legacy (Default: All)
             -Format     The report format - HTML/Console (Default: HTML)
             -OutputPath The location to save the report (Default: %pwd%)
             -APIkey     The API key for ChatGPT to generate a summary of the report (only needed for HTML format)
