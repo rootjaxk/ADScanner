@@ -1,8 +1,8 @@
 ![Banner](https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/kerberos-text2.png)  
 # ADScanner
-ADScanner is an improved Active Directory vulnerability scanner with intelligent report capability designed to quickly and easily reduce the risk of Active Directory environments that are victims of 10+ years of technical debt and compounding misconfigurations. 
+ADScanner is an improved Active Directory vulnerability scanner with intelligent report capability designed to quickly and easily reduce the risk of Active Directory environments that are victims of 10+ years of technical debt with compounding misconfigurations. 
 
-ADscanner will scan for **120+** vulnerability checks and produce a professional HTML vulnerability report and risk register ordered by risk severity with attack demonstrations with contextualized remediation steps provided to understand how threat actors will compromise your environment and help reduce risk as quickly as possible.
+ADscanner will scan for **120+** vulnerability checks and produce a professional HTML vulnerability report and risk register ordered by risk severity. The report has attack demonstrations with contextualized remediation steps provided to understand how threat actors will compromise your environment and help reduce risk as quickly as possible.
 
 Within a few minutes you can understand the biggest risks impacting your Active Directory and can work on minimizing the likelihood of ransomware. 
 
