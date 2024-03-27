@@ -527,8 +527,9 @@ function Invoke-ADScanner {
         if ($outputpath.EndsWith('\')) {
             $outputpath = $outputpath.TrimEnd('\')
         }
-        $FinalHTML | Out-File -FilePath $OutputPath + "\ADScanner-$domain.html"
-        Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Report outputted to $OutputPath\ADScanner-$domain.html" -ForegroundColor Yellow
+        $Endpath = $OutputPath + "\ADScanner-$domain.html"
+        $FinalHTML | Out-File -FilePath $Endpath
+        Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Report outputted to $Endpath" -ForegroundColor Yellow
         Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Done!" -ForegroundColor Yellow
     }
 }

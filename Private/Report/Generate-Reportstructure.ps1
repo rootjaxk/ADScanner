@@ -39,8 +39,8 @@ function Generate-HTMLReportHeader {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>$Domain Vulnerability Report</title>
-    <link rel="stylesheet" href="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/styles.css">
-    <link rel="icon" type="image/x-icon" href="/Private/Report/Images/favicon-32x32.png">
+    <link rel="stylesheet" href="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/styles.css">
+    <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/favicon-32x32.png">
 </head>
 <body>
     <div class="banner">
