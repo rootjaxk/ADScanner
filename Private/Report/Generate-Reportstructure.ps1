@@ -39,8 +39,470 @@ function Generate-HTMLReportHeader {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>$Domain Vulnerability Report</title>
-    <link rel="stylesheet" href="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/styles.css">
     <link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/favicon-32x32.png">
+    <style>
+        body{
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* Style for the banner */
+.banner {
+    background-color: #f2f2f2;
+    text-align: center;
+    display:flex;
+    align-items: center;
+}
+.banner-img{
+    height: 100%;
+    max-width: 100%;
+}
+
+.main-header {
+    background-color: #333333;
+    color: #fff;
+    padding: 10px;
+    margin: 0;
+    text-align: center;
+    font-weight:500;
+}
+
+
+/*risk overall bit*/
+.risk-overall{
+    display:flex;
+    border: 2px solid #333333;
+    border-radius: 10px;
+    margin-top: 10px;
+    max-width: 80%;
+    margin: auto;
+    margin-top: 10px;
+}
+.left-image{
+    max-width:33%;
+}
+.left-image img{
+    max-width: 100%;
+    padding-left: 5%;
+    align-items: center;
+}
+.risk-overall-text{
+    margin-left: 3%;
+}
+
+
+
+/*executive summary bit*/
+.summary {
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    padding-left: 0px;
+    display: flex;
+    border-bottom: 1px solid #333333;
+}
+
+/* Style for the tables */
+.table-container {
+    margin:5%;
+}
+
+/*left table*/
+.summary-table {
+    max-width: 90%;
+    border-collapse: collapse;
+    font-weight:500;
+    font-size: 14px;
+    margin: auto;
+    overflow: hidden;
+}
+.summary-table-header{
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border:none;
+}
+.summary-table th {
+    background-color: #263143;
+    color: #fff;
+    width:50%;
+}
+.summary-table td {
+    width: 50%;
+}
+.summary-left{
+    border-top-left-radius: 10px;
+    border:none;
+}
+.summary-right{
+    border-top-right-radius: 10px;
+    border:none;
+}
+.left-section {
+    flex: 1;
+    max-width:30%;
+}
+
+.category-riskcritical {
+    background-color: rgb(194, 36, 36);
+}
+.category-riskhigh {
+    background-color: rgb(228, 45, 45);
+}
+.category-riskmedium {
+    background-color: rgb(245, 167, 23);
+}
+.category-risklow {
+    background-color: rgb(246, 246, 27);
+}
+/*if category score is 0*/
+.category-riskinformational {
+    background-color: rgb(98, 214, 117);
+}
+
+/*right table*/
+.executive-summary {
+    flex: 2;
+    text-align: justify;
+}
+.executive-summary p:first-of-type {
+    margin: 0px;
+}
+.executive-summary h2{
+    margin-bottom:12px;
+}
+.custom-hr{
+    width: 50%;
+}
+
+
+
+
+/* Risk prioritisaion summary*/
+.risk-summary-container {
+    margin: 0 auto;
+    max-width: 80%;
+    padding: 0px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #333333;
+}
+
+.risk-summary-heading {
+    max-width: 65%;
+    text-align: center;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.risk-prioritisation-summary {
+    width: 80%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-weight:500;
+}
+
+.risk-column{
+    width:10%;
+    background-color: #263143;
+    color: #fff;
+    border-top-left-radius: 10px;
+    border:none;
+}
+
+.technique-column {
+    width: 40%; /* Adjust the width as needed */
+    background-color: #263143;
+    color: #fff;
+}
+
+.category-column,
+.score-column {
+    width: 10%; /* Adjust the width as needed */
+    background-color: #263143;
+    color: #fff;
+}
+.score-column{
+    border-top-right-radius: 10px;
+    border:none;
+}
+
+/* risk descriptions */
+.risk-summary-description{
+    text-align: center;
+    margin: 0 auto;
+    padding: 10px;
+}
+.risk-description-summary {
+    width: 60%;
+    margin: 0 auto;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+    font-weight:500;
+}
+.risk-column-description{
+    background-color: #263143;
+    color: #fff;
+    border-top-left-radius: 10px;
+    border:none;
+    width:10%;
+
+}
+.score-column-description{
+    background-color: #263143;
+    color: #fff;
+    width:8%;
+}
+.description-font{
+    font-weight:400;
+}
+
+.description{
+    background-color: #263143;
+    color: #fff;
+    border-top-right-radius: 10px;
+    border:none;
+}
+
+
+
+
+
+h2 {
+    text-decoration: underline;
+}
+
+a{
+    color:black;
+}
+
+.critical{
+    background-color: rgb(194, 36, 36);
+}
+.high{
+    background-color: rgb(228, 45, 45);
+}
+.medium{
+    background-color: rgb(245, 167, 23);
+}
+.low{
+    background-color: rgb(246, 246, 27)
+}
+.information{
+    background-color: rgb(149, 200, 232);
+}
+
+
+
+
+
+
+/* Technical section */
+table{
+    width:100%;
+    border-collapse: collapse;
+}
+
+
+/*domain-info*/
+.domain-info{
+    max-width: 70%;
+    margin: auto;
+    margin-bottom: 20px;
+}
+.info-left{
+    background-color: #263143;
+    color: #fff;
+    border-top-left-radius: 10px;
+    border:none;
+}
+.info-right{
+    background-color: #263143;
+    color: #fff;
+    border-top-right-radius: 10px;
+    border:none;
+}
+
+
+.domain-info p{
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-align:center;
+    max-width: 80%;
+}
+.domain-info-table{
+    margin: auto;
+    max-width: 85%;
+    margin-bottom: 40px;
+}
+.relevantinfo{
+    vertical-align: top;
+}
+.relevantinfo td{
+    display:flex;
+}
+.explanation{
+    vertical-align: top;
+}
+.grey{
+    background-color: #c4c4c4e0;
+    font-weight: 500;
+}
+.explanation{
+    text-align: justify;
+}
+
+
+
+/*other findings*/
+.novuln{
+    max-width: 80%;
+    margin: auto;
+    text-align:center;
+    margin-bottom: 30px;
+    margin-top: 25px;
+
+}
+.finding-header {
+    background-color: #263143;
+    text-align: center;
+    color: #fff;
+    padding: 10px;
+    font-weight:bold;
+}
+
+.finding-container {
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    padding-top:0px;
+    padding-bottom: 40px;
+}
+
+
+.table-header-left {
+    background-color: #263143;
+    color: #fff;
+    border-top-left-radius: 10px;
+    border:none;
+}
+.table-header-right {
+    background-color: #263143;
+    color: #fff;
+    border-top-right-radius: 10px;
+    border:none;
+}
+
+
+th,td {
+    border: 1px solid #263143;
+    padding: 8px;
+    text-align: left;
+}
+
+.toggle {
+    background-color: #b9c9d0;
+    font-weight:500;
+    padding:10px;
+   
+}
+.finding {
+    display:none;
+}
+
+th {
+    background-color: #6bb3cb;
+}
+
+.code{
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 10px;
+    background-color: #f4f4f4;
+    
+}
+
+
+.finding-riskcritical, .finding-riskhigh, .finding-riskmedium, .finding-risklow, .finding-riskinformational {
+    width: 15%;
+    font-weight:500;
+}
+
+.finding-riskcritical {
+    background-color: rgb(194, 36, 36);
+}
+.finding-riskhigh {
+    background-color: rgb(228, 45, 45);
+}
+.finding-riskmedium {
+    background-color: rgb(245, 167, 23);
+}
+.finding-risklow {
+    background-color: rgb(246, 246, 27);
+}
+.finding-riskinformational {
+    background-color: rgb(149, 200, 232);
+}
+
+
+.toggle:hover{
+    background-color: #cad3d6;
+    cursor: pointer;
+}
+
+.attack-container{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+.attack-text{
+    flex: 1;
+    margin-right: 20px;
+  }
+  
+.image-cell{
+    flex: 1;
+    max-width: 45%; 
+}
+.image-cell img{
+    width: 100%;
+    height: auto;
+    display: block;
+    margin-bottom: 10px;
+}
+
+.remediation-methodology{
+    text-align:center;
+    margin: auto;
+    max-width: 80%;
+    margin-bottom:20px;
+}
+.remediation-methodology p:first-of-type{
+    margin-bottom: 0
+}
+
+.disclosure{
+    max-width:95%;
+    margin:auto;
+    text-align:center;
+    border: 2px solid #a91818;
+    border-radius: 10px;
+    max-width: 80%;
+    margin-top: 12px;
+    margin-bottom:20px;
+}
+.disclosure h3{
+    text-decoration: underline;
+    margin:10px;
+}
+.disclosure p{
+    margin-top:0;
+}
+.disclosure-info{
+    max-width:95%;
+    margin:auto;
+}
+    </style>
 </head>
 <body>
     <div class="banner">
@@ -51,7 +513,7 @@ function Generate-HTMLReportHeader {
     return $html
 }
 
-function Generate-Riskoverallhtml{
+function Generate-Riskoverallhtml {
     param (
         [array]$TotalDomainRiskScore
     )
@@ -124,49 +586,49 @@ function Generate-CategoryRisksHTML {
                     </thead>
                     <tbody>
 "@
-        foreach ($item in $categoryRisks) {
-            if ($item.score -ge 100) {
-                $categoryRisksHTML += @"
+    foreach ($item in $categoryRisks) {
+        if ($item.score -ge 100) {
+            $categoryRisksHTML += @"
                 <tr>
                     <td>$($item.Category)</td>
                     <td class="category-riskcritical">$($item.score)</td>
                 </tr>
 "@
-            }
-            elseif ($item.score -ge 75) {
-                $categoryRisksHTML += @"
+        }
+        elseif ($item.score -ge 75) {
+            $categoryRisksHTML += @"
                 <tr>
                     <td>$($item.Category)</td>
                     <td class="category-riskhigh">$($item.score)</td>
                 </tr>
 "@
-            }
-            elseif ($item.score -ge 50) {
-                $categoryRisksHTML += @"
+        }
+        elseif ($item.score -ge 50) {
+            $categoryRisksHTML += @"
                 <tr>
                     <td>$($item.Category)</td>
                     <td class="category-riskmedium">$($item.score)</td>
                 </tr>
 "@
-            }
-            elseif ($item.score -ge 1) {
-                $categoryRisksHTML += @"
+        }
+        elseif ($item.score -ge 1) {
+            $categoryRisksHTML += @"
                 <tr>
                     <td>$($item.Category)</td>
                     <td class="category-risklow">$($item.score)</td>
                 </tr>
 "@          
-            }
-            elseif ($item.score -eq 0) {
-                $categoryRisksHTML += @"
+        }
+        elseif ($item.score -eq 0) {
+            $categoryRisksHTML += @"
                 <tr>
                     <td>$($item.Category)</td>
                     <td class="category-riskinformational">$($item.score)</td>
                 </tr>       
 "@
-            }
         }
-        $categoryRisksHTML += @"
+    }
+    $categoryRisksHTML += @"
                     </tbody>
                 </table>
             </div>
@@ -199,12 +661,12 @@ function Generate-RisksummaryHTMLoutput {
         </thead>
         <tbody>
 "@
-#Dynamically add rows to table based on risk
-foreach ($row in $AllissuesHTML) {
-    $nospace = $row.Technique.Replace(" ", "-")
-    if ($row.risk -match "CRITICAL") {
-        #replace whitespace with - as HTML id's cannot have whitespace
-        $RisksummaryHTMLoutput += @"
+    #Dynamically add rows to table based on risk
+    foreach ($row in $AllissuesHTML) {
+        $nospace = $row.Technique.Replace(" ", "-")
+        if ($row.risk -match "CRITICAL") {
+            #replace whitespace with - as HTML id's cannot have whitespace
+            $RisksummaryHTMLoutput += @"
         <tr class="critical">
             <td>Critical</td>
             <td><a href="#$nospace">$($row.technique)</a></td>
@@ -212,9 +674,9 @@ foreach ($row in $AllissuesHTML) {
             <td>$($row.score)</td>
         </tr>
 "@
-    }
-    elseif ($row.risk -match "HIGH") {
-        $RisksummaryHTMLoutput += @"
+        }
+        elseif ($row.risk -match "HIGH") {
+            $RisksummaryHTMLoutput += @"
         <tr class="high">
             <td>High</td>
             <td><a href="#$nospace">$($row.technique)</a></td>
@@ -222,9 +684,9 @@ foreach ($row in $AllissuesHTML) {
             <td>$($row.score)</td>
         </tr>
 "@
-    }
-    elseif ($row.risk -match "MEDIUM") {
-        $RisksummaryHTMLoutput += @"
+        }
+        elseif ($row.risk -match "MEDIUM") {
+            $RisksummaryHTMLoutput += @"
         <tr class="medium">
             <td>Medium</td>
             <td><a href="#$nospace">$($row.technique)</a></td>
@@ -232,9 +694,9 @@ foreach ($row in $AllissuesHTML) {
             <td>$($row.score)</td>
         </tr>
 "@
-    }
-    elseif ($row.risk -match "LOW") {
-        $RisksummaryHTMLoutput += @"
+        }
+        elseif ($row.risk -match "LOW") {
+            $RisksummaryHTMLoutput += @"
         <tr class="low">
             <td>Low</td>
             <td><a href="#$nospace">$($row.technique)</a></td>
@@ -242,9 +704,9 @@ foreach ($row in $AllissuesHTML) {
             <td>$($row.score)</td>
         </tr>
 "@
-    }
-    elseif ($row.risk -match "INFO") {
-        $RisksummaryHTMLoutput += @"
+        }
+        elseif ($row.risk -match "INFO") {
+            $RisksummaryHTMLoutput += @"
         <tr class="information">
             <td>Informational</td>
             <td><a href="#$nospace">$($row.technique)</a></td>
@@ -252,8 +714,8 @@ foreach ($row in $AllissuesHTML) {
             <td>$($row.score)</td>
         </tr>
 "@
+        }
     }
-}
     #end the table
     $RisksummaryHTMLoutput += "</tbody></table></div>"
     $RisksummaryHTMLoutput += @"
@@ -301,7 +763,7 @@ foreach ($row in $AllissuesHTML) {
     return $RisksummaryHTMLoutput
 }
 
-function Generate-javascripthtml{
+function Generate-javascripthtml {
     $html = @"
     <!-- js to drop down each finding-->
     <script>
@@ -345,7 +807,7 @@ function Generate-ReportFooter {
     return $html
 }
 
-function Generate-runinfo{
+function Generate-runinfo {
     param (
         [string]$Domain,
         [datetime]$startTime,
@@ -392,7 +854,7 @@ function Generate-runinfo{
     return $runinfoHTML
 }
 
-function Generate-executivesummary{
+function Generate-executivesummary {
     param (
         [string]$APIkey,
         [string]$RisksummaryHTMLoutput,
@@ -401,15 +863,20 @@ function Generate-executivesummary{
     )
     if ($riskOverallHTML -match "Critical.png") {
         $overallRisksummary = "Critical"
-    } elseif($riskOverallHTML -match "High.png"){
+    }
+    elseif ($riskOverallHTML -match "High.png") {
         $overallRisksummary = "High"
-    } elseif($riskOverallHTML -match "Medium.png"){
+    }
+    elseif ($riskOverallHTML -match "Medium.png") {
         $overallRisksummary = "Medium"
-    } elseif($riskOverallHTML -match "Low.png"){
+    }
+    elseif ($riskOverallHTML -match "Low.png") {
         $overallRisksummary = "Low"
-    } elseif($riskOverallHTML -match "Very-low.png"){
+    }
+    elseif ($riskOverallHTML -match "Very-low.png") {
         $overallRisksummary = "Very Low"
-    } elseif($riskOverallHTML -match "Perfect.png"){
+    }
+    elseif ($riskOverallHTML -match "Perfect.png") {
         $overallRisksummary = "Perfect"
     }
     $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some HTML information relating to a summary of a vulnerability scan and I want you to respond with an executive summary that can be used at the top of a vulnerability report that explains the ultimate risk to ransomware to the Active Directory from determined attackers relating to technical debt. This will be a minimum of 400 words and maximum of 700 words. Start by saying ADscanner was commissioned to perform a vulnerability assessment against the $domain Active Directory
@@ -425,5 +892,5 @@ function Generate-executivesummary{
         </div>
     </div>    
 "@
-return $executiveSummaryHTML
+    return $executiveSummaryHTML
 }
