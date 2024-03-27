@@ -114,7 +114,6 @@ function Invoke-ADScanner {
         "$([char]0x1b)[92m$msg$([char]0x1b)[0m"
     }
 
-    #Add a check to see if RSAT is installed, if not, say to install it before importing AD module
     function Test-RSAT-Installed {
         $RSAT = Get-Module -ListAvailable -Name 'ActiveDirectory'
         if ($RSAT) {
@@ -124,7 +123,6 @@ function Invoke-ADScanner {
             return $false
         }
     }
-    #required for esc7 check
     function Test-RSATADCS-Installed {
         try {
             $RSAT = Get-WindowsFeature -Name RSAT-ADCS
@@ -214,6 +212,7 @@ function Invoke-ADScanner {
         else {
             if ($OS -eq 1) {
                 import-module PSPKI
+                #check if RSAT-ADCS works
                 try {
                     $success = Get-CertificateTemplate
                 } catch {}
@@ -246,15 +245,22 @@ function Invoke-ADScanner {
         $DomainInfo += Find-DomainInfo -Domain $Domain
     }
     if ($Scans -eq "ADCS" -or $Scans -eq "All") {
-        $PKI += Find-ESC1 -Domain $Domain
-        $PKI += Find-ESC2 -Domain $Domain 
-        $PKI += Find-ESC3 -Domain $Domain
-        $PKI += Find-ESC4 -Domain $Domain 
-        $PKI += Find-ESC5 -Domain $Domain
-        $PKI += Find-ESC6 -Domain $Domain
-        $PKI += Find-ESC7 -Domain $Domain
-        $PKI += Find-ESC8 -Domain $Domain
-        $PKI = $PKI | Sort-Object -Property Score -Descending
+        #First check if PKI exists
+        $ADCSexists = Find-ADCS -Domain $Domain
+        if($ADCSexists) {
+            $PKI += Find-ESC1 -Domain $Domain
+            $PKI += Find-ESC2 -Domain $Domain 
+            $PKI += Find-ESC3 -Domain $Domain
+            $PKI += Find-ESC4 -Domain $Domain 
+            $PKI += Find-ESC5 -Domain $Domain
+            $PKI += Find-ESC6 -Domain $Domain
+            $PKI += Find-ESC7 -Domain $Domain
+            $PKI += Find-ESC8 -Domain $Domain
+            $PKI = $PKI | Sort-Object -Property Score -Descending
+        } else{
+            Write-Host "No ADCS found in $domain - PKI checks skipped" -ForegroundColor Yellow
+            $ADCSexists = $false
+        }
     }
     if ($Scans -eq "Kerberos" -or $Scans -eq "All") {
         $Kerberos += Find-Kerberoast -Domain $Domain
@@ -325,6 +331,11 @@ function Invoke-ADScanner {
 #                          Risk Prioritisation Summary                              #
 #####################################################################################
 "@
+        #Account for no PKI
+        if ($ADCSexists -eq $false){
+            $pki = New-Object PSObject
+            Add-Member -InputObject $pki -MemberType NoteProperty -Name score -Value 0
+        }
         #Category of risks - array of hashtables
         $categoryVariables = @(
             @{Name = "Kerberos"; Variable = $Kerberos },
@@ -414,7 +425,12 @@ function Invoke-ADScanner {
 #                                       PKI                                         #
 #####################################################################################
 "@
-        $PKI | Format-List
+        if ($ADCSexists -eq $false){
+            Write-Host "No ADCS found in $domain" -ForegroundColor Yellow
+        }
+        else{
+            $PKI | Format-List
+        }
     }
 
     if ($Format -eq "Console" -and ($Scans -eq "Kerberos" -or $Scans -eq "All")) {
@@ -487,6 +503,10 @@ function Invoke-ADScanner {
 
         #Technical section
         $DomainInfohtml = Generate-DomainInfohtml -DomainInfo $DomainInfo
+        #Account for PKI not existing
+        if ($ADCSexists -eq $false) {
+            $PKI  = "None"
+        } 
         $PKIhtml = Generate-PKIhtml -PKI $PKI -APIKey $APIkey
         $Kerberoshtml = Generate-Kerberoshtml -Kerberos $Kerberos -APIKey $APIkey
         $ACLshtml = Generate-ACLshtml -ACLs $ACLs -APIKey $APIkey
