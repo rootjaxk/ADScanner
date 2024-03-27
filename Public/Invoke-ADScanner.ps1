@@ -86,7 +86,7 @@ function Invoke-ADScanner {
   / ____ \| |__| |____) | (_| (_| | | | | | | |  __/ |   
  /_/    \_\_____/|_____/ \___\__,_|_| |_|_| |_|\___|_|   
 
- [+] Version: 1.0.0 - 23/03/2024
+ [+] Version: 1.0.0 - 27/03/2024
  [+] Jack G (@rootjack) https://github.com/rootjaxk/ADScanner
                                                    
 "@

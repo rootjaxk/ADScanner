@@ -1028,7 +1028,7 @@ function Generate-Passwordshtml {
                 </tr>
 "@  
             }
-            elseif ($finding.Technique -match "user's Active Directory description field") {
+            elseif ($finding.Technique -match "user's Active Directory description") {
                 $nospaceid = $finding.Technique.Replace(" ", "-")
                 $html += @"
                 <tr>
@@ -1061,7 +1061,7 @@ function Generate-Passwordshtml {
                                     <tr>
                                         <td class="relevantinfo"><table>
 "@
-                if($finding.Technique = "Plaintext credentials found in a standard user's Active Directory description field") {
+                if($finding.Technique = "Plaintext credentials found in a standard user's Active Directory description") {
                     $html += @"
                                 <tr><td class="grey">User</td><td>$($finding.User -replace "`r?`n", "<br>")</td></tr>
                                 <tr><td class="grey">Description</td><td>$($finding.Description)</td></tr>

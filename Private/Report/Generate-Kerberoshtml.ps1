@@ -219,7 +219,6 @@ function Generate-Kerberoshtml {
                     $html += "<td>T1558.003</td>"
                 }
                 $html += @"
-                                        <td>T1558.003</td>
                                         <td>+$($finding.Score)</td>
                                     </tr>
                                 </tbody>

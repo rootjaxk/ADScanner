@@ -357,13 +357,15 @@ th,td {
 }
 
 .toggle {
-    background-color: #abb9c0;
+    background-color: #b9c9d0;
     font-weight:500;
     padding:10px;
+   
 }
 .finding {
     display:none;
 }
+
 th {
     background-color: #6bb3cb;
 }
@@ -401,7 +403,7 @@ th {
 
 
 .toggle:hover{
-    background-color: #c4c4c4e0;
+    background-color: #cad3d6;
     cursor: pointer;
 }
 
@@ -412,7 +414,7 @@ th {
 }
 .attack-text{
     flex: 1;
-    margin-right: 20px; /* Adjust spacing between text and image */
+    margin-right: 20px;
   }
   
 .image-cell{
