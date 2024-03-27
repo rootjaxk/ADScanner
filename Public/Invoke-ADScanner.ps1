@@ -33,8 +33,8 @@ function Invoke-ADScanner {
     2. HTML
 
     .EXAMPLE 
-    Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\temp\
-    Invoke-ADScanner -Domain staging.test.local -Scans ADCS,Kerberos -Format csv -OutputPath c:\temp\
+    Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\windows\temp\
+    Invoke-ADScanner -Domain staging.test.local -Scans ADCS,Kerberos -Format csv -OutputPath c:\windows\temp\
 
     #>
 
@@ -58,23 +58,31 @@ function Invoke-ADScanner {
 
         [Parameter()]
         [String]
+        $OutputPath = (Get-Location).Path,
+
+        [Parameter()]
+        [String]
         $APIkey
     )    
 
 
     # Display help menu if ran incorrectly
-    if ((-not $Domain -or -not $apikey) -or $Help -or $Scans -notmatch "All|Info|Kerberos|PKI|RBAC|ACLs|Passwords|MISC|Legacy" -or ($format -notmatch "console" -and $scans -notmatch "all")) {
+    if ($Help -or $Scans -notmatch "All|Info|Kerberos|PKI|RBAC|ACLs|Passwords|MISC|Legacy" -or ($format -notmatch "console" -and $scans -notmatch "all") -or ($format -match "HTML" -and -not $APIkey)) {
         Write-Host -ForegroundColor Yellow "Invalid usage. Options:
             -Domain     The domain to scan. If don't know scanner will automatically use the current domain the system is joined to (Get-ADDomain)
             -Scans      The scan type to choose - All, Info, PKI, Kerberos, RBAC, ACLs, Passwords, MISC, Legacy (Default: All)
             -Format     The report format - HTML/Console (Default: HTML)
-            -OutputPath The location to save the report (Default: %pwd%)
-            -APIkey     The API key for ChatGPT to generate a summary of the report (only needed for HTML format)
+            -OutputPath The location to save the report (Default: current directory)
+            -APIkey     The API key for ChatGPT (only needed for HTML format)
 
-            Default Usage: Invoke-ADScanner -domain test.local -APIKey <API key> -OutputPath c:\temp\
-            Console example: Invoke-ADScanner -Domain test.local -Scans PKI -Format Console
+            Default Usage (Generate HTML domain report): Invoke-ADScanner -Domain test.local -APIKey <API key> -OutputPath c:\temp\
+            Console example (check remediation for PKI is succesful): Invoke-ADScanner -Domain test.local -Scans PKI -Format Console
     " 
         return
+    }
+
+    if (-not $Domain) {
+        $Domain = (Get-ADDomain).DNSRoot
     }
 
     #Logo made with https://patorjk.com/software/taag/#p=display&f=Big&t=ADScanner
@@ -108,8 +116,8 @@ function Invoke-ADScanner {
 
     #Add a check to see if RSAT is installed, if not, say to install it before importing AD module
     function Test-RSAT-Installed {
-        $RSAT = Get-WindowsFeature -Name RSAT-AD-PowerShell
-        if ($RSAT.Installed -eq $true) {
+        $RSAT = Get-Module -ListAvailable -Name 'ActiveDirectory'
+        if ($RSAT) {
             return $true
         }
         else {
@@ -118,11 +126,16 @@ function Invoke-ADScanner {
     }
     #required for esc7 check
     function Test-RSATADCS-Installed {
-        $RSAT = Get-WindowsFeature -Name RSAT-ADCS
-        if ($RSAT.Installed -eq $true) {
-            return $true
+        try {
+            $RSAT = Get-WindowsFeature -Name RSAT-ADCS
+            if ($RSAT.Installed -eq $true) {
+                return $true
+            }
+            else {
+                return $false
+            }
         }
-        else {
+        catch {
             return $false
         }
     }
@@ -136,36 +149,84 @@ function Invoke-ADScanner {
         }
     }
 
+    #Check if elevated to install pre-requisites
+    function Is-Admin {
+        $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+        $context = New-Object Security.Principal.WindowsPrincipal $identity
+        return $context.IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)
+    }
+    $OS = (Get-CimInstance -ClassName Win32_OperatingSystem).ProductType  # 1 - workstation, 2 - domain controller, 3 - non-dc server
+
     Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Checking pre-requisites..." -ForegroundColor Yellow
 
+    #Check if RSAT is installed
     if (Test-RSAT-Installed) {
         Import-Module ActiveDirectory
+        Import-Module GroupPolicy
+    }
+    elseif (Is-Admin -eq $true) {
+        #AD module install - different install on workstations
+        Write-Host "Installing RSAT-AD-PowerShell..." -ForegroundColor Yellow
+        if ($OS -eq 1) {
+            Add-WindowsCapability -Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0 -Online
+        }
+        else {
+            Install-WindowsFeature -Name RSAT-AD-PowerShell
+        }    
+        #GPO install - different on workstattions
+        Write-Host "Installing GPMC..." -ForegroundColor Yellow
+        if ($OS -eq 1) {
+            Add-WindowsCapability -Name Rsat.GroupPolicy.Management.Tools~~~~0.0.1.0 -Online
+        }
+        else {
+            Install-WindowsFeature -Name GPMC  
+        }
     }
     else {
-        Write-Host "RSAT is not installed. Please install RSAT as an elevated user before running this script." -ForegroundColor Yellow
-        Write-Host "Command: Install-WindowsFeature -Name RSAT-AD-PowerShell" -ForegroundColor Yellow #- only works on servers, on workstaions need to do Add-WindowsCapability -Name Rsat.ActiveDirectory.DS-LDS.Tools~~~~0.0.1.0 -Online (see locksmith) - https://github.com/TrimarcJake/Locksmith/blob/main/Private/Install-RSATADPowerShell.ps1
-        Write-Host "Command: Install-WindowsFeature -Name GPMC" -ForegroundColor Yellow         #For GPOs
-        return
-    }   
-    
-    if (-not (Test-RSATADCS-Installed)) {
-        Write-Host "RSAT is not installed. Please install RSAT as an elevated user before running this script." -ForegroundColor Yellow
-        Write-Host "Command: Install-WindowsFeature -Name RSAT-ADCS" -ForegroundColor Yellow
+        Write-Host "RSAT-AD is not installed, please run ADScanner in an elevated powershell prompt to install the required RSAT modules." -ForegroundColor Yellow
         return
     }
-
+    
+    #Chec if PSPKI is installed
     if (Test-PSPKI-Installed) {
         Import-Module PSPKI
     }
+    elseif (Is-Admin -eq $true) {
+        Write-Host "Installing PSPKI..." -ForegroundColor Yellow
+        Install-Module -Name PSPKI -Force
+    }
     else {
         Write-Host "PSPKI is not installed. Please install PSPKI as an elevated user before running this script." -ForegroundColor Yellow
-        Write-Host "Command: Install-Module -Name PSPKI -Force" -ForegroundColor Yellow
         return
-    }   
+    }
 
-    #TO-DO - add functionality to do individual scans (for prioritised remediation)
+    #Check if RSAT-ADCS is installed (for ESC7 check)
+    if (-not (Test-RSATADCS-Installed)) {
+        if (Is-Admin -eq $true) {
+            Write-Host "Installing RSAT-ADCS..." -ForegroundColor Yellow
+            if ($OS -eq 1) {
+                Add-WindowsCapability -Name Rsat.CertificateServices.Tools~~~~0.0.1.0 -Online
+            }
+            else {
+                Install-WindowsFeature -Name RSAT-ADCS 
+            }
+        }
+        else {
+            if ($OS -eq 1) {
+                import-module PSPKI
+                try {
+                    $success = Get-CertificateTemplate
+                } catch {}
+                if (-not $success) {
+                    Write-Host "RSAT-ADCS is not installed - please run ADScanner in an elevated powershell prompt to install the required RSAT modules." -ForegroundColor Yellow
+                    return
+                }
+            }
+        }
+    }
+
+
     #TD-DO - add functionality to exclude GPT (if executing in environment where outbound access is not permitted / privacy concerns)
-
     
     # Create variables to store the findings
     $DomainInfo = @()
@@ -440,8 +501,11 @@ function Invoke-ADScanner {
         $FinalHTML = $htmlreportheader + $riskOverallHTML + $runinfoHTML + $categoryRisksHTML + $executiveSummaryHTML + $RisksummaryHTMLoutput + $DomainInfohtml + $PKIhtml + $Kerberoshtml + $ACLshtml + $RBAChtml + $Passwordshtml + $MISChtml + $Legacyhtml + $Reportfooter + $JSend
 
         #Output HTML report
-        $FinalHTML | Out-File -FilePath "report.html"
-        Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Report outputted to report.html" -ForegroundColor Yellow
+        if ($outputpath.EndsWith('\')) {
+            $outputpath = $outputpath.TrimEnd('\')
+        }
+        $FinalHTML | Out-File -FilePath $OutputPath + "\ADScanner-$domain.html"
+        Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Report outputted to $OutputPath\ADScanner-$domain.html" -ForegroundColor Yellow
         Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Done!" -ForegroundColor Yellow
     }
 }
