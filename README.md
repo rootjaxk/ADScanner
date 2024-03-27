@@ -73,7 +73,7 @@ PS C:\> Invoke-ADScanner -Domain test.local -APIKey <api key>
 ```
 
 ## Example report 
-Preview an example report [here](https://asdasd)
+Preview an example report [here](http://adscanner-rootjack.s3-website.eu-north-1.amazonaws.com/)
 
 ![Report preview](https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/report-preview.png)  
 
