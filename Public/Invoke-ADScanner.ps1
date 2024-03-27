@@ -9,17 +9,14 @@ function Invoke-ADScanner {
 
     .COMPONENT
     Invoke-ADScanner requires the AD & ADCS modules to be installed in the scope of the Current User. This will require the Remote System Administration
-    Toolkit (RSAT) installed on the device. 
-    If Locksmith does not identify RSAT installed, it will attempt to install the relevant modules, else will fail.
+    Toolkit (RSAT) as well as the PSPKI module  installed on the device. 
+    If ADScanner does not identify any pre-requisites installed, it will attempt to install the relevant modules.
 
     .PARAMETER Scans
-    Specify which scans you want to run. Available scans: 'All' or ADCS or Kerberos, or , or 'PromptMe'
+    Specify which scans you want to run. Available scans: 'All, Info, PKI, Kerberos, RBAC, ACLs, Passwords, MISC, Legacy'
 
     -Scans All
     Run all scans (default)
-
-    -Scans PromptMe
-    Presents a grid view of the available scan types that can be selected and run them after you click OK.
 
     .PARAMETER Domain
     Specify a domain to run the scan in to cater to more complex environments
@@ -27,14 +24,20 @@ function Invoke-ADScanner {
     .PARAMETER OutputPath
     Specify the path where you want to save the report.
 
-    .OUTPUTS
+    .PARAMETER Format
     Different report output types (compliance with different report formats):
     1. To console
     2. HTML
 
+    .PARAMETER APIKey
+    The API key for ChatGPT (only needed for HTML format)
+
+    .PARAMETER Help
+    Display the help menu
+
     .EXAMPLE 
-    Invoke-ADScanner -Domain test.local -Scans All -Format html -OutputPath c:\windows\temp\
-    Invoke-ADScanner -Domain staging.test.local -Scans ADCS,Kerberos -Format csv -OutputPath c:\windows\temp\
+    Invoke-ADScanner -Domain test.local -APIKey <API key> -OutputPath c:\temp\
+    Invoke-ADScanner -Domain test.local -Scans PKI -Format Console
 
     #>
 
