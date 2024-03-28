@@ -73,11 +73,11 @@ PS C:\> Invoke-ADScanner -Domain test.local -APIKey <api key>
 ```
 
 ## Example report 
-Preview an example report [here](http://adscanner-rootjack.s3-website.eu-north-1.amazonaws.com/)
+Preview an example report [here](http://adscanner-rootjack.s3-website.eu-north-1.amazonaws.com/).
 
 ![Report preview](https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/report-preview.png)  
 
 ## Disclaimer
-ADScanner is intended for use on authorised systems only. Users must obtain explicit consent from system owners before using the tool on any network or actions could lead to serious legal repercussions. The creator is not responsible nor liable for any resulting damages or losses. GPT remediation has been prompt engineered but steps are a best effort and should be checked before implementation.
+ADScanner is intended for use on authorised systems only. Users must obtain explicit consent from system owners before using the tool on any network or actions could lead to serious legal repercussions. The creator is not responsible nor liable for any resulting damages or losses. GPT remediation has been prompt engineered but steps are a best effort and should be checked before implementation. This has not been tested in production environments.
 
-Potentially sensitive vulnerability information will be sent to ChatGPT - this is a PoC tool. This has not been tested in production environments.
+When producing the HTML report potentially sensitive vulnerability information will be sent to ChatGPT - this is a PoC tool. If you don't want to send information to GPT but still want to find vulnerabilities, run ADScanner with the `-format console` flag. 
