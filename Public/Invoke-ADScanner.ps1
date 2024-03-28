@@ -76,7 +76,7 @@ function Invoke-ADScanner {
             -Scans      The scan type to choose - All, Info, PKI, Kerberos, RBAC, ACLs, Passwords, MISC, Legacy (Default: All)
             -Format     The report format - HTML/Console (Default: HTML)
             -OutputPath The location to save the report (Default: current directory)
-            -APIkey     The API key for ChatGPT (only needed for HTML format)
+            -APIkey     The API key for ChatGPT (only needed for HTML format). Exclude if don't want to send data to ChatGPT and just use the console output
 
             Default Usage (Generate HTML domain report): Invoke-ADScanner -Domain test.local -APIKey <API key> -OutputPath c:\temp\
             Console example (check remediation for PKI is succesful): Invoke-ADScanner -Domain test.local -Scans PKI -Format Console
@@ -102,6 +102,10 @@ function Invoke-ADScanner {
                                                    
 "@
     Write-Host $Logo -ForegroundColor Yellow
+    if($format -ne $HTML -and -not $APIkey){
+        Write-Host "Console output chosen - no data will be sent to GPT and some checks will be missed." -ForegroundColor Yellow
+        $noGPT = $true
+    }
 
     #Colours for console output
     function to_red ($msg) {
@@ -289,7 +293,10 @@ function Invoke-ADScanner {
         $Passwords += Find-PwdNotRequired -Domain $Domain
         $Passwords += Find-LAPS -Domain $Domain
         $Passwords += Find-SensitiveInfo -Domain $Domain
-        $Passwords += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
+        #If console output only, skip GPT
+        if (-not $noGPT) {
+            $Passwords += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
+        }
         $Passwords = $Passwords | Sort-Object -Property Score -Descending
     }
     if ($Scans -eq "MISC" -or $Scans -eq "All") {
