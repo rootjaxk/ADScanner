@@ -6,10 +6,10 @@ ADscanner will scan for 120+ vulnerability checks and produce a professional HTM
 
 Within a few minutes you can understand the biggest risks impacting your Active Directory and can work on minimizing the likelihood of ransomware. 
 
-Inspired from the pingcastle and locksmith projects.
+Inspired from the [pingcastle](https://github.com/vletoux/pingcastle) and [locksmith](https://github.com/TrimarcJake/Locksmith) projects.
 
 ## Why this tool?
-Typical penetration tests are costly, time-constrained, not consistent and depend highly on the skill of the tester. Reports are rushed and generic remediation recommendations given, resulting in clients accepting their risks rather than actually remediating their issues. 
+Typical penetration tests are costly, time-constrained, not consistent and depend highly on the skill of the tester. Reports can be rushed and generic remediation recommendations given, resulting in clients accepting their risks rather than actually remediating their issues. 
 
 ADScanner addresses this, providing a free way to perform an Active Directory pentest on-demand and receive a professional report within minutes. It has been designed based of years of assessing vulnerable Active Directory environments & improving current gaps and accessibility in current tooling.
 
@@ -40,7 +40,7 @@ Capable of finding comprehensive attack vectors and your biggest risks across ca
 ## Pre-requisites
 Requires Remote Administration Toolkit (RSAT) to be installed. If not installed, on first run the module will try and install the relevant dependencies. 
 
-Will require outbound internet access to raw.githubusercontent.com and api.openai.com.
+Will require outbound internet access to https://raw.githubusercontent.com and https://api.openai.com.
 
 Works best executing on a system with full connectivity to all assets in a flat AD environment - if stateful firewalls segment portions of the network then this tool will not accurately test them. 
 
