@@ -534,7 +534,8 @@ function Invoke-ADScanner {
         if ($outputpath.EndsWith('\')) {
             $outputpath = $outputpath.TrimEnd('\')
         }
-        $Endpath = $OutputPath + "\ADScanner-$domain.html"
+        #give file name with output and date
+        $Endpath = $OutputPath + "\ADScanner-$domain-$((Get-Date).ToString("dd-MM-yyyy")).html"
         $FinalHTML | Out-File -FilePath $Endpath
         Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Report outputted to $Endpath" -ForegroundColor Yellow
         Write-Host "$((Get-Date).ToString(""[HH:mm:ss tt]"")) Done!" -ForegroundColor Yellow
