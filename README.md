@@ -2,7 +2,7 @@
 # ADScanner
 ADScanner is an improved Active Directory vulnerability scanner with intelligent report capability designed to quickly and easily reduce the risk of Active Directory environments that are victims of 10+ years of technical debt with compounding misconfigurations. 
 
-ADscanner will scan for 120+ vulnerability checks and produce a professional HTML vulnerability report and risk register ordered by risk severity. The report has attack demonstrations with contextualized remediation steps provided to understand how threat actors will compromise your environment and help reduce risk as quickly as possible.
+ADscanner will scan for 120+ vulnerability checks and produce a professional HTML vulnerability report and risk register ordered by risk severity. The report has attack demonstrations with contextualized remediation aided by ChatGPT to understand how threat actors will compromise your environment and help reduce risk as quickly as possible.
 
 Within a few minutes you can understand the biggest risks impacting your Active Directory and can work on minimizing the likelihood of ransomware. 
 
@@ -18,7 +18,7 @@ Capable of finding comprehensive attack vectors and your biggest risks across ca
 
 ## Features
  - Overall domain risk score - explain risk to management in a quantitative way
- - Executive summary for management - get senior management on side 
+ - Executive summary for management produced by GPT - get senior management on side 
  - Risk prioritisation summary - understand the correct order of remediation
  - Quick and easy to run - no technical skills required
  - Run on any domain joined system - no admin privileges required
