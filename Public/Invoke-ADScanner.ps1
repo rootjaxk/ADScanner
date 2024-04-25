@@ -102,7 +102,7 @@ function Invoke-ADScanner {
                                                    
 "@
     Write-Host $Logo -ForegroundColor Yellow
-    if($format -ne $HTML -and -not $APIkey){
+    if ($format -ne $HTML -and -not $APIkey) {
         Write-Host "Console output chosen - no data will be sent to GPT and some checks will be missed." -ForegroundColor Yellow
         $noGPT = $true
     }
@@ -222,7 +222,8 @@ function Invoke-ADScanner {
                 #check if RSAT-ADCS works
                 try {
                     $success = Get-CertificateTemplate
-                } catch {}
+                }
+                catch {}
                 if (-not $success) {
                     Write-Host "RSAT-ADCS is not installed - please run ADScanner in an elevated powershell prompt to install the required RSAT modules." -ForegroundColor Yellow
                     return
@@ -230,9 +231,6 @@ function Invoke-ADScanner {
             }
         }
     }
-
-
-    #TD-DO - add functionality to exclude GPT (if executing in environment where outbound access is not permitted / privacy concerns)
     
     # Create variables to store the findings
     $DomainInfo = @()
@@ -254,7 +252,7 @@ function Invoke-ADScanner {
     if ($Scans -eq "ADCS" -or $Scans -eq "All") {
         #First check if PKI exists
         $ADCSexists = Find-ADCS -Domain $Domain
-        if($ADCSexists) {
+        if ($ADCSexists) {
             $PKI += Find-ESC1 -Domain $Domain
             $PKI += Find-ESC2 -Domain $Domain 
             $PKI += Find-ESC3 -Domain $Domain
@@ -264,7 +262,12 @@ function Invoke-ADScanner {
             $PKI += Find-ESC7 -Domain $Domain
             $PKI += Find-ESC8 -Domain $Domain
             $PKI = $PKI | Sort-Object -Property Score -Descending
-        } else{
+            #Account for no vulns found
+            if (!$PKI) {
+                $nopkivulns = $true
+            }
+        }
+        else {
             Write-Host "No ADCS found in $domain - PKI checks skipped" -ForegroundColor Yellow
             $ADCSexists = $false
         }
@@ -275,10 +278,18 @@ function Invoke-ADScanner {
         $Kerberos += Find-Delegations -Domain $Domain
         $Kerberos += Find-GoldenTicket -Domain $Domain
         $Kerberos = $Kerberos | Sort-Object -Property Score -Descending
+        #Account for no vulns found
+        if (!$Kerberos) {
+            $nokerberosvulns = $true
+        }
     }   
     if ($Scans -eq "ACLs" -or $Scans -eq "All") {
         $ACLs += Find-ACLs -Domain $Domain
         $ACLs = $ACLs | Sort-Object -Property Score -Descending
+        #Account for no vulns found
+        if (!$ACLs) {
+            $noaclvulns = $true
+        }
     }
     if ($Scans -eq "RBAC" -or $Scans -eq "All") {
         $RBAC += Find-PrivilegedGroups -Domain $Domain
@@ -287,6 +298,10 @@ function Invoke-ADScanner {
         $RBAC += Find-AnonymousAccess -Domain $Domain
         $RBAC += Find-SensitiveAccounts -Domain $Domain
         $RBAC = $RBAC | Sort-Object -Property Score -Descending
+        #Account for no vulns found
+        if (!$RBAC) {
+            $norbacvulns = $true
+        }
     }
     if ($Scans -eq "PwdPolicy" -or $Scans -eq "All" ) {
         $Passwords += Find-PasswordPolicy -Domain $Domain
@@ -298,6 +313,10 @@ function Invoke-ADScanner {
             $Passwords += Find-UserDescriptions -Domain $Domain -APIKey $APIkey
         }
         $Passwords = $Passwords | Sort-Object -Property Score -Descending
+        #Account for no vulns found
+        if (!$Passwords) {
+            $nopasswordvulns = $true
+        }
     }
     if ($Scans -eq "MISC" -or $Scans -eq "All") {
         $MISC += Find-MAQ -Domain $Domain
@@ -308,11 +327,19 @@ function Invoke-ADScanner {
         $MISC += Find-WebDAV -Domain $Domain
         $MISC += Find-EfficiencyImprovements -Domain $Domain
         $MISC = $MISC | Sort-Object -Property Score -Descending
+        #Account for no vulns found
+        if (!$MISC) {
+            $nomiscvulns = $true
+        }
     }
     if ($Scans -eq "Legacy" -or $Scans -eq "All") {
         $Legacy += Find-LegacyProtocols -Domain $Domain
         $Legacy += Find-UnsupportedOS -Domain $Domain
         $Legacy = $Legacy | Sort-Object -Property Score -Descending
+        #Account for no vulns found
+        if (!$Legacy) {
+            $nolegacyvulns = $true
+        }
     }
 
   
@@ -341,10 +368,34 @@ function Invoke-ADScanner {
 #                          Risk Prioritisation Summary                              #
 #####################################################################################
 "@
-        #Account for no PKI
-        if ($ADCSexists -eq $false){
+        #Account for no vulnerabilities found
+        if ($ADCSexists -eq $false -or $nopkivulns) {
             $pki = New-Object PSObject
             Add-Member -InputObject $pki -MemberType NoteProperty -Name score -Value 0
+        }
+        if ($nokerberosvulns) {
+            $kerberos = New-Object PSObject
+            Add-Member -InputObject $kerberos -MemberType NoteProperty -Name score -Value 0
+        }
+        if ($noaclvulns) {
+            $acls = New-Object PSObject
+            Add-Member -InputObject $acls -MemberType NoteProperty -Name score -Value 0
+        }
+        if ($norbacvulns) {
+            $rbac = New-Object PSObject
+            Add-Member -InputObject $rbac -MemberType NoteProperty -Name score -Value 0
+        }
+        if ($nopasswordvulns) {
+            $passwords = New-Object PSObject
+            Add-Member -InputObject $passwords -MemberType NoteProperty -Name score -Value 0
+        }
+        if ($nomiscvulns) {
+            $misc = New-Object PSObject
+            Add-Member -InputObject $misc -MemberType NoteProperty -Name score -Value 0
+        }
+        if ($nolegacyvulns) {
+            $legacy = New-Object PSObject
+            Add-Member -InputObject $legacy -MemberType NoteProperty -Name score -Value 0
         }
         #Category of risks - array of hashtables
         $categoryVariables = @(
@@ -382,9 +433,29 @@ function Invoke-ADScanner {
         $categoryRisks = $categoryRisks | Sort-Object -Property Score -Descending
         $categoryRisks
        
-        #Ordered summary of risks
+        #Ordered summary of risks, accounting for no vulnerabilities in a category discovered
         $Risksummaries = "`r`n[*] Risk summaries:"
-        $Allissues += $PKI + $Kerberos + $RBAC + $ACLs + $Passwords + $MISC + $Legacy
+        if (!$nopkivulns -and $ADCSexists -ne $false) {
+            $Allissues += $PKI
+        }
+        if (!$nokerberosvulns) {
+            $Allissues += $Kerberos
+        }
+        if (!$norbacvulns) {
+            $Allissues += $RBAC
+        }
+        if (!$noaclvulns) {
+            $Allissues += $ACLs
+        }
+        if (!$nopasswordvulns) {
+            $Allissues += $Passwords
+        }
+        if (!$nomiscvulns) {
+            $Allissues += $MISC
+        }
+        if (!$nolegacyvulns) {
+            $Allissues += $Legacy
+        }
 
         #Add category to each issue
         $Allissues | ForEach-Object {
@@ -435,10 +506,13 @@ function Invoke-ADScanner {
 #                                       PKI                                         #
 #####################################################################################
 "@
-        if ($ADCSexists -eq $false){
-            Write-Host "No ADCS found in $domain" -ForegroundColor Yellow
+        if ($ADCSexists -eq $false) {
+            Write-Host "`r`nNo ADCS found in $domain`r`n"
         }
-        else{
+        elseif ($nopkivulns) {
+            Write-Host "`r`nNo PKI vulnerabilities found`r`n"
+        }
+        else {
             $PKI | Format-List
         }
     }
@@ -449,7 +523,12 @@ function Invoke-ADScanner {
 #                                    Kerberos                                       #
 #####################################################################################
 "@
-        $Kerberos | Sort-Object -Property Score -Descending | Format-List
+        if ($nokerberosvulns) {
+            Write-Host "`r`nNo Kerberos vulnerabilities found`r`n"
+        }
+        else {
+            $Kerberos | Sort-Object -Property Score -Descending | Format-List
+        }
     }    
 
     if ($Format -eq "Console" -and ($Scans -eq "RBAC" -or $Scans -eq "All")) {
@@ -458,7 +537,12 @@ function Invoke-ADScanner {
 #                                       RBAC                                        #
 #####################################################################################
 "@
-        $RBAC | Sort-Object -Property Score -Descending | Format-List
+        if ($norbacvulns) {
+            Write-Host "`r`nNo RBAC vulnerabilities found`r`n"
+        }
+        else {
+            $RBAC | Sort-Object -Property Score -Descending | Format-List
+        }
     }
 
     if ($Format -eq "Console" -and ($Scans -eq "ACLs" -or $Scans -eq "All")) {
@@ -467,7 +551,12 @@ function Invoke-ADScanner {
 #                                       ACLs                                        #
 #####################################################################################
 "@
-        $ACLs | Sort-Object -Property Score -Descending | Format-List
+        if ($noaclvulns) {
+            Write-Host "`r`nNo ACL vulnerabilities found`r`n"
+        }
+        else {
+            $ACLs | Sort-Object -Property Score -Descending | Format-List
+        }
     }
 
     if ($Format -eq "Console" -and ($Scans -eq "Passwords" -or $Scans -eq "All")) {
@@ -476,7 +565,12 @@ function Invoke-ADScanner {
 #                                     Passwords                                     #
 #####################################################################################
 "@
-        $Passwords | Sort-Object -Property Score -Descending | Format-List
+        if ($nopasswordvulns) {
+            Write-Host "`r`nNo Password vulnerabilities found`r`n"
+        }
+        else {
+            $Passwords | Sort-Object -Property Score -Descending | Format-List
+        }
     }
 
     if ($Format -eq "Console" -and ($Scans -eq "MISC" -or $Scans -eq "All")) {
@@ -485,16 +579,26 @@ function Invoke-ADScanner {
 #                                       MISC                                        #
 #####################################################################################
 "@
-        $MISC | Sort-Object -Property Score -Descending | Format-List
+        if ($nomiscvulns) {
+            Write-Host "`r`nNo MISC vulnerabilities found`r`n"
+        }
+        else {
+            $MISC | Sort-Object -Property Score -Descending | Format-List
+        }
     }
 
     if ($Format -eq "Console" -and ($Scans -eq "Legacy" -or $Scans -eq "All")) {
         Write-Host @"
 #####################################################################################
-#                                       LEGACY                                      #
+#                                       Legacy                                      #
 #####################################################################################
 "@
-        $Legacy | Sort-Object -Property Score -Descending | Format-List
+        if ($nolegacyvulns) {
+            Write-Host "`r`nNo Legacy vulnerabilities found`r`n"
+        }
+        else {
+            $Legacy | Sort-Object -Property Score -Descending | Format-List
+        }
     }
 
 
@@ -515,7 +619,7 @@ function Invoke-ADScanner {
         $DomainInfohtml = Generate-DomainInfohtml -DomainInfo $DomainInfo
         #Account for PKI not existing
         if ($ADCSexists -eq $false) {
-            $PKI  = "None"
+            $PKI = "None"
         } 
         $PKIhtml = Generate-PKIhtml -PKI $PKI -APIKey $APIkey
         $Kerberoshtml = Generate-Kerberoshtml -Kerberos $Kerberos -APIKey $APIkey
