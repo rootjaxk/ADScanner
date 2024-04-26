@@ -21,12 +21,12 @@ Copyright = '(c) 2024. All rights reserved.'
 # Modules that must be imported into the global environment prior to importing this module
 RootModule = 'ADScanner.psm1'
 RequiredModules = @(
-    @{
-        ModuleName    = 'ActiveDirectory'
-        ModuleVersion = '1.0.0.0'
-        Guid          = '43c15630-959c-49e4-a977-758c5cc93408'
-    }
-)    #probably need PSPKI as well 
+    #@{
+    #    ModuleName    = 'ActiveDirectory'
+    #    ModuleVersion = '1.0.0.0'
+    #    Guid          = '43c15630-959c-49e4-a977-758c5cc93408'
+    #}
+)    #none needed as Invoke-ADScanner will install them if not installed 
 
 
 # Only export public function to keep all internal working 'hidden' from end user. 

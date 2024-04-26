@@ -10,7 +10,7 @@ function Generate-PKIhtml {
     #gen AI prompt for remediation
     $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I don't want generic remediation, I want specific steps someone can take and follow step, by step. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
 
-    if ($PKI -eq "None") {
+    if ($PKI -eq "None" -or $PKI.Score -eq 0) {
         $html = @"
         <div class="finding-header">PKI</div>
         <h2 class="novuln">No vulnerabilities found!</h2>

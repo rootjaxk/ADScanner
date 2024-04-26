@@ -9,7 +9,7 @@ function Generate-ACLshtml {
     #gen AI prompt for remediation
     $AiSystemMessage = "You are an Active Directory security expert. I will provide you with some information relating to a vulnerability and I want you to respond with exact remediation steps to fix the specified vulnerability in html code. I want it in numbered steps that go inbetween list tags <ol><li> in html. I want no other information returned."
     
-    if (!$ACLs) {
+    if (!$ACLs -or $ACLs.Score -eq 0) {
         $html = @"
         <div class="finding-header">ACLs</div>
         <h2 class="novuln">No vulnerabilities found!</h2>
