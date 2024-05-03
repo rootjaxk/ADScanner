@@ -78,7 +78,7 @@ function Invoke-ADScanner {
             -OutputPath The location to save the report (Default: current directory)
             -APIkey     The API key for ChatGPT (only needed for HTML format). Exclude if don't want to send data to ChatGPT and just use the console output
 
-            Default Usage (Generate HTML domain report): Invoke-ADScanner -Domain test.local -APIKey <API key> -OutputPath c:\temp\
+            Default Usage (Generate HTML domain report):              Invoke-ADScanner -Domain test.local -APIKey <API key> -OutputPath c:\temp\
             Console example (check remediation for PKI is succesful): Invoke-ADScanner -Domain test.local -Scans PKI -Format Console
     " 
         return
@@ -219,15 +219,6 @@ function Invoke-ADScanner {
         else {
             if ($OS -eq 1) {
                 import-module PSPKI
-                #check if RSAT-ADCS works
-                try {
-                    $success = Get-CertificateTemplate
-                }
-                catch {}
-                if (-not $success) {
-                    Write-Host "RSAT-ADCS is not installed - please run ADScanner in an elevated powershell prompt to install the required RSAT modules." -ForegroundColor Yellow
-                    return
-                }
             }
         }
     }
