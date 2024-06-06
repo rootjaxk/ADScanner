@@ -41,11 +41,12 @@ function Find-LDAPSigning {
             $LDAP = "LDAP://" + $ServerName + ':' + $Port
             $Connection = [ADSI]($LDAP)
             $Connection.Close()
+            Write-Host "LDAP bind to $ServerName`:$Port successful" -ForegroundColor Yellow
             return $true
         }
         catch {
             if ($_.Exception.ToString() -match "The server is not operational") {
-                Write-Warning "Can't open $ServerName`:$Port."
+                Write-Warning "Can't connect to $ServerName`:$Port"
             }
             else {
                 Write-Warning -Message $_

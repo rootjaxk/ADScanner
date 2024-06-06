@@ -199,6 +199,7 @@ function Invoke-ADScanner {
     elseif (Is-Admin -eq $true) {
         Write-Host "Installing PSPKI..." -ForegroundColor Yellow
         Install-Module -Name PSPKI -Force
+        Import-Module PSPKI
     }
     else {
         Write-Host "PSPKI is not installed. Please install PSPKI as an elevated user before running this script." -ForegroundColor Yellow

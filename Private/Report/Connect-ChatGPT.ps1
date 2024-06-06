@@ -6,6 +6,7 @@ function Connect-ChatGPT {
   
     .PARAMETER APIKey
     The API key to connect to the ChatGPT API to avoid hardcoding the secret in the script
+    
 
     .PARAMETER Prompt
     The prompt to provide the GPT to generate a response

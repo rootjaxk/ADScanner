@@ -45,17 +45,19 @@ Will require outbound internet access to https://raw.githubusercontent.com and h
 Works best executing on a system with full connectivity to all assets in a flat AD environment - if stateful firewalls segment portions of the network then this tool will not accurately test them. 
 
 ## Usage
-Bypass execution policy (as script isn't signed yet)
+ADScanner will run on any domain joined system from PowerShell.
+
+1. Bypass execution policy (as script isn't signed yet)
 ```
 PS C:\> powershell -ep bypass
 ```
 
-Download and import the module
+2. Download and import the module
 ```
 PS C:\> Import-Module .\ADScanner.psd1
 ```
 
-Run specifying OpenAI API key - average scan for 120 checks costs $0.01
+3. Run specifying OpenAI API key - average scan for 120 checks costs $0.01
 ```
 PS C:\> Invoke-ADScanner -Domain test.local -APIKey <api key>
 
