@@ -80,7 +80,9 @@ Preview an example report of a very vulnerable directory [here](http://adscanner
 ![Report preview](https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/report-preview.png)  
 
 ## Disclaimer
-ADScanner is intended for use on authorised systems only. Users must obtain explicit consent from system owners before using the tool on any network or actions could lead to serious legal repercussions. The creator is not responsible nor liable for any resulting damages or losses. GPT remediation has been prompt engineered but steps are a best effort and should be checked before implementation. This has not been tested in production environments.
+ADScanner is intended for use on authorised systems only. Users must obtain explicit consent from system owners before using the tool on any network or actions could lead to serious legal repercussions. The creator is not responsible nor liable for any resulting damages or losses. GPT remediation has been prompt engineered but steps are a best effort and should be checked before implementation. 
+
+This has had limited testing in production environments. False positives may be flagged for ACL issues as the tool doesn't take into account for custom RBAC groups (just uses default) - pending development for incorporation of this. 
 
 When producing the HTML report potentially sensitive vulnerability information will be sent to ChatGPT - this is a PoC tool. If you don't want to send information to GPT but still want to find vulnerabilities, run ADScanner with the `-format console` flag and don't specify an API key. 
 ```
