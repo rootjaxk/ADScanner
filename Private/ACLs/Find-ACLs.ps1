@@ -76,7 +76,7 @@ function Find-ACLs {
   ##############
 
   #All objects in domain
-  $ldapFilter = "(|(objectClass=user)(objectClass=computer)(objectClass=groupPolicyContainer)(objectClass=organizationalUnit)(distinguishedName=$searchBase)(distinguishedName=CN=Users,$searchBase)(distinguishedName=CN=Computers,$searchBase))"
+  $ldapFilter = "(|(objectClass=user)(objectClass=computer)(objectClass=groupPolicyContainer)(objectClass=organizationalUnit)(distinguishedName=$searchBase)(distinguishedName=CN=Users,$searchBase)(distinguishedName=CN=Computers,$searchBase)(distinguishedName=CN=AdminSDHolder,CN=System,$searchBase))"
   $Alldomainobjects = (Get-ADObject -SearchBase $searchBase -LDAPFilter $ldapFilter).distinguishedname
 
   $GPOissues = @()
