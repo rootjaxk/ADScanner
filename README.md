@@ -75,7 +75,7 @@ PS C:\> Invoke-ADScanner -Domain test.local -APIKey <api key>
 ```
 
 ## Example report 
-Preview an example report of a very vulnerable directory [here](http://adscanner-rootjack.s3-website.eu-north-1.amazonaws.com/) and a default directory [here](https://adscanner-rootjack.s3.eu-north-1.amazonaws.com/ADScanner-lims.co.uk-26-04-2024.html).
+Preview an example report of a very vulnerable directory [here](https://github.com/rootjaxk/ADScanner/blob/main/ADScanner-test.local.html) and a default directory [here](https://github.com/rootjaxk/ADScanner/blob/main/ADScanner-lims.co.uk-26-04-2024.html).
 
 ![Report preview](https://raw.githubusercontent.com/rootjaxk/ADScanner/main/Private/Report/Images/report-preview.png)  
 
